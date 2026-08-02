@@ -1,0 +1,15 @@
+{
+  "name": "Mi Español · 我的西班牙文學習筆記",
+  "short_name": "Mi Español",
+  "description": "個人西班牙文學習筆記:對話、文法、單字卡、歌詞分析、動詞練習、間隔重複複習。",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F2E6CE",
+  "theme_color": "#C24A32",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

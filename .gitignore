@@ -1,0 +1,14 @@
+node_modules/
+.vercel
+.env*
+
+# 原始筆記照片（190MB，網站未引用，不進版本庫）
+筆記照片/
+
+# 本機備份與工具設定
+*.bak
+*.bak-*
+*.backup-*
+index.bak-*.html
+index.backup-*.html
+.claude/

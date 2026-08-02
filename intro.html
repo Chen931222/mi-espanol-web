@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mi Español — 一個人也能養成的西班牙文學習法</title>
+<meta name="description" content="對話、單字卡 SRS、歌詞、聽力口說、遊戲化進度——Mi Español 產品導覽。">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2E6CE; --paper-2:#FAF2E0; --card:#FCF8EE;
+  --ink:#2B2017; --ink-soft:#6E5A44;
+  --terra:#C24A32; --terra-deep:#9C3320; --ochre:#E0A02E; --azul:#2F6E87; --wine:#7C2D2D; --good:#4F7A3A;
+  --line:#E5D5B6; --line-strong:#D8C29A;
+  --acc:#C24A32; --acc-deep:#9C3320;
+  --r:20px; --shadow:0 18px 44px -20px rgba(70,45,20,.5);
+  --font-display:'Fraunces','Noto Serif TC','Songti TC',Georgia,serif;
+  --font-body:'Karla','Microsoft JhengHei','PingFang TC','Heiti TC',sans-serif;
+  --vh:100vh;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overscroll-behavior:none;height:100%;overflow:hidden}
+body{
+  font-family:var(--font-body);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+  background:radial-gradient(1200px 600px at 85% -10%, #F7E9C8 0%, transparent 60%),
+             radial-gradient(900px 500px at -10% 110%, #F3DEC0 0%, transparent 55%),var(--paper);
+}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:9000;opacity:.05;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.glow{position:fixed;inset:0;pointer-events:none;z-index:0;transition:opacity 1.1s ease;opacity:0}
+.glow.on{opacity:1}
+
+/* ── 頂欄 / 進度 / 圓點 ── */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;gap:12px;padding:14px 22px}
+.brand{font-family:var(--font-display);font-weight:900;font-size:1.25rem;color:var(--ink)}
+.brand i{font-style:italic;color:var(--acc);transition:color .8s}
+.top-sp{flex:1}
+.tbtn{display:inline-flex;align-items:center;gap:7px;cursor:pointer;border:1.5px solid var(--line-strong);background:rgba(252,248,238,.75);backdrop-filter:blur(6px);color:var(--ink-soft);border-radius:999px;padding:8px 16px;font-weight:700;font-size:.85rem;font-family:var(--font-body);text-decoration:none;transition:.2s}
+.tbtn:hover{border-color:var(--acc);color:var(--acc)}
+.tbtn.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.tprog{position:fixed;top:0;left:0;right:0;height:3px;z-index:110}
+.tprog i{display:block;height:100%;width:0;background:var(--acc);transition:width .7s cubic-bezier(.4,0,.2,1),background .8s}
+.dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:11px}
+.dot{position:relative;width:11px;height:11px;border-radius:50%;border:1.6px solid var(--ink-soft);background:transparent;cursor:pointer;padding:0;transition:.25s}
+.dot:hover{border-color:var(--acc)}
+.dot.on{background:var(--acc);border-color:var(--acc);transform:scale(1.25)}
+.dot .lb{position:absolute;right:22px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:.74rem;font-weight:700;color:var(--ink-soft);background:rgba(252,248,238,.92);border:1px solid var(--line);border-radius:999px;padding:3px 10px;opacity:0;pointer-events:none;transition:.2s}
+.dot:hover .lb{opacity:1}
+
+/* ── 舞台 ── */
+#stage{position:relative;height:var(--vh);overflow:hidden;z-index:1}
+.scene{position:absolute;inset:0;visibility:hidden;opacity:0;z-index:2}
+.scene.active{visibility:visible;opacity:1}
+.scene.leave{visibility:visible;opacity:0;transition:opacity .55s ease}
+.inner{position:relative;width:min(1180px,100%);height:100%;margin:0 auto;padding:0 56px;display:flex;align-items:center}
+.side{width:min(430px,40%);display:flex;flex-direction:column;gap:18px}
+.scene[data-side="right"] .inner{justify-content:flex-end}
+.scene[data-side="left"] .inner{justify-content:flex-start}
+
+/* 大標語(一幕一句) */
+.claim{font-family:var(--font-display);font-weight:900;font-size:clamp(1.9rem,3.6vw,2.9rem);line-height:1.18;color:var(--ink);opacity:0;transform:translateY(30px)}
+.claim i{font-style:italic;color:var(--acc);transition:color .8s}
+.scene.active .claim{opacity:1;transform:none;transition:opacity 1s cubic-bezier(.16,1,.3,1) .15s,transform 1s cubic-bezier(.16,1,.3,1) .15s}
+.kick{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.14em;color:#fff;background:var(--acc);border-radius:999px;padding:3px 12px;margin-bottom:2px;transition:background .8s;align-self:flex-start;opacity:0}
+.scene.active .kick{opacity:1;transition:opacity .8s ease .05s}
+
+/* 文字卡(分段自動輪播) */
+.card{position:relative;background:rgba(252,248,238,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1.5px solid var(--line-strong);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 24px 18px;cursor:pointer;opacity:0;transform:translateY(26px)}
+.scene.active .card{opacity:1;transform:none;transition:opacity .9s ease .45s,transform .9s cubic-bezier(.16,1,.3,1) .45s}
+.prog{position:absolute;top:0;left:16px;right:16px;height:3px;border-radius:0 0 4px 4px;overflow:hidden;background:var(--line)}
+.prog i{display:block;height:100%;width:0;background:var(--acc);transition:background .8s}
+.seg{display:none}
+.seg.on{display:block;animation:segin .5s ease}
+@keyframes segin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.seg h3{font-family:var(--font-display);font-weight:900;font-size:1.12rem;color:var(--ink);margin-bottom:7px}
+.seg h3 em{font-style:italic;color:var(--acc);transition:color .8s}
+.seg p{color:var(--ink-soft);font-size:.92rem}
+.stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.stat{border:1.5px solid var(--line-strong);background:var(--paper-2);border-radius:12px;padding:6px 11px;font-size:.78rem;font-weight:700;color:var(--ink-soft)}
+.stat b{display:block;font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:var(--acc);line-height:1.1;transition:color .8s}
+.seg-dots{display:flex;gap:6px;margin-top:14px}
+.seg-dots i{width:20px;height:4px;border-radius:99px;background:var(--line-strong);transition:.3s}
+.seg-dots i.on{background:var(--acc)}
+.card-hint{margin-top:8px;font-size:.7rem;color:var(--ink-soft);opacity:.6}
+
+/* ── 貫穿全場的手機 ── */
+/* --ps(縮放) 與 --pdy(垂直位移) 由 JS 依「文字之間的空檔」算出,確保永不重疊 */
+#phoneWrap{position:absolute;left:50%;top:50%;z-index:1;--ps:1;--pdy:0px;transform:translate(-50%,calc(-50% + var(--pdy))) scale(var(--ps));transition:transform 1.1s cubic-bezier(.16,1,.3,1)}
+#phoneWrap.side-left{transform:translate(calc(-50% - 18vw),calc(-50% + var(--pdy))) scale(var(--ps))}   /* 卡片在右 → 手機偏左 */
+#phoneWrap.side-right{transform:translate(calc(-50% + 18vw),calc(-50% + var(--pdy))) scale(var(--ps))}  /* 卡片在左 → 手機偏右 */
+#phoneWrap.hero-pos{transform:translate(-50%,calc(-50% + var(--pdy))) scale(var(--ps))}
+.phone{position:relative;width:262px;height:532px;background:#2B2017;border-radius:40px;box-shadow:0 30px 70px -24px rgba(70,45,20,.65),inset 0 0 0 3px #4A3A2B;padding:11px}
+.phone::before{content:"";position:absolute;top:11px;left:50%;transform:translateX(-50%);width:88px;height:22px;background:#2B2017;border-radius:0 0 14px 14px;z-index:5}
+.p-screen{position:relative;width:100%;height:100%;background:var(--paper-2);border-radius:30px;overflow:hidden;display:flex;flex-direction:column}
+.p-top{flex:0 0 auto;text-align:center;padding:26px 0 6px;font-family:var(--font-display);font-weight:900;font-size:.85rem;color:var(--ink);border-bottom:1px solid var(--line);background:var(--paper-2);z-index:4}
+.p-top i{font-style:italic;color:var(--terra)}
+.p-body{position:relative;flex:1;overflow:hidden}
+.screen{position:absolute;inset:0;padding:10px 11px;opacity:0;transition:opacity .55s ease;overflow:hidden}
+.screen.on{opacity:1;transition-delay:.25s}
+.p-nav{flex:0 0 auto;display:flex;justify-content:space-around;align-items:center;padding:7px 6px 9px;border-top:1px solid var(--line);background:var(--paper-2);z-index:4}
+.p-nav span{display:flex;color:var(--ink-soft);opacity:.55;transition:.3s}
+.p-nav span.on{color:var(--acc);opacity:1;transform:scale(1.2)}
+
+/* 手機內畫面共用小元件 */
+.m-bub{border-radius:11px;padding:7px 9px;margin:6px 0;font-size:.62rem;line-height:1.45;border:1px solid var(--line);background:var(--card)}
+.m-bub.q{margin-left:14%;background:var(--terra);border-color:transparent;color:#fff;border-bottom-right-radius:3px}
+.m-bub .es{font-family:var(--font-display);font-weight:600;font-size:.68rem}
+.m-bub u{text-decoration:none;border-bottom:1.5px dotted currentColor;font-weight:700}
+.m-bub .hl{background:var(--terra);color:#fff;border-radius:3px;padding:0 2px;border-bottom:none}
+.m-note{background:var(--paper-2);border:1px solid var(--line-strong);border-left:3px solid var(--terra);border-radius:8px;padding:6px 8px;font-size:.56rem;color:var(--ink-soft);margin-top:6px}
+.m-note b{font-family:var(--font-display);color:var(--terra-deep);font-size:.66rem}
+.m-card{background:var(--card);border:1px solid var(--line-strong);border-radius:12px;box-shadow:0 8px 20px -10px rgba(70,45,20,.4);padding:12px 10px;text-align:center}
+.m-word{font-family:var(--font-display);font-weight:900;font-size:1.15rem;color:var(--terra)}
+.m-pos{font-size:.55rem;font-weight:700;color:var(--ink-soft)}
+.m-ej{font-size:.58rem;color:var(--ink-soft);font-style:italic;margin-top:3px}
+.m-srs{display:flex;gap:5px;margin-top:8px}
+.m-srs span{flex:1;border-radius:8px;padding:5px 2px;font-size:.56rem;font-weight:800;text-align:center}
+.m-srs .b1{background:#E8B6A7;color:#5C2418}.m-srs .b2{background:#F0D9A6;color:#5E4711}.m-srs .b3{background:#BBD8AE;color:#264C1B}
+.m-lyr{font-family:var(--font-display);font-weight:600;font-size:.66rem;color:var(--wine);line-height:1.6}
+.m-cn{font-size:.55rem;color:var(--ink-soft);margin-bottom:5px}
+.m-lyr u{text-decoration:none;border-bottom:1.5px dotted var(--wine);font-weight:700}
+.m-lyr .hl{background:var(--wine);color:#fff;border-radius:3px;padding:0 2px;border-bottom:none}
+.m-zone{min-height:30px;border:1.2px dashed var(--line-strong);border-radius:9px;background:rgba(252,248,238,.8);padding:5px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.m-pool{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;justify-content:center}
+.m-tile{border:1px solid var(--line-strong);background:var(--card);border-radius:6px;padding:3px 7px;font-family:var(--font-display);font-weight:700;font-size:.62rem;color:var(--azul)}
+.m-tile.ok{background:var(--azul);color:#fff;border-color:transparent}
+.m-q{text-align:center;font-weight:900;font-size:.66rem;margin-bottom:7px}
+.m-inf{font-family:var(--font-display);font-weight:900;font-size:1rem;color:var(--good);text-align:center}
+.m-ask{text-align:center;font-size:.6rem;color:var(--ink-soft);margin:3px 0 7px}
+.m-ask b{color:var(--azul)}
+.m-input{border:1.2px solid var(--line-strong);border-radius:8px;background:#fff;padding:5px 8px;font-family:var(--font-display);font-size:.72rem;text-align:center;margin:0 auto;width:80%;display:block}
+.m-okline{text-align:center;font-weight:800;color:var(--good);font-size:.6rem;margin-top:6px}
+.m-chips{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:8px}
+.m-chips span{border:1px solid var(--line-strong);border-radius:99px;padding:2px 7px;font-size:.5rem;font-weight:800;color:var(--ink-soft);background:var(--paper-2)}
+.m-chips .on{background:var(--good);border-color:var(--good);color:#fff}
+.m-micring{position:relative;width:64px;height:64px;margin:10px auto}
+.m-micring .c{position:absolute;inset:0;border-radius:50%;background:var(--terra-deep);display:flex;align-items:center;justify-content:center;color:#fff}
+.m-micring .p{position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--terra-deep);animation:ring 2.2s ease-out infinite;opacity:0}
+.m-micring .p:nth-child(2){animation-delay:1.1s}
+@keyframes ring{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.8);opacity:0}}
+.m-diff{background:var(--card);border:1px solid var(--line-strong);border-radius:10px;padding:8px 10px;font-family:var(--font-display);font-weight:600;font-size:.66rem;line-height:1.8;text-align:center}
+.m-diff .g{color:var(--good);font-weight:800}
+.m-diff .r{background:#B23A2E;color:#fff;border-radius:4px;padding:0 4px;font-weight:800}
+.m-diff .s{display:block;font-family:var(--font-body);font-size:.52rem;color:var(--ink-soft);font-weight:700}
+.m-ring{position:relative;width:74px;height:74px;margin:4px auto}
+.m-ring svg{transform:rotate(-90deg)}
+.m-ring .n{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;color:var(--terra-deep);font-size:.8rem;line-height:1}
+.m-ring .n small{font-weight:700;color:var(--ink-soft);font-size:.42rem;margin-top:2px}
+.m-heat{display:grid;grid-template-rows:repeat(7,7px);grid-auto-flow:column;gap:2px;justify-content:center;margin-top:8px}
+.m-heat span{width:7px;height:7px;border-radius:2px;background:var(--paper-2);border:1px solid var(--line)}
+.m-heat .l1{background:#EFCBA4;border-color:transparent}.m-heat .l2{background:#E0975E;border-color:transparent}.m-heat .l3{background:#C24A32;border-color:transparent}.m-heat .l4{background:#8C2A18;border-color:transparent}
+.m-badges{display:flex;gap:5px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.m-badges span{display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line-strong);border-radius:8px;padding:4px 7px;font-size:.54rem;font-weight:800}
+.m-badges svg{color:var(--ochre)}
+.m-ctain{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;text-align:center}
+.m-ctain .big{font-family:var(--font-display);font-weight:900;font-size:1.05rem;line-height:1.3}
+.m-ctain .big i{font-style:italic;color:var(--terra)}
+.m-btn{background:var(--terra);color:#fff;font-weight:900;font-size:.7rem;border-radius:99px;padding:8px 20px}
+.m-home{display:flex;flex-direction:column;gap:7px}
+.m-daily{background:linear-gradient(180deg,#FBEEE2,var(--card));border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.m-daily .h{font-family:var(--font-display);font-weight:900;font-size:.64rem;color:var(--terra-deep)}
+.m-dstats{display:flex;gap:5px;margin-top:5px}
+.m-dstats div{flex:1;background:var(--paper-2);border:1px solid var(--line);border-radius:7px;text-align:center;padding:4px 2px}
+.m-dstats b{display:block;font-family:var(--font-display);font-weight:900;font-size:.74rem;color:var(--terra)}
+.m-dstats i{font-style:normal;font-size:.46rem;font-weight:700;color:var(--ink-soft)}
+
+/* 標籤指線(掛在手機裡,跟著手機移動+漂浮) */
+.callout{position:absolute;z-index:9;opacity:0;transform:translateY(8px);transition:opacity .6s ease,transform .6s ease;pointer-events:none}
+.callout.on{opacity:1;transform:none;transition-delay:1.1s}
+.callout .pin{position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 25%,transparent)}
+.callout .ln{position:absolute;top:-1px;height:2px;background:var(--acc)}
+.callout .tag{position:absolute;top:-16px;white-space:nowrap;background:var(--card);border:1.5px solid var(--acc);color:var(--ink);border-radius:999px;padding:5px 13px;font-size:.74rem;font-weight:800;box-shadow:var(--shadow)}
+.callout .tag i{font-style:normal;color:var(--acc)}
+.co-left .ln{right:5px;width:var(--len,120px)}
+.co-left .tag{right:calc(var(--len,120px) + 3px)}
+.co-right .ln{left:5px;width:var(--len,120px)}
+.co-right .tag{left:calc(var(--len,120px) + 3px)}
+
+/* 爆炸拆解幕 */
+.exp-card{position:absolute;left:50%;top:50%;width:104px;margin-left:-52px;margin-top:-34px;background:var(--card);border:1.5px solid var(--line-strong);border-radius:14px;box-shadow:var(--shadow);padding:9px 8px;text-align:center;opacity:0;transform:translate(0,0) scale(.4);transition:transform 1s cubic-bezier(.16,1,.3,1),opacity .6s ease;z-index:3;pointer-events:none}
+.exp-card svg{color:var(--acc)}
+.exp-card b{display:block;font-size:.72rem;font-weight:900;margin-top:3px}
+.exp-card i{font-style:italic;font-family:var(--font-display);font-size:.6rem;color:var(--ink-soft)}
+#stage.exploded .exp-card{opacity:1;transform:translate(var(--tx),var(--ty)) scale(1)}
+#stage.exploded .exp-card:nth-child(1){transition-delay:.15s}#stage.exploded .exp-card:nth-child(2){transition-delay:.22s}
+#stage.exploded .exp-card:nth-child(3){transition-delay:.29s}#stage.exploded .exp-card:nth-child(4){transition-delay:.36s}
+#stage.exploded .exp-card:nth-child(5){transition-delay:.43s}#stage.exploded .exp-card:nth-child(6){transition-delay:.5s}
+#stage.exploded .exp-card:nth-child(7){transition-delay:.57s}#stage.exploded .exp-card:nth-child(8){transition-delay:.64s}
+#stage.exploded #phoneWrap .phone{box-shadow:0 30px 90px -20px color-mix(in srgb,var(--acc) 45%,transparent),inset 0 0 0 3px #4A3A2B}
+
+/* 開場/結尾置中排版 */
+.center-scene .inner{justify-content:center}
+/* 用 margin auto 置中(不能用 translateX,否則它會變成 fixed 子元素的參考框,手機版標語會位移) */
+.center-scene .mid{position:absolute;left:0;right:0;margin:0 auto;text-align:center;z-index:4;width:min(760px,92%)}
+.center-scene .mid.top{top:9vh}
+.center-scene .mid.bottom{bottom:7vh}
+.hero-kick{font-size:.78rem;font-weight:800;letter-spacing:.32em;color:var(--terra);margin-bottom:12px}
+.hero-h1{font-family:var(--font-display);font-weight:900;font-size:clamp(2.1rem,5.4vw,3.9rem);line-height:1.08;color:var(--ink)}
+.hero-scene .mid.top{top:6vh}
+.hero-scene .mid.bottom{bottom:6vh}
+.hero-h1 i{font-style:italic;color:var(--terra)}
+.hero-sub{margin-top:12px;font-size:clamp(.9rem,2.2vw,1.05rem);color:var(--ink-soft)}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.hero-tags span{border:1.5px solid var(--line-strong);background:rgba(252,248,238,.7);border-radius:999px;padding:5px 13px;font-size:.78rem;font-weight:700;color:var(--ink-soft)}
+.hero-hint{position:absolute;bottom:22px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-soft);font-size:.76rem;font-weight:700;z-index:4}
+.hero-hint svg{animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(6px)}}
+.cta{display:inline-flex;align-items:center;gap:10px;margin-top:14px;background:var(--terra);color:#fff;font-weight:900;font-size:1.05rem;border-radius:999px;padding:14px 34px;text-decoration:none;box-shadow:0 16px 36px -14px rgba(194,74,50,.7);transition:.25s;pointer-events:auto}
+.cta:hover{background:var(--terra-deep);transform:translateY(-2px)}
+.fin-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.fin-tags span{border:1.5px solid var(--line-strong);background:rgba(252,248,238,.7);border-radius:999px;padding:5px 13px;font-size:.78rem;font-weight:700;color:var(--ink-soft)}
+.center-scene .mid{opacity:0;transform:translateY(24px)}
+.scene.active .mid{opacity:1;transform:none;transition:opacity 1s cubic-bezier(.16,1,.3,1) .2s,transform 1s cubic-bezier(.16,1,.3,1) .2s}
+
+/* 中等寬度:空間不夠,標籤指線收掉 */
+@media(max-width:1000px){.callout{display:none}}
+/* ── 手機版 ── */
+@media(max-width:680px){
+  .inner{padding:0 4vw}
+  .side{width:100%}
+  #phoneWrap{--ps:.7}
+  #phoneWrap,#phoneWrap.side-left,#phoneWrap.side-right,#phoneWrap.hero-pos{transform:translate(-50%,calc(-50% + var(--pdy))) scale(var(--ps))}
+  .claim{position:fixed;left:4vw;right:4vw;top:64px;font-size:1.45rem;text-align:center;z-index:5}
+  .kick{position:fixed;top:36px;left:50%;transform:translateX(-50%);z-index:5;align-self:auto}
+  .card{position:fixed;left:4vw;right:4vw;bottom:calc(12px + env(safe-area-inset-bottom));max-height:40vh;overflow-y:auto;padding:18px 18px 14px}
+  .callout{display:none}
+  .exp-card{width:84px;margin-left:-42px;padding:7px 6px}
+  .exp-card b{font-size:.62rem}
+  #stage.exploded .exp-card{transform:translate(var(--mtx,var(--tx)),var(--mty,var(--ty))) scale(1)}
+  .tbtn .tx{display:none}
+  .tbtn{padding:8px 11px}
+  .dots{right:7px;gap:8px}
+  .dot .lb{display:none}
+  .center-scene .mid.top{top:8vh}
+  .center-scene .mid.bottom{bottom:9vh}
+  .hero-hint{bottom:14px}
+  .stats{gap:5px}.stat{padding:4px 8px;font-size:.68rem}.stat b{font-size:.95rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .m-micring .p,.hero-hint svg{animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="glow" id="glowA"></div>
+<div class="glow" id="glowB"></div>
+<div class="tprog"><i id="tprog-i"></i></div>
+
+<header class="topbar">
+  <span class="brand">Mi <i>Español</i></span>
+  <span class="top-sp"></span>
+  <button class="tbtn" id="autoBtn" type="button">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5v14l11-7z"/></svg>
+    <span class="tx">自動導覽</span>
+  </button>
+  <a class="tbtn" href="https://mi-espanol-web.vercel.app" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
+    <span class="tx">進入網站</span>
+  </a>
+</header>
+
+<nav class="dots" id="dots"></nav>
+
+<main id="stage">
+
+  <!-- 貫穿全場的手機 -->
+  <div id="phoneWrap" class="hero-pos"><div id="phoneDrift"><div class="phone">
+    <div class="p-screen">
+      <div class="p-top">Mi <i>Español</i></div>
+      <div class="p-body">
+        <div class="screen" data-s="home">
+          <div class="m-home">
+            <div class="m-daily"><div class="h">每日複習 · 學習進度</div>
+              <div class="m-dstats"><div><b>12</b><i>連續天數</i></div><div><b>24<small>/30</small></b><i>今日 XP</i></div><div><b>9</b><i>今日到期</i></div></div>
+            </div>
+            <div class="m-bub q"><div class="es">¿Cómo estás hoy?</div></div>
+            <div class="m-bub"><div class="es">Muy bien, ¿y tú?</div></div>
+            <div class="m-card" style="margin-top:2px"><div class="m-word" style="font-size:.95rem">aprovechar</div><div class="m-pos">動 v. · 把握;善用</div></div>
+          </div>
+        </div>
+        <div class="screen" data-s="chat">
+          <div class="m-bub q"><div class="es">¿Qué te gusta hacer en tu tiempo libre?</div>你空閒時喜歡做什麼?</div>
+          <div class="m-bub"><div class="es">Hay que <span class="hl">disfrutar</span> la vida al máximo.</div>人生要及時行樂。</div>
+          <div class="m-note"><b>disfrutar</b> · 動詞原形<br>hay que + 原形 =「(人人都)得…」,後面永遠接原形。</div>
+          <div class="m-bub q"><div class="es">¿Puede que sí?</div></div>
+        </div>
+        <div class="screen" data-s="vocab">
+          <div class="m-card" style="margin-top:14px"><div class="m-word">aprovechar</div><div class="m-pos">動 v. · 把握;善用</div><div class="m-ej">Hay que aprovechar el tiempo.</div></div>
+          <div class="m-srs"><span class="b1">忘了<br>今天</span><span class="b2">普通<br>3 天後</span><span class="b3">記得<br>14 天後</span></div>
+          <div class="m-chips" style="margin-top:10px"><span class="on">卡片複習</span><span>配對消除</span><span>選擇題</span><span>拼寫測驗</span></div>
+        </div>
+        <div class="screen" data-s="lyric">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:.7rem;margin-bottom:6px">Vivir Mi Vida · Marc Anthony</div>
+          <div class="m-lyr">Voy a <span class="hl">reír</span>, voy a <u>bailar</u></div><div class="m-cn">我要笑、我要跳舞</div>
+          <div class="m-lyr">Vivir mi vida, la la la la</div><div class="m-cn">活出我的人生</div>
+          <div class="m-lyr">A veces llega la <u>lluvia</u></div><div class="m-cn">有時大雨會來</div>
+          <div class="m-note" style="border-left-color:var(--wine)"><b style="color:var(--wine)">reír</b> · 動詞原形「笑」<br>ir a + 原形 = 將要做…,口語最常用的未來式。</div>
+        </div>
+        <div class="screen" data-s="tiles">
+          <div class="m-q">「我不想失去你。」</div>
+          <div class="m-zone"><span class="m-tile ok">No</span><span class="m-tile ok">quiero</span></div>
+          <div class="m-pool"><span class="m-tile">perderte.</span><span class="m-tile">a</span><span class="m-tile">vida</span><span class="m-tile">la</span><span class="m-tile">mi</span></div>
+          <div class="m-note" style="border-left-color:var(--azul);margin-top:12px"><b style="color:var(--azul)">句子重組</b><br>句庫全部來自你學過的對話和例句。</div>
+        </div>
+        <div class="screen" data-s="verb">
+          <div class="m-inf" style="margin-top:10px">hablar <span style="font-family:var(--font-body);font-size:.6rem;color:var(--ink-soft);font-weight:700">說話</span></div>
+          <div class="m-ask">寫出 <b>tú</b> 的 <b>未來式</b></div>
+          <div class="m-input">hablarás</div>
+          <div class="m-okline">✓ 正確!</div>
+          <div class="m-chips"><span>現在式</span><span>簡單過去</span><span>未完成過去</span><span class="on">未來式</span><span>現在虛擬</span></div>
+        </div>
+        <div class="screen" data-s="mic">
+          <div class="m-micring"><span class="p"></span><span class="p"></span><div class="c"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/></svg></div></div>
+          <div class="m-diff"><span class="g">Quiero</span> <span class="g">vivir</span> <span class="r">mi</span> <span class="g">vida</span><span class="s">唸對 75% · 再試一次!</span></div>
+          <div class="m-note" style="margin-top:10px"><b>聽寫 · Dictado</b><br>播一句(不看字),把聽到的打出來,逐字批改。</div>
+        </div>
+        <div class="screen" data-s="prog">
+          <div class="m-ring"><svg width="74" height="74" viewBox="0 0 74 74"><circle cx="37" cy="37" r="31" fill="none" stroke="#E5D5B6" stroke-width="7"/><circle cx="37" cy="37" r="31" fill="none" stroke="#C24A32" stroke-width="7" stroke-linecap="round" stroke-dasharray="146 195"/></svg><div class="n">24<small>/ 30 XP</small></div></div>
+          <div class="m-badges">
+            <span><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c4.4 0 7-2.8 7-6.5 0-3-2-5-3.5-6.5C14 7.5 13 5.5 13 3c-3 2-4.5 4.5-4.5 7C7 9 6.5 8 6.5 6.5 5.2 8.2 5 10.5 5 12c0 5.5 2.6 10 7 10Z"/></svg>連勝 12 天</span>
+            <span><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10Z"/></svg>保護卡 × 2</span>
+          </div>
+          <div class="m-heat" id="mheat"></div>
+        </div>
+        <div class="screen" data-s="cta">
+          <div class="m-ctain"><div class="big">今天的<br>第一句<i>西班牙文</i></div><div class="m-btn">開始學習 · Empezar</div></div>
+        </div>
+      </div>
+      <div class="p-nav" id="pnav"></div>
+    </div>
+  </div>
+  <div class="callout co-left" data-sc="1" style="left:70px;top:128px;--len:100px"><span class="pin"></span><span class="ln"></span><span class="tag">點<i>底線字</i>,文法就在這</span></div>
+  <div class="callout co-right" data-sc="2" style="left:215px;top:208px;--len:90px"><span class="pin"></span><span class="ln"></span><span class="tag"><i>SRS</i> 間隔重複排程</span></div>
+  <div class="callout co-left" data-sc="3" style="left:95px;top:100px;--len:160px"><span class="pin"></span><span class="ln"></span><span class="tag">每個<i>字</i>都能點開</span></div>
+  <div class="callout co-right" data-sc="4" style="left:212px;top:150px;--len:95px"><span class="pin"></span><span class="ln"></span><span class="tag">點磚塊<i>排語序</i></span></div>
+  <div class="callout co-left" data-sc="5" style="left:58px;top:140px;--len:125px"><span class="pin"></span><span class="ln"></span><span class="tag"><i>打字</i>才記得住</span></div>
+  <div class="callout co-right" data-sc="6" style="left:166px;top:98px;--len:140px"><span class="pin"></span><span class="ln"></span><span class="tag">語音辨識<i>逐字比對</i></span></div>
+  <div class="callout co-left" data-sc="7" style="left:55px;top:212px;--len:120px"><span class="pin"></span><span class="ln"></span><span class="tag">一年份的<i>累積</i></span></div>
+  </div></div>
+
+  <!-- 爆炸拆解的八張功能卡(常駐,exploded 時飛出) -->
+  <div class="exp-card" style="--tx:-300px;--ty:-170px;--mtx:-125px;--mty:-235px"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 21l2.1-5.4A8.5 8.5 0 1 1 21 11.5Z"/></svg><b>對話練習</b><i>Conversación</i></div>
+  <div class="exp-card" style="--tx:-360px;--ty:0px;--mtx:-136px;--mty:-80px"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg><b>文法筆記</b><i>Gramática</i></div>
+  <div class="exp-card" style="--tx:-300px;--ty:170px;--mtx:-125px;--mty:75px"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2"/></svg><b>單字卡</b><i>Vocabulario</i></div>
+  <div class="exp-card" style="--tx:-130px;--ty:250px;--mtx:-70px;--mty:225px"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><b>歌詞分析</b><i>Canciones</i></div>
+  <div class="exp-card" style="--tx:130px;--ty:250px;--mtx:70px;--mty:225px"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg><b>綜合練習</b><i>Ejercicios</i></div>
+  <div class="exp-card" style="--tx:300px;--ty:170px;--mtx:125px;--mty:75px"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2"/><path d="M12 5v14"/><path d="M9 19h6"/></svg><b>動詞練習</b><i>Verbos</i></div>
+  <div class="exp-card" style="--tx:360px;--ty:0px;--mtx:136px;--mty:-80px"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/></svg><b>聽力口說</b><i>Escuchar</i></div>
+  <div class="exp-card" style="--tx:300px;--ty:-170px;--mtx:125px;--mty:-235px"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0Z"/><path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3"/></svg><b>學習進度</b><i>Progreso</i></div>
+
+  <!-- 0 開場 -->
+  <section class="scene center-scene hero-scene" data-acc="#C24A32" data-acc2="#9C3320" data-screen="home" data-phone="hero-pos" data-label="開場">
+    <div class="inner"></div>
+    <div class="mid top">
+      <div class="hero-kick">MI ESPAÑOL · 我的西班牙文</div>
+      <h1 class="hero-h1">把西班牙文<br>學成<i>生活的一部分</i></h1>
+    </div>
+    <div class="mid bottom">
+      <p class="hero-sub">對話、單字、歌詞、聽力、口說、遊戲化進度——自學需要的一切,都在同一頁裡。</p>
+      <div class="hero-tags"><span>免費 · 免註冊</span><span>手機電腦皆可</span><span>PWA 可安裝</span><span>進度雲端同步</span></div>
+    </div>
+    <div class="hero-hint">滾動開始 · Desliza
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </div>
+  </section>
+
+  <!-- 1 對話 -->
+  <section class="scene" data-acc="#C24A32" data-acc2="#9C3320" data-side="right" data-screen="chat" data-phone="side-left" data-label="對話練習">
+    <div class="inner"><div class="side">
+      <span class="kick">01 · CONVERSACIÓN</span>
+      <h2 class="claim">從<i>真實對話</i>開始。</h2>
+      <div class="card">
+        <div class="prog"><i></i></div>
+        <div class="seg"><h3>不是從單字表,是從<em>對話</em></h3><p>點餐、看醫生、聊人生——每一課都是真的會發生的對話。先看問句想一想,再翻出答案。</p></div>
+        <div class="seg"><h3>看不懂的字,點一下就懂</h3><p>底線字都能點:什麼時態、為什麼用虛擬式、整組動詞變化。文法解釋長在句子上,不用翻書。</p></div>
+        <div class="seg"><h3>角色扮演模式</h3><p>你的台詞會被遮住——先照中文用西語說說看,再翻開對答案。<div class="stats"><div class="stat"><b>7</b>真實場景</div><div class="stat"><b>37</b>組問答</div></div></p></div>
+        <div class="seg-dots"></div>
+        <div class="card-hint">點卡片看下一段 ›</div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 2 單字卡 -->
+  <section class="scene" data-acc="#E0A02E" data-acc2="#B87F17" data-side="left" data-screen="vocab" data-phone="side-right" data-label="單字卡 SRS">
+    <div class="inner"><div class="side">
+      <span class="kick">02 · VOCABULARIO</span>
+      <h2 class="claim">你忘掉的,<i>它記得</i>。</h2>
+      <div class="card">
+        <div class="prog"><i></i></div>
+        <div class="seg"><h3>科學的<em>遺忘曲線</em></h3><p>答完「忘了/普通/記得」,SRS 間隔重複幫你排下次複習:記得的越排越遠,忘了的明天再來。</p></div>
+        <div class="seg"><h3>三種小遊戲換著練</h3><p>配對消除、選擇題、拼寫測驗——答錯的字自動排回今日複習,還會進錯題本。</p></div>
+        <div class="seg"><h3>字庫規模</h3><p>每個字都有例句,從對話和歌詞裡長出來。<div class="stats"><div class="stat"><b>281</b>張單字卡</div><div class="stat"><b>0→90天</b>SRS 排程</div></div></p></div>
+        <div class="seg-dots"></div>
+        <div class="card-hint">點卡片看下一段 ›</div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 3 歌詞 -->
+  <section class="scene" data-acc="#7C2D2D" data-acc2="#5E1F1F" data-side="right" data-screen="lyric" data-phone="side-left" data-label="歌詞分析">
+    <div class="inner"><div class="side">
+      <span class="kick">03 · CANCIONES</span>
+      <h2 class="claim">聽歌的時間,<i>全是學習時間</i>。</h2>
+      <div class="card">
+        <div class="prog"><i></i></div>
+        <div class="seg"><h3>用你<em>本來就愛聽</em>的歌</h3><p>Karol G、Marc Anthony……逐句中譯,每個生字都能點開看解析。</p></div>
+        <div class="seg"><h3>歌詞填空挑戰</h3><p>一鍵把整首歌挖空,邊聽邊把字填回去——最不像唸書的背單字法。想學哪首,自己加進來。</p></div>
+        <div class="seg"><h3>歌庫</h3><p><div class="stats"><div class="stat"><b>14</b>首完整解析</div><div class="stat"><b>逐句</b>中譯+文法</div><div class="stat"><b>∞</b>自己加歌</div></div></p></div>
+        <div class="seg-dots"></div>
+        <div class="card-hint">點卡片看下一段 ›</div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 4 綜合練習 -->
+  <section class="scene" data-acc="#2F6E87" data-acc2="#1F4E63" data-side="left" data-screen="tiles" data-phone="side-right" data-label="綜合練習">
+    <div class="inner"><div class="side">
+      <span class="kick">04 · EJERCICIOS</span>
+      <h2 class="claim">會認不算會,<i>會用</i>才算。</h2>
+      <div class="card">
+        <div class="prog"><i></i></div>
+        <div class="seg"><h3>填空 + <em>句子重組</em></h3><p>看中文,把打亂的單字磚拼回正確語序——最快抓到語感的練習。</p></div>
+        <div class="seg"><h3>句庫來自你學過的內容</h3><p>全部來自對話課文和例句,不會冒出沒學過的字。<div class="stats"><div class="stat"><b>327</b>句重組句庫</div><div class="stat"><b>自動</b>收錄錯題</div></div></p></div>
+        <div class="seg-dots"></div>
+        <div class="card-hint">點卡片看下一段 ›</div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 5 動詞 -->
+  <section class="scene" data-acc="#4F7A3A" data-acc2="#38592A" data-side="right" data-screen="verb" data-phone="side-left" data-label="動詞練習">
+    <div class="inner"><div class="side">
+      <span class="kick">05 · VERBOS</span>
+      <h2 class="claim">720 種變化,<i>練進肌肉裡</i>。</h2>
+      <div class="card">
+        <div class="prog"><i></i></div>
+        <div class="seg"><h3>西語最難的,用<em>打字</em>攻克</h3><p>給你原形+人稱+時態,你打出變化。手指記住的比眼睛看過的牢固十倍;沒打重音也算對。</p></div>
+        <div class="seg"><h3>五種時態 + 變位總表</h3><p>現在式到虛擬式循序漸進,總表隨時查。<div class="stats"><div class="stat"><b>24</b>核心動詞</div><div class="stat"><b>5</b>種時態</div><div class="stat"><b>720</b>種變化形</div></div></p></div>
+        <div class="seg-dots"></div>
+        <div class="card-hint">點卡片看下一段 ›</div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 6 聽力口說 -->
+  <section class="scene" data-acc="#9C3320" data-acc2="#7A2415" data-side="left" data-screen="mic" data-phone="side-right" data-label="聽力口說">
+    <div class="inner"><div class="side">
+      <span class="kick">06 · ESCUCHAR Y HABLAR</span>
+      <h2 class="claim">一個人,<i>也敢開口</i>。</h2>
+      <div class="card">
+        <div class="prog"><i></i></div>
+        <div class="seg"><h3><em>聽寫</em>:自學者最缺的訓練</h3><p>播一句(不看字),把聽到的打出來,逐字批改,還有慢速播放。</p></div>
+        <div class="seg"><h3>對著它說,它聽得懂</h3><p>語音辨識逐字比對你唸對幾成。不用找語伴、不怕丟臉,在房間就能練到敢開口。<div class="stats"><div class="stat"><b>312</b>句聽寫句庫</div><div class="stat"><b>逐字</b>比對回饋</div></div></p></div>
+        <div class="seg-dots"></div>
+        <div class="card-hint">點卡片看下一段 ›</div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 7 進度 -->
+  <section class="scene" data-acc="#C2861F" data-acc2="#9A6812" data-side="right" data-screen="prog" data-phone="side-left" data-label="學習進度">
+    <div class="inner"><div class="side">
+      <span class="kick">07 · PROGRESO</span>
+      <h2 class="claim">讓你<i>每天回得來</i>的設計。</h2>
+      <div class="card">
+        <div class="prog"><i></i></div>
+        <div class="seg"><h3>XP、連勝、<em>保護卡</em></h3><p>每天練習賺 XP、設每日目標、累積連勝。滿 100 XP 送保護卡,漏一天不會前功盡棄。</p></div>
+        <div class="seg"><h3>看得見的累積</h3><p>一年熱力圖、成就徽章、錯題本弱點重練——每天的努力都畫在牆上。<div class="stats"><div class="stat"><b>18</b>個成就</div><div class="stat"><b>365天</b>熱力圖</div><div class="stat"><b>1</b>本錯題本</div></div></p></div>
+        <div class="seg-dots"></div>
+        <div class="card-hint">點卡片看下一段 ›</div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 8 爆炸拆解 -->
+  <section class="scene center-scene" data-acc="#C24A32" data-acc2="#9C3320" data-screen="home" data-phone="" data-explode="1" data-label="全部功能">
+    <div class="inner"></div>
+    <div class="mid top">
+      <h2 class="claim" style="font-size:clamp(1.9rem,4.2vw,3rem)">這一切,都在<i>同一頁</i>裡。</h2>
+    </div>
+    <div class="mid bottom">
+      <p class="hero-sub">八大功能、一個檔案、零安裝。打開網址,就是你的西班牙文教室。</p>
+    </div>
+  </section>
+
+  <!-- 9 CTA -->
+  <section class="scene center-scene" data-acc="#C24A32" data-acc2="#9C3320" data-screen="cta" data-phone="hero-pos" data-label="開始使用">
+    <div class="inner"></div>
+    <div class="mid top">
+      <h2 class="claim" style="font-size:clamp(2rem,5vw,3.4rem)">今天的第一句西班牙文,<br><i>現在就開始</i>。</h2>
+    </div>
+    <div class="mid bottom">
+      <a class="cta" href="https://mi-espanol-web.vercel.app" target="_blank" rel="noopener">開始學習 · Empezar
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+      <div class="fin-tags"><span>281 單字卡</span><span>62 條文法</span><span>14 首歌</span><span>327 句句庫</span><span>免費 · 免註冊</span></div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+"use strict";
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+
+/* 視窗高度(innerHeight 可能暫時為 0) */
+function setVH(){ const h=window.innerHeight; if(!h){ requestAnimationFrame(setVH); return; }
+  document.documentElement.style.setProperty("--vh",h+"px"); }
+setVH();
+window.addEventListener("resize",setVH);
+new ResizeObserver(setVH).observe(document.documentElement);
+
+const scenes=$$(".scene");
+const N=scenes.length;
+let idx=0, transing=false, lastNav=0;
+const COOLDOWN=900, SEG_MS=6000;
+
+/* 手機底部迷你導覽列(8 個小點對應功能) */
+const NAVIC=[
+  '<path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 21l2.1-5.4A8.5 8.5 0 1 1 21 11.5Z"/>',
+  '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>',
+  '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2"/>',
+  '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4Z"/>',
+  '<path d="M4 7V5h16v2"/><path d="M12 5v14"/><path d="M9 19h6"/>',
+  '<path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/>',
+  '<path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0Z"/><path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3"/>'
+];
+const pnav=$("#pnav");
+pnav.innerHTML=NAVIC.map(p=>`<span><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg></span>`).join("");
+/* 各幕 → 迷你導覽列亮哪一格(-1 = 不亮) */
+const PNAV_ON=[-1,0,2,3,4,5,6,7,-1,-1];
+
+/* 主題色光暈 */
+const glowA=$("#glowA"), glowB=$("#glowB");
+let glowFlip=false;
+function applyTheme(sc){
+  const acc=sc.dataset.acc||"#C24A32", acc2=sc.dataset.acc2||acc;
+  document.documentElement.style.setProperty("--acc",acc);
+  document.documentElement.style.setProperty("--acc-deep",acc2);
+  const g=glowFlip?glowA:glowB, o=glowFlip?glowB:glowA; glowFlip=!glowFlip;
+  g.style.background=`radial-gradient(900px 520px at ${idx%2?"18%":"82%"} 30%, ${acc}22 0%, transparent 65%)`;
+  g.classList.add("on"); o.classList.remove("on");
+}
+
+/* 圓點 */
+const dotsBox=$("#dots");
+scenes.forEach((sc,i)=>{ const b=document.createElement("button"); b.className="dot"; b.type="button";
+  b.innerHTML=`<span class="lb">${sc.dataset.label||("第 "+(i+1)+" 幕")}</span>`;
+  b.onclick=()=>go(i); dotsBox.appendChild(b); });
+const dots=$$(".dot",dotsBox);
+
+/* 手機狀態(位置 / 螢幕 / 爆炸 / 標籤) */
+const phoneWrap=$("#phoneWrap"), stage=$("#stage");
+function setPhone(sc){
+  phoneWrap.className=sc.dataset.phone||"";
+  const key=sc.dataset.screen||"home";
+  $$(".screen").forEach(s=>s.classList.toggle("on",s.dataset.s===key));
+  stage.classList.toggle("exploded",sc.dataset.explode==="1");
+  const on=PNAV_ON[scenes.indexOf(sc)];
+  $$("#pnav span").forEach((s,i)=>s.classList.toggle("on",i===on));
+  $$(".callout").forEach(c=>c.classList.toggle("on",c.dataset.sc===String(scenes.indexOf(sc))));
+  fitPhone();
+}
+/* 依「文字上下緣之間的空檔」決定手機多大、擺多高——任何視窗高度都不會壓到標題 */
+const PH_H=532;
+function fitPhone(){
+  const sc=scenes[idx]; if(!sc)return;
+  /* 用舞台自身高度當基準(手機與各幕都相對它定位),不要用 innerHeight,否則 --vh 尚未同步時會錯位 */
+  const H=stage.clientHeight||window.innerHeight||800, mob=window.innerWidth<=680;
+  let topB,botT;
+  if(sc.classList.contains("center-scene")){
+    const t=sc.querySelector(".mid.top"), b=sc.querySelector(".mid.bottom"), hint=sc.querySelector(".hero-hint");
+    topB=t?(t.offsetTop+t.offsetHeight):H*0.1;
+    /* 手機版標語改成 fixed,不算進區塊高度,得另外把它的底邊納入 */
+    const cl=sc.querySelector(".claim");
+    if(cl&&getComputedStyle(cl).position==="fixed")topB=Math.max(topB,64+cl.offsetHeight);
+    botT=H;
+    if(b)botT=Math.min(botT,b.offsetTop);
+    if(hint)botT=Math.min(botT,hint.offsetTop);
+  }else if(mob){
+    const cl=sc.querySelector(".claim");   /* 手機版 .claim 固定在 top:64px;用 offsetHeight 才不受入場動畫影響 */
+    topB=cl?(64+cl.offsetHeight):100;
+    botT=H*0.56;               /* 底部卡片最高 40vh,保守留住下半部 */
+  }else{
+    topB=64; botT=H-40;        /* 桌面側邊幕:只受頂欄與視窗底限制 */
+  }
+  const gap=mob?10:16;
+  const avail=Math.max(150,botT-topB-gap*2);
+  const ps=Math.max(.38,Math.min(1,avail/PH_H));
+  const pdy=(topB+gap+PH_H*ps/2)-H/2;
+  phoneWrap.style.setProperty("--ps",ps.toFixed(3));
+  phoneWrap.style.setProperty("--pdy",Math.round(pdy)+"px");
+}
+window.addEventListener("resize",fitPhone);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitPhone);
+
+/* 文字卡分段 */
+let segIdx=0, segT0=0;
+function segsOf(sc){ return $$(".seg",sc); }
+function showSeg(sc,k){
+  const segs=segsOf(sc); if(!segs.length)return;
+  segIdx=Math.max(0,Math.min(k,segs.length-1));
+  segs.forEach((s,i)=>s.classList.toggle("on",i===segIdx));
+  const dotsEl=$(".seg-dots",sc);
+  if(dotsEl)dotsEl.innerHTML=segs.map((_,i)=>`<i class="${i===segIdx?"on":""}"></i>`).join("");
+  segT0=performance.now();
+  const bar=$(".prog i",sc); if(bar)bar.style.width="0%";
+}
+function nextSeg(sc,fromAuto){
+  const segs=segsOf(sc);
+  if(!segs.length){ if(fromAuto&&autoTour)go(idx+1); return; }
+  if(segIdx>=segs.length-1){
+    if(fromAuto&&autoTour){ if(idx<N-1)go(idx+1); else setAuto(false); }
+    else if(!fromAuto) showSeg(sc,0);
+    else segT0=performance.now();
+    return;
+  }
+  showSeg(sc,segIdx+1);
+}
+$$(".card").forEach(card=>card.addEventListener("click",()=>nextSeg(scenes[idx],false)));
+
+/* 換幕 */
+function go(k){
+  if(transing)return;
+  k=Math.max(0,Math.min(N-1,k));
+  if(k===idx&&scenes[idx].classList.contains("active"))return;
+  transing=true;
+  const oldSc=scenes[idx], newSc=scenes[k];
+  if(oldSc!==newSc){ oldSc.classList.remove("active"); oldSc.classList.add("leave");
+    setTimeout(()=>oldSc.classList.remove("leave"),600); }
+  idx=k;
+  newSc.classList.add("active");
+  applyTheme(newSc);
+  setPhone(newSc);
+  dots.forEach((d,i)=>d.classList.toggle("on",i===idx));
+  $("#tprog-i").style.width=(N>1?(idx/(N-1))*100:0)+"%";
+  showSeg(newSc,0);
+  segT0=performance.now()+700;
+  setTimeout(()=>{ transing=false; },650);
+}
+
+/* 自動導覽 */
+let autoTour=false;
+const autoBtn=$("#autoBtn");
+function setAuto(v){ autoTour=v; autoBtn.classList.toggle("on",v);
+  autoBtn.querySelector(".tx").textContent=v?"導覽中…":"自動導覽"; if(v)segT0=performance.now(); }
+autoBtn.onclick=()=>setAuto(!autoTour);
+
+/* rAF 主迴圈:進度條 + 手機漂移(delta time) */
+let prevT=performance.now();
+const phoneDrift=$("#phoneDrift");
+function loop(t){
+  prevT=t;
+  const sc=scenes[idx];
+  const segs=segsOf(sc);
+  if(segs.length&&!transing){
+    const el=Math.max(0,t-segT0);
+    const bar=$(".prog i",sc);
+    if(bar)bar.style.width=Math.min(100,el/SEG_MS*100)+"%";
+    if(el>=SEG_MS)nextSeg(sc,true);
+  } else if(!segs.length&&autoTour&&!transing){
+    if(t-segT0>=4500){ if(idx<N-1)go(idx+1); else setAuto(false); }
+  }
+  const s=t/1000;
+  phoneDrift.style.transform=`translate(${Math.sin(s*.45)*6}px,${Math.cos(s*.35)*8}px) rotate(${Math.sin(s*.25)*1.2}deg)`;
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ prevT=performance.now(); segT0=performance.now(); } });
+
+/* 導航輸入 */
+function nav(dir){
+  const now=performance.now();
+  if(now-lastNav<COOLDOWN||transing)return;
+  const k=idx+dir;
+  if(k<0||k>=N)return;
+  lastNav=now;
+  if(autoTour)setAuto(false);
+  go(k);
+}
+window.addEventListener("wheel",e=>{ if(Math.abs(e.deltaY)>=20)nav(e.deltaY>0?1:-1); },{passive:true});
+let tY=null;
+window.addEventListener("touchstart",e=>{ tY=e.touches[0].clientY; },{passive:true});
+window.addEventListener("touchend",e=>{ if(tY===null)return;
+  const dy=tY-e.changedTouches[0].clientY; tY=null;
+  if(Math.abs(dy)>=45)nav(dy>0?1:-1); },{passive:true});
+window.addEventListener("keydown",e=>{
+  if(e.key==="ArrowDown"||e.key==="ArrowRight"||e.key===" "){ e.preventDefault(); nav(1); }
+  else if(e.key==="ArrowUp"||e.key==="ArrowLeft"){ e.preventDefault(); nav(-1); }
+});
+
+/* 手機裡的迷你熱力圖 */
+(function(){ const box=$("#mheat"); if(!box)return;
+  let seed=11, html="";
+  for(let i=0;i<7*14;i++){ seed=(seed*137+61)%251; const r=seed/251;
+    let c=""; if(r>.84)c="l4"; else if(r>.68)c="l3"; else if(r>.5)c="l2"; else if(r>.32)c="l1";
+    html+=`<span class="${c}"></span>`; }
+  box.innerHTML=html;
+})();
+
+/* 開場 */
+scenes[0].classList.add("active");
+applyTheme(scenes[0]);
+setPhone(scenes[0]);
+dots[0].classList.add("on");
+segT0=performance.now();
+</script>
+</body>
+</html>

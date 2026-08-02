@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Mi Español">
+  <!-- 西班牙國旗 rojigualda:紅 1 / 黃 2 / 紅 1 的官方比例。
+       色票沿用網站自己的 --terra-deep 與 --ochre,讓圖標像印在同一張紙上,
+       而不是貼上去的剪貼畫。滿版無圓角 = 讓 iOS 與 Android 各自套用遮罩,不會雙重圓角。 -->
+  <rect width="512" height="512" fill="#9C3320"/>
+  <rect y="128" width="512" height="256" fill="#E0A02E"/>
+</svg>

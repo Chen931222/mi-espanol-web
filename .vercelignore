@@ -1,0 +1,6 @@
+# 不要上傳到公開網站的東西
+筆記照片/
+*.bak-*.html
+index.backup-*.html
+serve.ps1
+.claude/
