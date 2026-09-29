@@ -13,7 +13,7 @@
 :root{
   --paper:#F2E6CE; --paper-2:#FAF2E0; --card:#FCF8EE;
   --ink:#2B2017; --ink-soft:#6E5A44;
-  --terra:#C24A32; --terra-deep:#9C3320; --ochre:#E0A02E; --azul:#2F6E87; --wine:#7C2D2D; --good:#4F7A3A;
+  --terra:#C24A32; --terra-deep:#9C3320; --ochre:#E0A02E; --azul:#2F6E87; --wine:#7C2D2D; --good:#4F7A3A; --good-deep:#38592A;
   --line:#E5D5B6; --line-strong:#D8C29A;
   --acc:#C24A32; --acc-deep:#9C3320;
   --r:20px; --shadow:0 18px 44px -20px rgba(70,45,20,.5);
@@ -84,7 +84,7 @@ body{
 .seg-dots{display:flex;gap:6px;margin-top:14px}
 .seg-dots i{width:20px;height:4px;border-radius:99px;background:var(--line-strong);transition:.3s}
 .seg-dots i.on{background:var(--acc)}
-.card-hint{margin-top:8px;font-size:.7rem;color:var(--ink-soft);opacity:.6}
+.card-hint{margin-top:8px;font-size:.7rem;color:var(--ink-soft)}
 
 /* ── 貫穿全場的手機 ── */
 /* --ps(縮放) 與 --pdy(垂直位移) 由 JS 依「文字之間的空檔」算出,確保永不重疊 */
@@ -128,11 +128,11 @@ body{
 .m-tile{border:1px solid var(--line-strong);background:var(--card);border-radius:6px;padding:3px 7px;font-family:var(--font-display);font-weight:700;font-size:.62rem;color:var(--azul)}
 .m-tile.ok{background:var(--azul);color:#fff;border-color:transparent}
 .m-q{text-align:center;font-weight:900;font-size:.66rem;margin-bottom:7px}
-.m-inf{font-family:var(--font-display);font-weight:900;font-size:1rem;color:var(--good);text-align:center}
+.m-inf{font-family:var(--font-display);font-weight:900;font-size:1rem;color:var(--good-deep);text-align:center}
 .m-ask{text-align:center;font-size:.6rem;color:var(--ink-soft);margin:3px 0 7px}
 .m-ask b{color:var(--azul)}
 .m-input{border:1.2px solid var(--line-strong);border-radius:8px;background:#fff;padding:5px 8px;font-family:var(--font-display);font-size:.72rem;text-align:center;margin:0 auto;width:80%;display:block}
-.m-okline{text-align:center;font-weight:800;color:var(--good);font-size:.6rem;margin-top:6px}
+.m-okline{text-align:center;font-weight:800;color:var(--good-deep);font-size:.6rem;margin-top:6px}
 .m-chips{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:8px}
 .m-chips span{border:1px solid var(--line-strong);border-radius:99px;padding:2px 7px;font-size:.5rem;font-weight:800;color:var(--ink-soft);background:var(--paper-2)}
 .m-chips .on{background:var(--good);border-color:var(--good);color:#fff}
@@ -224,7 +224,7 @@ body{
   #phoneWrap{--ps:.7}
   #phoneWrap,#phoneWrap.side-left,#phoneWrap.side-right,#phoneWrap.hero-pos{transform:translate(-50%,calc(-50% + var(--pdy))) scale(var(--ps))}
   .claim{position:fixed;left:4vw;right:4vw;top:64px;font-size:1.45rem;text-align:center;z-index:5}
-  .kick{position:fixed;top:36px;left:50%;transform:translateX(-50%);z-index:5;align-self:auto}
+  .kick{position:fixed;top:36px;left:50%;transform:translateX(-50%);z-index:5;align-self:auto;white-space:nowrap} /* 置中的 fixed 元素只分到半個螢幕寬，長標籤會折成兩行蓋住標題 */
   .card{position:fixed;left:4vw;right:4vw;bottom:calc(12px + env(safe-area-inset-bottom));max-height:40vh;overflow-y:auto;padding:18px 18px 14px}
   .callout{display:none}
   .exp-card{width:84px;margin-left:-42px;padding:7px 6px}
