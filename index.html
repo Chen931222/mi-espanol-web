@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Mi Español">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
 :root{
@@ -48,8 +48,8 @@ body{font-family:var(--font-body);color:var(--ink);line-height:1.55;-webkit-font
 .tab .tab-ic{font-size:1.18rem;line-height:1;flex:0 0 24px;display:inline-flex;align-items:center;justify-content:center}
 .tab .tab-tx{display:flex;flex-direction:column;line-height:1.18}
 .tab .tab-sh{display:none}
-.tab .es{font-family:var(--font-display);font-style:italic;font-size:.74rem;font-weight:600;opacity:.7}
-.es2{display:block;font-family:var(--font-display);font-style:italic;font-weight:600;font-size:.7em;opacity:.72;margin-top:1px;line-height:1.05}
+.tab .es{font-family:var(--font-display);font-style:italic;font-size:.74rem;font-weight:600}
+.es2{display:block;font-family:var(--font-display);font-style:italic;font-weight:600;font-size:.7em;margin-top:1px;line-height:1.05}
 .tab:hover{background:var(--paper-2);color:var(--terra);border-color:var(--line-strong)}
 a.tour-link{text-decoration:none;margin-top:10px;border-top:1.5px dashed var(--line-strong);border-radius:0 0 12px 12px;padding-top:14px}
 .tab.active{background:#FBEBE2;color:var(--terra-deep);box-shadow:inset 3px 0 0 var(--terra)}
@@ -66,7 +66,7 @@ a.tour-link{text-decoration:none;margin-top:10px;border-top:1.5px dashed var(--l
   .tab .tab-sh{display:block}
   .tab .es{display:none}
   .tab:hover{background:transparent;border-color:transparent;color:var(--ink-soft)}
-  .tab.active{background:transparent;color:var(--terra);box-shadow:none}
+  .tab.active{background:transparent;color:var(--terra-deep);box-shadow:none}
   a.tour-link{margin-top:0;border-top:none;padding-top:7px;border-radius:10px}
   .topbar{display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:50;padding:12px 0 10px;background:linear-gradient(var(--paper) 72%,transparent);backdrop-filter:blur(3px)}
   .brand-sm{font-family:var(--font-display);font-weight:900;font-size:1.5rem;color:var(--ink)}
@@ -332,7 +332,7 @@ footer code{background:var(--paper-2);border:1px solid var(--line);border-radius
 .backup-tip{font-size:.86rem;color:var(--ink-soft);line-height:1.65;margin-bottom:14px}
 .backup-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .backup-row .reset{margin-top:0}
-.foot-note{font-size:.82rem;color:var(--ink-soft);opacity:.85;line-height:1.6}
+.foot-note{font-size:.82rem;color:var(--ink-soft);line-height:1.6}
 .sync{max-width:580px;margin:0 auto 18px;padding:20px 22px;background:linear-gradient(180deg,var(--paper-2),var(--paper));border:1.5px solid var(--terra);border-radius:16px;text-align:left}
 .sync-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
 .sync-h{font-family:var(--font-display);font-weight:900;font-size:1.05rem;color:var(--ink)}
@@ -345,7 +345,7 @@ footer code{background:var(--paper-2);border:1px solid var(--line);border-radius
 .sync-in{font-family:var(--font-display);font-weight:700;letter-spacing:.1em;text-transform:uppercase;width:130px;font-size:.95rem;padding:8px 12px;border:1.5px solid var(--line-strong);border-radius:10px;background:#fff;color:var(--ink);outline:none}
 .sync-in:focus{border-color:var(--terra)}
 .sync .reset{margin-top:0}
-.sync-note{font-size:.78rem;color:var(--ink-soft);opacity:.85;line-height:1.55;margin-top:12px}
+.sync-note{font-size:.78rem;color:var(--ink-soft);line-height:1.55;margin-top:12px}
 
 /* ===== 歌曲依歌手分組 ===== */
 #song-tabs{display:block}
@@ -435,6 +435,74 @@ footer code{background:var(--paper-2);border:1px solid var(--line);border-radius
 @keyframes pulse{50%{box-shadow:0 0 0 10px rgba(178,58,46,.15)}}
 .lp-score{margin-top:12px;color:var(--ink-soft);font-size:.9rem;font-weight:700}
 .lp-heard{color:var(--ink-soft);font-size:.92rem;margin-top:10px;font-style:italic}
+/* 逐句對話 Conversar */
+/* 注意:純 .card 沒有 padding,站上的內距是掛在 .card.qa 上,所以這裡要自己給 */
+.tk-card{padding:18px 20px}
+.tk-log{margin-bottom:18px}
+.tk-row{padding:9px 0}
+.tk-row+.tk-row{border-top:1px dashed var(--line)}
+.tk-who{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:3px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tk-row.me .tk-who{color:var(--terra-deep)}
+.tk-badge{font-size:.62rem;font-weight:700;letter-spacing:0;text-transform:none;padding:1px 6px;border-radius:3px;border:1px solid currentColor;color:var(--azul)}
+.tk-badge.util{color:var(--ink-soft)}
+.tk-badge.ok{color:var(--good)}
+.tk-badge.warn{color:var(--wine)}
+.tk-utils{margin-top:16px}
+.tk-utils-h{font-size:.76rem;color:var(--ink-soft);margin-bottom:8px}
+.tk-utils-row{display:flex;gap:9px;flex-wrap:wrap}
+.tk-util{text-align:left;cursor:pointer;border:1.5px dashed var(--line-strong);border-radius:12px;padding:9px 13px;
+  background:var(--paper-2);font-family:inherit;transition:.15s}
+.tk-util:hover{border-style:solid;border-color:var(--ink-soft);transform:translateY(-1px)}
+.tk-util-es{display:block;font-family:var(--font-display);font-weight:600;font-size:.95rem}
+.tk-util-cn{display:block;font-size:.74rem;color:var(--ink-soft);margin-top:2px}
+.tk-typehint{flex-basis:100%;font-size:.74rem;color:var(--ink-soft);line-height:1.5;margin-top:2px}
+.tk-verdict{margin-top:14px;padding:13px 15px;border:1.5px solid var(--ochre);border-radius:12px;background:var(--paper-2)}
+.tk-verdict.bad{border-color:var(--bad);color:var(--bad);font-weight:700;font-size:.88rem}
+.tk-verdict.good{border-color:var(--good)}
+.tk-intent{flex-basis:100%;font-size:.8rem;margin-bottom:2px}
+.tk-intent label{display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-weight:700;margin-right:16px;padding:6px 0;
+  white-space:nowrap}   /* 不加這行,中文會在 flex 盒裡一個字一行 */
+.tk-intent input{accent-color:var(--terra)}
+.tk-intent-note{font-size:.74rem;color:var(--ink-soft);font-weight:400;flex-basis:100%;line-height:1.45}
+.tk-gset{display:inline-block;margin-top:4px}
+.tk-v-sec{margin-top:11px;padding-top:9px;border-top:1px dashed var(--line)}
+.tk-v-sec.trap{border-top-color:var(--ochre)}
+.tk-v-sh{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:5px}
+.tk-v-pair{font-size:.82rem;line-height:1.6}
+.tk-v-pair+.tk-v-pair{margin-top:6px}
+.tk-v-col{display:inline-block;margin-left:10px;color:var(--ink-soft)}
+.tk-v-tag{display:inline-block;font-size:.7rem;color:var(--azul);border:1px solid currentColor;border-radius:3px;padding:0 5px;margin-left:6px}
+.tk-v-h{font-weight:900;font-size:.95rem}
+.tk-v-diff{font-family:var(--font-display);font-size:1rem;margin-top:7px;line-height:1.6}
+.tk-v-note{font-size:.78rem;color:var(--ink-soft);line-height:1.55;margin-top:8px}
+.tk-line{font-family:var(--font-display);font-weight:600;font-size:1.05rem;line-height:1.5}
+.tk-cn{font-size:.8rem;color:var(--ink-soft);margin-top:2px}
+.tk-prog{font-size:.72rem;font-weight:700;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:10px}
+.tk-lbl{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.tk-ask{font-family:var(--font-display);font-weight:600;font-size:clamp(1.2rem,2.6vw,1.6rem);line-height:1.35;margin-top:6px}
+.tk-tools{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.tk-turn{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+.tk-turn-h{font-family:var(--font-display);font-weight:900;font-size:1.02rem;display:inline}
+.tk-turn-hint{font-size:.76rem;color:var(--ink-soft);margin-left:8px}
+.tk-cue{border:1.5px solid var(--line-strong);border-radius:14px;padding:13px 16px;background:var(--card);margin-top:12px;position:relative}
+.tk-cue.alt{border-style:dashed;background:var(--paper-2)}
+.tk-cue-tag{font-size:.66rem;font-weight:700;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:5px}
+.tk-cue.alt .tk-cue-tag{color:var(--azul)}
+.tk-cue-es{font-family:var(--font-display);font-weight:600;font-size:1.05rem;line-height:1.5}
+.tk-cue-cn{font-size:.8rem;color:var(--ink-soft);margin-top:3px}
+.tk-cue .tk-acts{margin-top:10px}
+.tk-acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.tk-link{background:none;border:0;padding:6px 0;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:700;
+  color:var(--azul);text-decoration:underline;text-underline-offset:3px}
+.tk-link:hover{color:var(--terra-deep)}
+.tk-type{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap;align-items:center}
+.tk-type[hidden]{display:none}   /* display:flex 會蓋掉 [hidden] 的預設 display:none */
+.tk-type input{flex:1 1 220px;min-width:0;font-family:var(--font-display);font-size:1rem;padding:11px 14px;
+  border:1.5px solid var(--line-strong);border-radius:10px;background:var(--paper-2);color:var(--ink)}
+.tk-done{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.tk-done-h{font-family:var(--font-display);font-weight:900;font-size:1.15rem}
+@media(max-width:600px){ .tk-acts .btn,.tk-tools .btn,.tk-type .btn{min-height:44px}
+  .tk-link{min-height:44px;display:inline-flex;align-items:center} }
 .pg-card{padding:18px 20px;margin-bottom:18px}
 .pg-h{font-family:var(--font-display);font-weight:900;font-size:1.08rem;color:var(--terra-deep);display:flex;align-items:center;gap:7px;margin-bottom:12px;flex-wrap:wrap}
 .pg-h .sub{font-family:var(--font-body);font-weight:700;font-size:.8rem;color:var(--ink-soft);margin-left:auto}
@@ -523,7 +591,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="dialogos">
     <div class="reveal sec-head"><div class="sec-num">1</div>
       <div><span class="sec-title">對話練習</span> <span class="sec-es">Conversación</span></div></div>
-    <p class="reveal sec-desc">點問句看答案。句子裡<b>有底線的字</b>可以點開,看它的<b>文法重點</b>:時態、虛擬式、為什麼這樣用。</p>
+    <p class="reveal sec-desc">預設是<b>逐句對話</b>:對方說一句、你回一句,一次只出一句,談完的累積成一頁紀錄。想整份當清單查閱就切「一般模式」,想自己先講再對答案就切「角色扮演」。句子裡<b>有底線的字</b>都可以點開,看它的<b>文法重點</b>:時態、虛擬式、為什麼這樣用。</p>
     <div class="reveal chips" id="dlg-mode"></div>
     <div class="reveal chips" id="dlg-chips"></div>
     <div id="dlg-list"></div>
@@ -4106,7 +4174,385 @@ let dScene=0;
 DATA.dialogos.forEach((d,i)=>{ const c=document.createElement("button"); c.className="chip"+(i===0?" active":"");
   c.innerHTML=`${d.scene} <span style="opacity:.7;font-style:italic">· ${d.es}</span>`;
   c.onclick=()=>{dScene=i;$$(".chip",chipBox).forEach((x,j)=>x.classList.toggle("active",j===i));renderDlg();}; chipBox.appendChild(c); });
+
+/* 逐句對話 Conversar:一次只出一句,你回一句,談過的累積成謄寫稿。
+   用的是現有 dialogos 資料(直線一問一答),沒有虛構任何內容。 */
+let dTalkScene=-1, dTalkStep=0, dTalkLog=[], dTalkFix=0;
+
+/* ═══ 本機語言檢查層 ═══
+   這一層全部是規則判定:去重音比對、查表、詞形比對。沒有猜測、沒有呼叫任何服務,
+   所以它說的每一句都是可以斬釘截鐵講的真話。它判不到的事情就明說判不到。 */
+
+/* ñ 不是重音是獨立字母,拆解前先保護起來 */
+function deacc(s){
+  /* n-tilde 是獨立字母不是重音,逐字處理時跳過它,其餘拆解後去掉組合用重音記號 */
+  s=String(s); var out="";
+  for(var i=0;i<s.length;i++){
+    var ch=s[i];
+    if(ch==="\u00F1"||ch==="\u00D1"){ out+=ch; continue; }
+    out+=ch.normalize("NFD").replace(/[\u0300-\u036F]/g,"");
+  }
+  return out;
+}
+function talkWords(s){ return (String(s).toLowerCase().match(/[a-zñáéíóúü]+/gi)||[]); }
+function talkKey(s){ return deacc(String(s).toLowerCase()).replace(/[^a-zñ ]/g," ").replace(/\s+/g," ").trim(); }
+/* 保留重音的正規化:用來分辨「完全一樣」與「只差重音」 */
+function talkKeyAcc(s){ return String(s).toLowerCase().replace(/[^a-zñáéíóúü ]/gi," ").replace(/\s+/g," ").trim(); }
+
+/* 地區用法對照:兩邊都對,只是地方不同。本站教拉美用法。 */
+const REGIONPAIR=[
+  {es:"zumo",la:"jugo",cn:"果汁"},
+  {es:"ordenador",la:"computadora",cn:"電腦"},
+  {es:"móvil",la:"celular",cn:"手機"},
+  {es:"coche",la:"carro",cn:"汽車"},
+  {es:"patata",la:"papa",cn:"馬鈴薯"},
+  {es:"gafas",la:"lentes",cn:"眼鏡"},
+  {es:"piso",la:"departamento",cn:"公寓"},
+  {es:"billete",la:"boleto",cn:"車票"},
+  {es:"conducir",la:"manejar",cn:"開車"},
+  {es:"coger",la:"tomar",cn:"拿/搭乘 — coger 在多數拉美地區是粗話,要避開"}
+];
+/* ser / estar 換一個就換意思。這是中文母語者最常踩的一格,而且兩句文法都對,
+   任何自動批改都判不出你想說哪一個 —— 所以這裡不判對錯,只問你想說哪個。 */
+const SERESTAR=[
+  {w:"cansado",ser:"讓人疲累的(事物)",estar:"累了"},
+  {w:"aburrido",ser:"無趣的人/事",estar:"覺得無聊"},
+  {w:"listo",ser:"聰明的",estar:"準備好了"},
+  {w:"rico",ser:"有錢的",estar:"好吃的"},
+  {w:"bueno",ser:"好的/善良的",estar:"好吃的"},
+  {w:"malo",ser:"壞的/邪惡的",estar:"生病了/壞掉了"},
+  {w:"verde",ser:"綠色的",estar:"還沒熟"},
+  {w:"seguro",ser:"安全的(事物)",estar:"確定的"},
+  {w:"vivo",ser:"機靈的",estar:"活著的"}
+];
+const SERFORM=["soy","eres","es","somos","sois","son","era","eras","eran","fui","fue","sere","seria"];
+const ESTFORM=["estoy","estas","esta","estamos","estais","estan","estaba","estabas","estaban","estuve","estuvo","estare"];
+/* 只有西班牙用的動詞人稱字尾(vosotros)與 voseo,拿來提示地區,不當錯誤 */
+const SPAINONLY=/^(vosotros|vuestro|vuestra|os)$/;
+function talkGender(){ try{ return localStorage.getItem("miEspanol.gender")||""; }catch(_){ return ""; } }
+function talkSetGender(g){ try{ localStorage.setItem("miEspanol.gender",g); }catch(_){} }
+/* 只差字尾 -o/-a,且與你宣告的性別相符 → 這是對的,不是錯字 */
+function genderOk(target,typed,g){
+  if(!g||target.length!==typed.length||target===typed) return false;
+  if(target.slice(0,-1)!==typed.slice(0,-1)) return false;
+  const te=target.slice(-1), ye=typed.slice(-1);
+  if(!/[oa]/.test(te)||!/[oa]/.test(ye)) return false;
+  return (g==="f"&&ye==="a")||(g==="m"&&ye==="o");
+}
+
+/* 回傳一份「本機查得到什麼」的報告。answering=false 代表使用者宣告要說別的話,
+   那就不拿範例句當基準比對 —— 拿它比會把「說別的」誤判成「寫錯」。 */
+function talkAnalyze(v, model, answering){
+  const g=talkGender();
+  const rep={gender:g, region:[], traps:[], spain:[], accentOnly:false, accentFix:[], genderFix:[],
+             pct:null, diffHtml:null, exact:false};
+  const vw=talkWords(v);
+
+  vw.forEach(w=>{
+    const k=deacc(w);
+    REGIONPAIR.forEach(p=>{ if(deacc(p.es)===k) rep.region.push({used:w,side:"es",pair:p});
+                            else if(deacc(p.la)===k) rep.region.push({used:w,side:"la",pair:p}); });
+    if(SPAINONLY.test(k)) rep.spain.push(w);
+  });
+  /* vosotros 動詞字尾 -áis/-éis */
+  if(/[aei]is\b/.test(deacc(v.toLowerCase()))) rep.spain.push("動詞的 vosotros 字尾");
+  /* voseo:vos + tenés/sos/querés */
+  if(/\bvos\b/.test(deacc(v.toLowerCase()))) rep.spain.push("vos(阿根廷/烏拉圭的 voseo)");
+
+  /* 範例句自己用了哪個 ser/estar 搭配:一樣的就不要囉嗦,只有你選得跟範例句不同才提醒 */
+  const modelUse={};
+  if(model){
+    const mwx=talkWords(model);
+    SERESTAR.forEach(t=>{
+      const i=mwx.findIndex(w=>deacc(w)===t.w);
+      if(i<0) return;
+      const b=mwx.slice(0,i).map(deacc);
+      if(b.some(w=>SERFORM.indexOf(w)>=0)) modelUse[t.w]="ser";
+      else if(b.some(w=>ESTFORM.indexOf(w)>=0)) modelUse[t.w]="estar";
+    });
+  }
+  SERESTAR.forEach(t=>{
+    const i=vw.findIndex(w=>deacc(w)===t.w);
+    if(i<0) return;
+    const before=vw.slice(0,i).map(deacc);
+    const usedSer=before.some(w=>SERFORM.indexOf(w)>=0);
+    const usedEst=before.some(w=>ESTFORM.indexOf(w)>=0);
+    if(!usedSer&&!usedEst) return;
+    const used=usedSer?"ser":"estar";
+    if(answering && modelUse[t.w]===used) return;   // 跟範例句用法相同,沒什麼好提醒的
+    rep.traps.push({t:t, used:used});
+  });
+
+  if(answering && model){
+    const mw=talkWords(model), tw=vw;
+    rep.exact = talkKeyAcc(model)===talkKeyAcc(v);   // 含重音完全相同才算 exact
+    if(mw.length===tw.length){
+      let accent=0, gen=0, other=0;
+      for(let i=0;i<mw.length;i++){
+        const a=mw[i].toLowerCase(), b=tw[i].toLowerCase();
+        if(a===b) continue;
+        if(deacc(a)===deacc(b)){ accent++; rep.accentFix.push({typed:tw[i],correct:mw[i]}); }
+        else if(genderOk(deacc(a),deacc(b),g)){ gen++; rep.genderFix.push({typed:tw[i],base:mw[i]}); }
+        else other++;
+      }
+      rep.accentOnly = (other===0 && accent>0);
+      rep.genderOnlyOk = (other===0 && accent===0 && gen>0);
+    }
+    const r=spCompare(model, v);
+    rep.pct=r.pct; rep.diffHtml=r.html;
+  }
+  return rep;
+}
+/* 「換你說」的其他說法。
+   鐵則:每一句都必須跟範例答案<b>意思相同</b> —— 因為對方下一句是照劇本走的,
+   意思一變話題就接不上了(那正是先前萬用回應搞砸的地方)。
+   所以這裡放的是「同一件事的不同講法」:有短的、有換句型的,不是不同的答案。
+   key = 場景index-句index,不用長字串當 key,免得改到資料就對不上。 */
+const TALKALT={
+  "0-0":[{es:"Un poco cansado, la verdad.",cn:"老實說,有點累。"},{es:"Hoy estoy bastante cansado.",cn:"我今天蠻累的。"}],
+  "0-1":[{es:"No estoy cansado, estoy aburrido. Mis amigos hoy no tienen tiempo.",cn:"我不是累,是無聊。我朋友今天沒空。"},{es:"Aburrido, más bien. Hoy nadie tiene tiempo.",cn:"比較像是無聊。今天大家都沒空。"}],
+  "0-2":[{es:"Siempre como lo mismo.",cn:"我總是吃一樣的。"},{es:"Nada especial, como todos los días.",cn:"沒什麼特別的,跟每天一樣。"}],
+  "0-3":[{es:"No sé cocinar, prefiero pedir.",cn:"我不會煮,比較喜歡叫外送。"},{es:"Prefiero pedir comida a domicilio.",cn:"我比較喜歡叫外送到家。"}],
+  "0-4":[{es:"Pedí fideos fritos y algo de comida china.",cn:"我點了炒麵和一些中菜。"},{es:"Fideos fritos, pescado, carne… comida china de siempre.",cn:"炒麵、魚、肉…就一般的中菜。"}],
+  "0-5":[{es:"Normal, nada especial.",cn:"普通,沒什麼特別。"},{es:"Ni bien ni mal.",cn:"不好也不壞。"}],
+  "1-0":[{es:"Voy al hospital, me duele el estómago.",cn:"我要去醫院,我胃痛。"},{es:"Tengo que ir al médico por el estómago.",cn:"我因為胃的問題得去看醫生。"}],
+  "1-1":[{es:"Desde septiembre del año pasado. Ya me hicieron pruebas y salió todo bien.",cn:"從去年九月。已經做過檢查,結果都正常。"},{es:"Casi un año. El médico dice que no es grave.",cn:"快一年了。醫生說不嚴重。"}],
+  "1-2":[{es:"Estoy tomando medicina china, pero va y viene.",cn:"我在吃中藥,但反反覆覆。"},{es:"A veces sí, a veces no. Ahora tomo medicina china.",cn:"有時候有有時候沒有。現在吃中藥。"}],
+  "1-3":[{es:"Creo que sí, me funciona mejor.",cn:"我覺得有,對我比較有效。"},{es:"Sí, para mí funciona mejor que la occidental.",cn:"有,對我來說比西藥有效。"}],
+  "2-0":[{es:"Un americano, por favor.",cn:"一杯美式,麻煩了。"},{es:"Quiero un café americano caliente.",cn:"我要一杯熱美式。"}],
+  "2-1":[{es:"¿Qué me recomienda?",cn:"您推薦什麼?"},{es:"¿Qué tartas hay hoy?",cn:"今天有什麼蛋糕?"}],
+  "2-2":[{es:"¿Es muy dulce?",cn:"很甜嗎?"},{es:"¿La de queso lleva mucho azúcar?",cn:"起司那個糖很多嗎?"}],
+  "2-3":[{es:"Nada más, gracias. ¿Cuánto es?",cn:"不用了,謝謝。多少錢?"},{es:"Con eso está bien. ¿Cuánto le debo?",cn:"這樣就好。我要付多少?"}],
+  "2-4":[{es:"Con tarjeta.",cn:"刷卡。"},{es:"Pago con tarjeta, por favor.",cn:"我刷卡,麻煩了。"}],
+  "2-5":[{es:"Muchas gracias.",cn:"非常感謝。"},{es:"Gracias, igualmente.",cn:"謝謝,你也是。"}],
+  "3-0":[{es:"Sí, hace muchísimo calor estos días.",cn:"對,這幾天超熱。"},{es:"Sí, más de 30 grados. ¡Qué calor!",cn:"對,30 度以上。好熱!"}],
+  "3-1":[{es:"Voy a nadar o me quedo en casa con el aire acondicionado.",cn:"我去游泳或待在家吹冷氣。"},{es:"Me quedo en casa jugando al ordenador. No puedo comer mucho hielo.",cn:"待在家玩電腦。我不能吃太多冰。"}],
+  "3-2":[{es:"No vivo cerca del mar, voy a la piscina.",cn:"我不住海邊,我去游泳池。"},{es:"Suelo ir a una piscina cerca de casa.",cn:"我通常去家附近的游泳池。"}],
+  "3-3":[{es:"Hago dominadas y ejercicios de pecho.",cn:"我做引體向上和練胸。"},{es:"Sobre todo dominadas, porque trabajan todo el cuerpo.",cn:"主要是引體向上,因為能練到全身。"}],
+  "3-4":[{es:"Llevo un año, pero sin mucha constancia.",cn:"練一年了,但不太持續。"},{es:"Un año más o menos, entreno bastante relajado.",cn:"大概一年,練得很隨性。"}],
+  "4-0":[{es:"Soy estudiante y doy clases particulares a veces.",cn:"我是學生,偶爾當家教。"},{es:"Estudio y también trabajo como tutor.",cn:"我讀書,也做家教。"}],
+  "4-1":[{es:"Estudio Sistemas de Información, segundo año.",cn:"我讀資訊系統,二年級。"},{es:"Gestión de Sistemas de Información. Estoy en segundo.",cn:"資訊管理。我大二。"}],
+  "4-2":[{es:"Más o menos. Lo mejor es que tengo mucho tiempo libre.",cn:"還好。最好的是我有很多自由時間。"},{es:"No mucho, pero tengo bastante tiempo libre.",cn:"不太喜歡,但我有蠻多自由時間。"}],
+  "4-3":[{es:"Creo que sí. Vamos en coche al parque y lo pasamos bien.",cn:"我覺得有。我們開車去公園,玩得很開心。"},{es:"Sí. Salimos en coche con amigos, y eso me enseñó a disfrutar la vida.",cn:"有。我們和朋友開車出去,那讓我學會享受生活。"}],
+  "5-0":[{es:"Aquí tiene.",cn:"給您。"},{es:"Sí, aquí está mi pasaporte.",cn:"好的,這是我的護照。"}],
+  "5-1":[{es:"No, solo equipaje de mano.",cn:"不用,只有手提行李。"},{es:"No hace falta, llevo una maleta pequeña.",cn:"不需要,我帶一個小行李箱。"}],
+  "5-2":[{es:"Por la puerta B12.",cn:"在 B12 登機門。"},{es:"Es la puerta B12, a la derecha.",cn:"是 B12 登機門,在右邊。"}],
+  "5-3":[{es:"¿A nombre de quién?",cn:"用誰的名字?"},{es:"Claro, ¿su nombre, por favor?",cn:"好的,請問您的名字?"}],
+  "5-4":[{es:"Sí, de siete a diez.",cn:"有,七點到十點。"},{es:"Sí, el desayuno es de siete a diez en el comedor.",cn:"有,早餐七到十點在餐廳。"}],
+  "5-5":[{es:"A las doce.",cn:"十二點。"},{es:"Hay que dejarla antes del mediodía.",cn:"中午前要退房。"}],
+  "6-0":[{es:"Soy Chen. ¿Y tú?",cn:"我是 Chen。你呢?"},{es:"Me llamo Chen, encantado.",cn:"我叫 Chen,幸會。"}],
+  "6-1":[{es:"Soy de Taiwán.",cn:"我是台灣人。"},{es:"De Taiwán, pero vivo en Madrid.",cn:"台灣,不過住在馬德里。"}],
+  "6-2":[{es:"Soy estudiante.",cn:"我是學生。"},{es:"Estudio y trabajo a tiempo parcial.",cn:"我讀書也打工。"}],
+  "6-3":[{es:"Veinticinco.",cn:"二十五。"},{es:"Tengo veinticinco años, ¿y tú?",cn:"我二十五歲,你呢?"}],
+  "6-4":[{es:"Escuchar música y aprender idiomas.",cn:"聽音樂和學語言。"},{es:"Me gusta la música y estudiar idiomas.",cn:"我喜歡音樂和學語言。"}],
+  "6-5":[{es:"¡Claro! ¿Cuándo?",cn:"當然!什麼時候?"},{es:"Sí, claro. Te doy mi número.",cn:"好啊,我給你我的號碼。"}]
+};
+function talkAlts(){ return TALKALT[dScene+"-"+dTalkStep]||[]; }
+
+/* 「請對方重說」的修復句。
+   這是唯一一種在任何一輪都真的成立的回應 —— 因為它不需要接住話題,它是在要求重來。
+   （先前那組「萬用回應」是設計錯誤:Sí, claro. 回「你今天怎麼樣?」根本不通,
+     而且說完之後對方照劇本往下問,整段對話就散了。） */
+const TALKFIX=[
+  {es:"No entiendo.", cn:"我聽不懂。"},
+  {es:"Perdón, ¿puedes repetirlo?", cn:"抱歉,可以再說一次嗎?"},
+  {es:"¿Puedes hablar más despacio?", cn:"可以說慢一點嗎?"}
+];
+function talkReset(){ dTalkScene=dScene; dTalkStep=0; dTalkLog=[]; dTalkFix=0; }
+/* kind: "model" 範例句 / "util" 萬用回應 / "typed" 打字。
+   誠實規則:打字的內容系統沒有能力判斷對錯,只能拿它跟範例句比字。
+   比得上就照實說比了幾成並給分;比不上就標「未批改」且不給分,絕不假裝通過。 */
+function talkCommit(said,cn,kind,pct){
+  const it=DATA.dialogos[dScene].items[dTalkStep];
+  dTalkLog.push({q:it.q,qcn:it.qcn,said:said,cn:cn,kind:kind,pct:(pct==null?null:pct)});
+  if(kind==="fix"){
+    /* 請對方重說 → 不前進、不計分(不然按著它就能刷分),對方把同一句再說一次。
+       這才是這句話在真實對話裡的作用,話題也不會被截斷。 */
+    dTalkFix++;
+    renderTalk();
+    setTimeout(()=>speak(it.q,null,0.55),260);
+    return;
+  }
+  dTalkStep++; dTalkFix=0;
+  if(kind!=="typed" || (pct!=null && pct>=0.6)){ award(1); cnt("dialog"); }
+  renderDaily(); renderTalk();
+}
+function talkBadge(t){
+  if(t.kind==="fix") return '<span class="tk-badge util">請對方重說</span>';
+  if(t.kind==="alt") return '<span class="tk-badge util">另一種說法</span>';
+  if(t.kind==="typed") return t.pct!=null && t.pct>=0.6
+    ? `<span class="tk-badge ok">打字 · 對上 ${Math.round(t.pct*100)}%</span>`
+    : '<span class="tk-badge warn">打字 · 未批改</span>';
+  return "";
+}
+function renderTalk(){
+  if(dTalkScene!==dScene) talkReset();
+  const sc=DATA.dialogos[dScene], items=sc.items, N=items.length;
+  dlgList.innerHTML="";
+  const wrap=document.createElement("div"); wrap.className="card tk-card reveal";
+  /* 對方連續說同一句 = 你剛才請他重說。標出來,讀起來才是一段有來有往的對話 */
+  const log=dTalkLog.map((t,i)=>{
+    const again = i>0 && dTalkLog[i-1].q===t.q;
+    return `<div class="tk-row"><div class="tk-who">對方${again?'<span class="tk-badge util">再說一次</span>':''}</div>
+       <div class="tk-line">${esc(t.q)}</div><div class="tk-cn">${esc(t.qcn)}</div></div>
+     <div class="tk-row me"><div class="tk-who">Tú · 你${talkBadge(t)}</div>
+       <div class="tk-line">${esc(t.said)}</div>${t.cn?`<div class="tk-cn">${esc(t.cn)}</div>`:""}</div>`;
+  }).join("");
+  if(dTalkStep>=N){
+    wrap.innerHTML=`${log?`<div class="tk-log">${log}</div>`:""}
+      <div class="tk-done"><div class="tk-done-h">這個場景的 ${N} 句都談完了。</div>
+        <p class="tk-cn">上面是你這一輪談過的內容。想換個主題,點上面的場景標籤。</p>
+        <div class="tk-acts"><button class="btn" id="tk-again">再談一次</button></div></div>`;
+    dlgList.appendChild(wrap);
+    $("#tk-again").onclick=()=>{ talkReset(); renderTalk(); };
+    reflow("dialogos"); return;
+  }
+  const it=items[dTalkStep];
+  wrap.innerHTML=`${log?`<div class="tk-log">${log}</div>`:""}
+    <div class="tk-prog">第 ${dTalkStep+1} / ${N} 句 · ${esc(sc.scene)}</div>
+    <div class="tk-lbl">對方說</div>
+    <div class="tk-ask">${annotate(it.q,it.notes)} ${spkHTML(it.q)}</div>
+    <div class="tk-cn">${esc(it.qcn)}</div>
+    <div class="tk-tools">
+      <button class="btn" id="tk-play">${svgIcon(ICON.vol,13)} 播放</button>
+      <button class="btn" id="tk-slow">${svgIcon(ICON.vol,13)} 慢速</button>
+    </div>
+    <div class="tk-turn">
+      <span class="tk-turn-h">換你說</span><span class="tk-turn-hint">照著唸出來,唸完按下面那顆 — 照著回答,話題才接得下去</span>
+      <div class="tk-cue">
+        <div class="tk-cue-tag">範例句</div>
+        <div class="tk-cue-es">${annotate(it.a,it.notes)} ${spkHTML(it.a)}</div>
+        <div class="tk-cue-cn">${esc(it.acn)}</div>
+        <div class="tk-acts"><button class="btn" id="tk-say">我唸完這句了 ›</button></div>
+      </div>
+      ${talkAlts().map((alt,i)=>`
+      <div class="tk-cue alt">
+        <div class="tk-cue-tag">另一種說法</div>
+        <div class="tk-cue-es" lang="es">${esc(alt.es)} ${spkHTML(alt.es)}</div>
+        <div class="tk-cue-cn">${esc(alt.cn)}</div>
+        <div class="tk-acts"><button class="btn" data-alt="${i}">我唸完這句了 ›</button></div>
+      </div>`).join("")}
+      <div class="tk-acts">
+        <button class="tk-link" id="tk-toggle">想說別句?打字輸入</button>
+      </div>
+      <div class="tk-utils">
+        <div class="tk-utils-h">沒聽懂?請對方重說一次 — <b>不會跳過這一句</b>,他會把同一句再說一遍(慢速)</div>
+        <div class="tk-utils-row">${TALKFIX.map((u,i)=>
+          `<button class="tk-util" data-u="${i}"><span class="tk-util-es" lang="es">${esc(u.es)}</span><span class="tk-util-cn">${esc(u.cn)}</span></button>`
+        ).join("")}</div>
+        ${dTalkFix>=2?`<div class="tk-utils-h" style="margin-top:8px;color:var(--wine)">已經請他重說 ${dTalkFix} 次了 — 可以直接照上面的提示句卡唸,或打字說別的。</div>`:""}
+      </div>
+      <div class="tk-type" id="tk-typewrap" hidden>
+        <div class="tk-intent">
+          <label><input type="radio" name="tk-intent" value="answer" checked> 我要回答這句</label>
+          <label><input type="radio" name="tk-intent" value="other"> 我想說別的</label>
+          <span class="tk-intent-note">選「說別的」就不會拿範例句來比對你 — 說別的話不是寫錯。</span>
+        </div>
+        <input id="tk-input" lang="es" placeholder="Escribe tu respuesta…" autocomplete="off" spellcheck="false">
+        <button class="btn" id="tk-send">送出</button>
+        <div class="tk-typehint" id="tk-typehint"></div>
+      </div>
+      <div class="tk-verdict" id="tk-verdict" hidden></div>
+      <div class="gnote" id="tk-gnote"></div>
+    </div>`;
+  dlgList.appendChild(wrap);
+  $("#tk-play").onclick=()=>speak(it.q,null);
+  $("#tk-slow").onclick=()=>speak(it.q,null,0.55);
+  $("#tk-say").onclick=()=>talkCommit(it.a,it.acn,"model");
+  const alts=talkAlts();
+  wrap.querySelectorAll("[data-alt]").forEach(b=>b.onclick=()=>{ const a=alts[+b.dataset.alt]; talkCommit(a.es,a.cn,"alt"); });
+  $("#tk-toggle").onclick=()=>{ const w=$("#tk-typewrap"); w.hidden=!w.hidden; if(!w.hidden)$("#tk-input").focus(); };
+  wrap.querySelectorAll(".tk-util").forEach(b=>b.onclick=()=>{ const u=TALKFIX[+b.dataset.u]; talkCommit(u.es,u.cn,"fix"); });
+  const paintHint=()=>{
+    const ans=document.querySelector('input[name="tk-intent"]:checked').value==="answer";
+    const g=talkGender();
+    $("#tk-typehint").innerHTML=(ans
+      ? "會做的事:去重音比對、地區用法查表、ser/estar 陷阱提醒、跟範例句逐字比對。"
+      : "你說要講別的,所以<b>不拿範例句比對</b>。只做地區用法查表與 ser/estar 提醒。")
+      + "<br>這些全是本機規則判定,可以斬釘截鐵講;<b>「這句西語整體對不對」本機判不到</b>,判不到的就不會給你分數。"
+      + (g?"":' <span class="tk-gset">還沒設定:<button class="tk-link" data-g="m">我用陽性自稱</button> · <button class="tk-link" data-g="f">我用陰性自稱</button>(影響 -o/-a 的判定)</span>');
+    $("#tk-typehint").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{ talkSetGender(b.dataset.g); paintHint(); showToast("已記住:以"+(b.dataset.g==="m"?"陽性":"陰性")+"自稱"); });
+  };
+  wrap.querySelectorAll('input[name="tk-intent"]').forEach(r=>r.onchange=paintHint);
+  paintHint();
+  const send=()=>{
+    const v=$("#tk-input").value.trim(), vd=$("#tk-verdict");
+    const answering=document.querySelector('input[name="tk-intent"]:checked').value==="answer";
+    const bad=m=>{ vd.hidden=false; vd.className="tk-verdict bad"; vd.innerHTML=esc(m); };
+    if(!v){ bad("先打一句再送出。"); return; }
+    if(!/\p{L}/u.test(v)){ bad("這裡要寫一句西語,不能只有數字或符號。"); return; }
+    if(/[一-鿿぀-ヿ]/.test(v)){ bad("這裡要用西語寫,不是中文。"); return; }
+
+    const rep=talkAnalyze(v, it.a, answering);
+    /* 本機查得到的事情,先各自列出來,每一條都標明依據 */
+    const blocks=[];
+    if(rep.region.length) blocks.push(`<div class="tk-v-sec"><div class="tk-v-sh">地區用法(查表 · 兩邊都對)</div>`+
+      rep.region.map(x=>`<div class="tk-v-pair"><b lang="es">${esc(x.used)}</b> ${esc(x.pair.cn)}
+        <span class="tk-v-col">西班牙 <b lang="es">${esc(x.pair.es)}</b></span>
+        <span class="tk-v-col">拉美 <b lang="es">${esc(x.pair.la)}</b></span>
+        ${x.side==="es"?'<span class="tk-v-tag">你用的是西班牙用法,本站教拉美</span>':''}</div>`).join("")+`</div>`);
+    if(rep.spain.length) blocks.push(`<div class="tk-v-sec"><div class="tk-v-sh">地區形式</div>
+      <div class="tk-v-pair">偵測到 ${esc(rep.spain.join("、"))} — 這是西班牙/南錐用法,不是錯,只是本站教拉美中性用法。</div></div>`);
+    if(rep.traps.length) blocks.push(`<div class="tk-v-sec trap"><div class="tk-v-sh">ser / estar 換一個就換意思</div>`+
+      rep.traps.map(x=>`<div class="tk-v-pair">你寫的是 <b lang="es">${esc(x.used)} ${esc(x.t.w)}</b> ＝「${esc(x.used==="ser"?x.t.ser:x.t.estar)}」。
+        你想說的是不是「${esc(x.used==="ser"?x.t.estar:x.t.ser)}」(那要用 <b lang="es">${esc(x.used==="ser"?"estar":"ser")}</b>)?
+        <span class="tk-v-tag">兩句文法都對,只有你知道要哪個</span></div>`).join("")+`</div>`);
+
+    if(answering && rep.exact){ vd.hidden=true; talkCommit(v,"","typed",1); return; }
+    if(answering && rep.accentOnly){
+      vd.hidden=false; vd.className="tk-verdict good";
+      vd.innerHTML=`<div class="tk-v-h">只差重音符號 — 用字跟範例句完全一樣</div>
+        <div class="tk-v-pair">${rep.accentFix.map(f=>`<b lang="es">${esc(f.typed)}</b> → <b lang="es">${esc(f.correct)}</b>`).join("、")}</div>
+        <p class="tk-v-note">這是<b>本機比對</b>,不是猜的:把兩句的重音都拿掉之後字完全相同。重音是正字法,不是文法錯。</p>
+        ${blocks.join("")}
+        <div class="tk-acts"><button class="btn" id="tk-keep">記下來(算對)</button>
+          <button class="tk-link" id="tk-redo">我補上重音</button></div>`;
+      $("#tk-keep").onclick=()=>talkCommit(v,"","typed",1);
+      $("#tk-redo").onclick=()=>{ vd.hidden=true; $("#tk-input").focus(); };
+      return;
+    }
+    if(answering && rep.genderOnlyOk){
+      vd.hidden=false; vd.className="tk-verdict good";
+      vd.innerHTML=`<div class="tk-v-h">跟範例句只差 -o/-a,而且符合你設定的性別</div>
+        <div class="tk-v-pair">${rep.genderFix.map(f=>`<b lang="es">${esc(f.typed)}</b>(範例句寫 ${esc(f.base)})`).join("、")}</div>
+        <p class="tk-v-note">這是<b>本機比對</b>:你設定以${talkGender()==="f"?"陰":"陽"}性自稱,所以這個字尾是對的,範例句只是用另一個性別寫的。</p>
+        ${blocks.join("")}
+        <div class="tk-acts"><button class="btn" id="tk-keep">記下來(算對)</button>
+          <button class="tk-link" id="tk-redo">我改一下</button></div>`;
+      $("#tk-keep").onclick=()=>talkCommit(v,"","typed",1);
+      $("#tk-redo").onclick=()=>{ vd.hidden=true; $("#tk-input").focus(); };
+      return;
+    }
+    if(answering && rep.pct>=0.6){ vd.hidden=true; talkCommit(v,"","typed",rep.pct); return; }
+
+    /* 到這裡就是本機判不到的區域:要嘛你在說別的話,要嘛跟範例句差太多。
+       本機能講的都講完了,剩下的老實說不知道,不給分。 */
+    vd.hidden=false; vd.className="tk-verdict";
+    vd.innerHTML=`<div class="tk-v-h">${answering?`跟範例句只對上 ${Math.round(rep.pct*100)}%`:"你說要講別的,所以沒有拿範例句比對"}</div>
+      ${answering?`<div class="tk-v-diff">${rep.diffHtml}</div>`:""}
+      ${blocks.join("")||'<p class="tk-v-note">本機查表沒有查到地區用法或 ser/estar 陷阱。</p>'}
+      <p class="tk-v-note"><b>本機到這裡就沒了。</b>「這句西語整體對不對」需要真的懂西語才判得出來,
+        這個網站現在沒有那個能力,所以<b>不判、也不計分</b> — 而不是隨便給你過。</p>
+      <p class="tk-v-note">還有一件事要先講:這是<b>照劇本走的對話練習,不是真的 AI 對話</b>。
+        你說了劇本以外的話之後,對方還是會問劇本上的下一句,<b>不會接你這句</b>。
+        想讓話題連得上,就照上面的提示句卡回答;想請他重說,用下面那三顆。</p>
+      <div class="tk-acts"><button class="btn" id="tk-keep">記下來,繼續下一句</button>
+        <button class="tk-link" id="tk-redo">我改一下</button></div>`;
+    $("#tk-keep").onclick=()=>talkCommit(v,"","typed",answering?rep.pct:null);
+    $("#tk-redo").onclick=()=>{ vd.hidden=true; $("#tk-input").focus(); };
+  };
+  $("#tk-send").onclick=send;
+  $("#tk-input").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); send(); } });
+  const gnote=$("#tk-gnote");
+  wrap.querySelectorAll(".w").forEach(span=>span.onclick=e=>{
+    e.stopPropagation();
+    wrap.querySelectorAll(".w").forEach(s=>s.classList.remove("sel")); span.classList.add("sel");
+    gnote.innerHTML=noteHTML(it.notes[+span.dataset.k]); gnote.classList.add("show");
+  });
+  reflow("dialogos");
+}
 function renderDlg(){
+  if(dlgMode==="talk") return renderTalk();
   dlgList.innerHTML="";
   DATA.dialogos[dScene].items.forEach(it=>{
     const card=document.createElement("div"); card.className="card qa reveal";
@@ -4870,8 +5316,9 @@ function buildChips(box,defs,cur,onpick){ if(!box)return; box.innerHTML="";
     b.onclick=()=>{ $$(".chip",box).forEach(x=>x.classList.remove("active")); b.classList.add("active"); onpick(k); }; box.appendChild(b); }); }
 
 /* ===== 1. 對話:角色扮演模式開關 ===== */
-let rolePlay=false;
-buildChips($("#dlg-mode"),[["read","一般模式 Leer"],["rp","角色扮演 Role-play"]],"read",k=>{ rolePlay=(k==="rp"); renderDlg(); });
+let rolePlay=false, dlgMode="talk";
+buildChips($("#dlg-mode"),[["talk","逐句對話 Conversar"],["read","一般模式 Leer"],["rp","角色扮演 Role-play"]],"talk",
+  k=>{ dlgMode=k; rolePlay=(k==="rp"); renderDlg(); });
 
 /* ===== 3. 單字小遊戲:配對 / 選擇 / 拼寫 ===== */
 $("#vg-head").innerHTML=svgIcon(ICON.game,18)+" 單字小遊戲 · Juegos";

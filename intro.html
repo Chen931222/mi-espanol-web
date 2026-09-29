@@ -64,7 +64,7 @@ body{
 .claim{font-family:var(--font-display);font-weight:900;font-size:clamp(1.9rem,3.6vw,2.9rem);line-height:1.18;color:var(--ink);opacity:0;transform:translateY(30px)}
 .claim i{font-style:italic;color:var(--acc);transition:color .8s}
 .scene.active .claim{opacity:1;transform:none;transition:opacity 1s cubic-bezier(.16,1,.3,1) .15s,transform 1s cubic-bezier(.16,1,.3,1) .15s}
-.kick{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.14em;color:#fff;background:var(--acc);border-radius:999px;padding:3px 12px;margin-bottom:2px;transition:background .8s;align-self:flex-start;opacity:0}
+.kick{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--acc-ink,#fff);background:var(--acc);border-radius:999px;padding:3px 12px;margin-bottom:2px;transition:background .8s;align-self:flex-start;opacity:0}
 .scene.active .kick{opacity:1;transition:opacity .8s ease .05s}
 
 /* 文字卡(分段自動輪播) */
@@ -200,7 +200,7 @@ body{
 .hero-kick{font-size:.78rem;font-weight:800;letter-spacing:.32em;color:var(--terra);margin-bottom:12px}
 .hero-h1{font-family:var(--font-display);font-weight:900;font-size:clamp(2.1rem,5.4vw,3.9rem);line-height:1.08;color:var(--ink)}
 .hero-scene .mid.top{top:6vh}
-.hero-scene .mid.bottom{bottom:6vh}
+.hero-scene .mid.bottom{bottom:max(6vh,76px)} /* 讓出底部提示:距底 22px＋提示高 41px＋間距 13px;fitPhone 會跟著把手機縮小 */
 .hero-h1 i{font-style:italic;color:var(--terra)}
 .hero-sub{margin-top:12px;font-size:clamp(.9rem,2.2vw,1.05rem);color:var(--ink-soft)}
 .hero-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
@@ -385,7 +385,7 @@ body{
   </section>
 
   <!-- 2 單字卡 -->
-  <section class="scene" data-acc="#E0A02E" data-acc2="#B87F17" data-side="left" data-screen="vocab" data-phone="side-right" data-label="單字卡 SRS">
+  <section class="scene" data-acc="#E0A02E" data-acc2="#B87F17" data-acc-ink="var(--ink)" data-side="left" data-screen="vocab" data-phone="side-right" data-label="單字卡 SRS">
     <div class="inner"><div class="side">
       <span class="kick">02 · VOCABULARIO</span>
       <h2 class="claim">你忘掉的,<i>它記得</i>。</h2>
@@ -462,7 +462,7 @@ body{
   </section>
 
   <!-- 7 進度 -->
-  <section class="scene" data-acc="#C2861F" data-acc2="#9A6812" data-side="right" data-screen="prog" data-phone="side-left" data-label="學習進度">
+  <section class="scene" data-acc="#C2861F" data-acc2="#9A6812" data-acc-ink="var(--ink)" data-side="right" data-screen="prog" data-phone="side-left" data-label="學習進度">
     <div class="inner"><div class="side">
       <span class="kick">07 · PROGRESO</span>
       <h2 class="claim">讓你<i>每天回得來</i>的設計。</h2>
@@ -541,7 +541,7 @@ let glowFlip=false;
 function applyTheme(sc){
   const acc=sc.dataset.acc||"#C24A32", acc2=sc.dataset.acc2||acc;
   document.documentElement.style.setProperty("--acc",acc);
-  document.documentElement.style.setProperty("--acc-deep",acc2);
+  document.documentElement.style.setProperty("--acc-deep",acc2); document.documentElement.style.setProperty("--acc-ink",sc.dataset.accInk||"#fff");
   const g=glowFlip?glowA:glowB, o=glowFlip?glowB:glowA; glowFlip=!glowFlip;
   g.style.background=`radial-gradient(900px 520px at ${idx%2?"18%":"82%"} 30%, ${acc}22 0%, transparent 65%)`;
   g.classList.add("on"); o.classList.remove("on");

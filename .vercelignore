@@ -4,3 +4,9 @@
 index.backup-*.html
 serve.ps1
 .claude/
+.impeccable/
+PRODUCT.md
+# 2026-08-14 停用：口說對話頁。拿掉語音辨識後功能與主站「對話·角色扮演」重疊，
+# 檔案留在本機備查，但不發佈。sr-probe 是本機診斷工具，同樣不上線。
+conversa.html
+sr-probe.html
