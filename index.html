@@ -61,25 +61,33 @@ body{font-family:var(--font-body);color:var(--ink);line-height:1.55;-webkit-font
 .tab:hover{background:var(--paper-2);color:var(--terra);border-color:var(--line-strong)}
 a.tour-link{text-decoration:none;margin-top:10px;border-top:1.5px dashed var(--line-strong);border-radius:0 0 12px 12px;padding-top:14px}
 .tab.active{background:#FBEBE2;color:var(--terra-deep);box-shadow:inset 3px 0 0 var(--terra)}
+#mnav,#mback,#msheet{display:none}   /* 桌機用側邊欄;手機版的顯示規則在下面的 @media 裡(要排在這條後面才蓋得過) */
 @media(max-width:860px){
   .app{display:block}
-  .sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;flex-direction:row;z-index:60;padding:5px 4px;border-right:none;border-top:1.5px solid var(--line-strong);background:var(--paper-2);box-shadow:0 -8px 22px -14px rgba(70,45,20,.55)}
-  .brand,.brand-tag{display:none}
-  .nav-group{display:none}
-  .side-nav{flex-direction:row;justify-content:space-around;width:100%;margin-top:0;gap:0}
-  .tab{flex-direction:column;gap:3px;padding:7px 4px;border-radius:10px;font-size:.7rem;align-items:center}
-  .tab .tab-ic{font-size:1.32rem;flex:none}
-  .tab .tab-tx{align-items:center}
-  .tab .tab-cn{display:none}
-  .tab .tab-sh{display:block}
-  .tab .es{display:none}
-  .tab:hover{background:transparent;border-color:transparent;color:var(--ink-soft)}
-  .tab.active{background:transparent;color:var(--terra-deep);box-shadow:none}
-  a.tour-link{margin-top:0;border-top:none;padding-top:7px;border-radius:10px}
+  /* 手機不用側邊欄:底部改成 5 格(#mnav),前 4 格是常用分頁,第 5 格「更多」打開 #msheet 列出其餘的。
+     原本 10 格擠一排,每格只有 39px。 */
+  .sidebar{display:none}
+  #mnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--paper-2);border-top:1.5px solid var(--line-strong);padding-bottom:env(safe-area-inset-bottom)}
+  #mnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font:inherit;background:none;border:none;color:var(--ink-soft);padding:10px 4px 9px;min-height:60px;cursor:pointer}
+  #mnav .mb-ic{font-size:1.32rem;line-height:1;display:inline-flex}
+  #mnav .mb-tx{font-family:var(--font-body);font-weight:700;font-size:.78rem;line-height:1.2}
+  #mnav button.on,body.ms-open #mmore{color:var(--terra-deep)}
+  #mback{display:block;position:fixed;inset:0;z-index:58;background:rgba(43,32,23,.22);opacity:0;pointer-events:none;transition:opacity .22s}
+  body.ms-open #mback{opacity:1;pointer-events:auto}
+  #msheet{display:block;position:fixed;left:0;right:0;bottom:0;z-index:59;background:var(--card);border-radius:20px 20px 0 0;box-shadow:0 -16px 44px -18px rgba(70,45,20,.6);padding:18px 14px calc(72px + env(safe-area-inset-bottom));transform:translateY(105%);visibility:hidden;transition:transform .26s cubic-bezier(.2,.8,.2,1),visibility 0s .26s}
+  body.ms-open #msheet{transform:none;visibility:visible;transition:transform .26s cubic-bezier(.2,.8,.2,1),visibility 0s}
+  #msheet h2{font-family:var(--font-body);font-size:.74rem;font-weight:800;letter-spacing:.1em;color:var(--ink-soft);margin:0 8px 6px}
+  #msheet button,#msheet a{display:flex;align-items:center;gap:14px;width:100%;font:inherit;font-family:var(--font-body);font-weight:700;font-size:1rem;color:var(--ink);background:none;border:none;border-bottom:1px solid var(--line);padding:13px 8px;min-height:50px;text-align:left;text-decoration:none;cursor:pointer}
+  #msheet a:last-child{border-bottom:none}
+  #msheet .mb-ic{font-size:1.25rem;color:var(--ink-soft);display:inline-flex}
+  #msheet .es{margin-left:auto;font-family:var(--font-display);font-style:italic;font-weight:600;font-size:.82rem;color:var(--ink-soft)}
+  #msheet .on,#msheet .on .mb-ic{color:var(--terra-deep)}
   .topbar{display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:50;padding:12px 0 10px;background:linear-gradient(var(--paper) 72%,transparent);backdrop-filter:blur(3px)}
   .brand-sm{font-family:var(--font-display);font-weight:900;font-size:1.5rem;color:var(--ink)}
   .wrap{padding:6px 18px 96px}
 }
+
+@media(prefers-reduced-motion:reduce){#mback,#msheet,body.ms-open #msheet{transition:none}}
 
 section{display:none}
 section.active{display:block}
@@ -596,6 +604,10 @@ body.np-open .note-pop{transform:translateY(0)}
     <h1 class="brand"><a class="brand-link" href="intro.html" title="回產品導覽 · Tour">Mi <span class="accent">Español</span><span class="brand-tag">我的西班牙文學習筆記</span></a></h1>
     <nav class="side-nav" id="tabs"></nav>
   </aside>
+  <!-- 手機底部分頁列與「更多」清單(內容由下面的 script 依 TABS 產生) -->
+  <div id="mback"></div>
+  <div id="msheet" role="dialog" aria-label="其他分頁"></div>
+  <nav id="mnav" aria-label="分頁"></nav>
   <div class="main">
     <header class="topbar"><a class="brand-sm brand-link" href="intro.html" title="回產品導覽 · Tour">Mi <span class="accent">Español</span></a></header>
     <div class="wrap">
@@ -4189,7 +4201,32 @@ TABS.forEach((t,i)=>{ if(NAVGROUP[t.id]){ const g=document.createElement("span")
 (function(){ const a=document.createElement("a"); a.className="tab tour-link"; a.href="intro.html";
   a.innerHTML=`<span class="tab-ic">${svgIcon(ICON.play,"1.1em")}</span><span class="tab-tx"><span class="tab-cn">產品導覽</span><span class="tab-sh">導覽</span><span class="es">Tour</span></span>`;
   tabsEl.appendChild(a); })();
+/* ===== 手機底部分頁列:常用 4 格 + 「更多」 =====
+   MNAV_MAIN 是留在底部的四個分頁(要換就改這一行);其餘的自動進「更多」清單。 */
+const MNAV_MAIN=["hoy","dialogos","canciones","vocabulario"];
+const MNAV_REST=TABS.map(t=>t.id).filter(id=>!MNAV_MAIN.includes(id));
+const mnav=$("#mnav"), msheet=$("#msheet"), mback=$("#mback");
+const MORE_IC='<svg width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>';
+const tabOf=id=>TABS.find(t=>t.id===id);
+mnav.innerHTML=MNAV_MAIN.map(id=>`<button type="button" data-id="${id}"><span class="mb-ic">${tabOf(id).ic}</span><span class="mb-tx">${tabOf(id).sh}</span></button>`).join("")+
+  `<button type="button" id="mmore" aria-expanded="false" aria-controls="msheet"><span class="mb-ic">${MORE_IC}</span><span class="mb-tx">更多</span></button>`;
+msheet.innerHTML=`<h2>其他分頁</h2>`+MNAV_REST.map(id=>`<button type="button" data-id="${id}"><span class="mb-ic">${tabOf(id).ic}</span>${tabOf(id).cn}<span class="es">${tabOf(id).es}</span></button>`).join("")+
+  `<a href="intro.html"><span class="mb-ic">${svgIcon(ICON.play,"1.1em")}</span>產品導覽<span class="es">Tour</span></a>`;
+const mmore=$("#mmore");
+function msheetClose(back){ if(!document.body.classList.contains("ms-open")) return; document.body.classList.remove("ms-open"); mmore.setAttribute("aria-expanded","false"); if(back) mmore.focus(); }
+function msheetOpen(){ document.body.classList.add("ms-open"); mmore.setAttribute("aria-expanded","true"); const f=msheet.querySelector("button,a"); if(f) f.focus({preventScroll:true}); }
+mmore.onclick=()=>{ document.body.classList.contains("ms-open")?msheetClose(true):msheetOpen(); };
+mback.onclick=()=>msheetClose(true);
+mnav.querySelectorAll("button[data-id]").forEach(b=>b.onclick=()=>{ msheetClose(); show(b.dataset.id); });
+msheet.querySelectorAll("button[data-id]").forEach(b=>b.onclick=()=>{ msheetClose(); show(b.dataset.id); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") msheetClose(true); });
+function mnavSync(id){
+  mnav.querySelectorAll("button[data-id]").forEach(b=>{ const on=b.dataset.id===id; b.classList.toggle("on",on); if(on)b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+  mmore.classList.toggle("on",MNAV_REST.includes(id));
+  msheet.querySelectorAll("button[data-id]").forEach(b=>{ const on=b.dataset.id===id; b.classList.toggle("on",on); if(on)b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+}
 function show(id){
+  mnavSync(id);
   $$("button.tab").forEach((b,i)=>b.classList.toggle("active",TABS[i].id===id));
   $$("section").forEach(s=>s.classList.remove("active","in"));
   const el=document.getElementById(id); el.classList.add("active");
