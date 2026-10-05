@@ -39,7 +39,10 @@ body{font-family:var(--font-body);color:var(--ink);line-height:1.55;-webkit-font
 .grain{position:fixed;inset:0;pointer-events:none;z-index:9000;opacity:.05;mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 .app{display:flex;align-items:flex-start}
-.sidebar{flex:0 0 212px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:28px 16px;background:linear-gradient(180deg,var(--paper-2),var(--paper));border-right:1.5px solid var(--line);z-index:40}
+.sidebar{flex:0 0 212px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:28px 16px;background:linear-gradient(180deg,var(--paper-2),var(--paper));border-right:1.5px solid var(--line);z-index:40;
+  overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--ink-soft) 45%,var(--paper)) transparent}
+/* 視窗矮時分頁超出 100vh:側欄自己捲,滑軌只在放不下時出現 */
+.sidebar:hover{scrollbar-color:var(--ink-soft) transparent}
 .brand{font-family:var(--font-display);font-weight:900;font-size:1.7rem;line-height:1.02;color:var(--ink);padding:4px 10px 0}
 .brand-tag{display:block;font-family:var(--font-body);font-weight:500;font-size:.72rem;color:var(--ink-soft);margin-top:9px}
 .side-nav{display:flex;flex-direction:column;gap:6px;margin-top:24px}
