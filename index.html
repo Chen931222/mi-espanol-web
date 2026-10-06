@@ -509,7 +509,17 @@ body.rt-bar-on #toast-box{bottom:92px}
 .tk-badge.util{color:var(--ink-soft)}
 .tk-badge.ok{color:var(--good)}
 .tk-badge.warn{color:var(--wine)}
-.tk-utils{margin-top:16px}
+/* 模式與場景的晶片平常收起來,只留一行「目前的選擇 · 更換」 */
+.dlg-pick{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-size:.92rem}
+.dlg-pick-cur{font-weight:700}
+#dialogos:not(.dlg-open) #dlg-mode,#dialogos:not(.dlg-open) #dlg-chips{display:none}
+/* 「另一種說法」整張卡可點 */
+.tk-cue.alt{cursor:pointer;transition:.18s}
+.tk-cue.alt:hover,.tk-cue.alt:focus-visible{border-style:solid;border-color:var(--ink-soft);background:var(--card)}
+.tk-more{display:flex;align-items:center;gap:10px;margin-top:12px}
+.tk-sep{color:var(--line-strong)}
+.tk-utils{margin-top:12px}
+.tk-utils[hidden]{display:none}
 .tk-utils-h{font-size:.76rem;color:var(--ink-soft);margin-bottom:8px}
 .tk-utils-row{display:flex;gap:9px;flex-wrap:wrap}
 .tk-util{text-align:left;cursor:pointer;border:1.5px dashed var(--line-strong);border-radius:12px;padding:9px 13px;
@@ -4537,7 +4547,6 @@ function talkCommit(said,cn,kind,pct){
 }
 function talkBadge(t){
   if(t.kind==="fix") return '<span class="tk-badge util">請對方重說</span>';
-  if(t.kind==="alt") return '<span class="tk-badge util">另一種說法</span>';
   if(t.kind==="typed") return t.pct!=null && t.pct>=0.6
     ? `<span class="tk-badge ok">打字 · 對上 ${Math.round(t.pct*100)}%</span>`
     : '<span class="tk-badge warn">打字 · 未批改</span>';
@@ -4569,14 +4578,14 @@ function renderTalk(){
   wrap.innerHTML=`${log?`<div class="tk-log">${log}</div>`:""}
     <div class="tk-prog">第 ${dTalkStep+1} / ${N} 句 · ${esc(sc.scene)}</div>
     <div class="tk-lbl">對方說</div>
-    <div class="tk-ask">${annotate(it.q,it.notes)} ${spkHTML(it.q)}</div>
+    <div class="tk-ask">${annotate(it.q,it.notes)}</div>
     <div class="tk-cn">${esc(it.qcn)}</div>
     <div class="tk-tools">
       <button class="btn" id="tk-play">${svgIcon(ICON.vol,13)} 播放</button>
       <button class="btn" id="tk-slow">${svgIcon(ICON.vol,13)} 慢速</button>
     </div>
     <div class="tk-turn">
-      <span class="tk-turn-h">換你說</span><span class="tk-turn-hint">照著唸出來,唸完按下面那顆 — 照著回答,話題才接得下去</span>
+      <span class="tk-turn-h">換你說</span>
       <div class="tk-cue">
         <div class="tk-cue-tag">範例句</div>
         <div class="tk-cue-es">${annotate(it.a,it.notes)} ${spkHTML(it.a)}</div>
@@ -4584,27 +4593,26 @@ function renderTalk(){
         <div class="tk-acts"><button class="btn" id="tk-say">我唸完這句了 ›</button></div>
       </div>
       ${talkAlts().map((alt,i)=>`
-      <div class="tk-cue alt">
-        <div class="tk-cue-tag">另一種說法</div>
+      <div class="tk-cue alt" role="button" tabindex="0" data-alt="${i}" aria-label="選這句:${esc(alt.es)}">
+        <div class="tk-cue-tag">另一種說法 · 唸完點這裡</div>
         <div class="tk-cue-es" lang="es">${esc(alt.es)} ${spkHTML(alt.es)}</div>
         <div class="tk-cue-cn">${esc(alt.cn)}</div>
-        <div class="tk-acts"><button class="btn" data-alt="${i}">我唸完這句了 ›</button></div>
       </div>`).join("")}
-      <div class="tk-acts">
-        <button class="tk-link" id="tk-toggle">想說別句?打字輸入</button>
+      <div class="tk-more">
+        <button class="tk-link" id="tk-fixtoggle">沒聽懂</button><span class="tk-sep">·</span>
+        <button class="tk-link" id="tk-toggle">想說別的,打字</button>
       </div>
-      <div class="tk-utils">
-        <div class="tk-utils-h">沒聽懂?請對方重說一次 — <b>不會跳過這一句</b>,他會把同一句再說一遍(慢速)</div>
+      <div class="tk-utils" id="tk-utils" hidden>
+        <div class="tk-utils-h">對方會把同一句再說一遍(慢速),不會跳過。</div>
         <div class="tk-utils-row">${TALKFIX.map((u,i)=>
           `<button class="tk-util" data-u="${i}"><span class="tk-util-es" lang="es">${esc(u.es)}</span><span class="tk-util-cn">${esc(u.cn)}</span></button>`
         ).join("")}</div>
-        ${dTalkFix>=2?`<div class="tk-utils-h" style="margin-top:8px;color:var(--wine)">已經請他重說 ${dTalkFix} 次了 — 可以直接照上面的提示句卡唸,或打字說別的。</div>`:""}
+        ${dTalkFix>=2?`<div class="tk-utils-h" style="margin-top:8px;color:var(--wine)">已經請他重說 ${dTalkFix} 次了 — 可以直接照上面的句子唸,或打字說別的。</div>`:""}
       </div>
       <div class="tk-type" id="tk-typewrap" hidden>
         <div class="tk-intent">
           <label><input type="radio" name="tk-intent" value="answer" checked> 我要回答這句</label>
           <label><input type="radio" name="tk-intent" value="other"> 我想說別的</label>
-          <span class="tk-intent-note">選「說別的」就不會拿範例句來比對你 — 說別的話不是寫錯。</span>
         </div>
         <input id="tk-input" lang="es" placeholder="Escribe tu respuesta…" autocomplete="off" spellcheck="false">
         <button class="btn" id="tk-send">送出</button>
@@ -4618,17 +4626,19 @@ function renderTalk(){
   $("#tk-slow").onclick=()=>speak(it.q,null,0.55);
   $("#tk-say").onclick=()=>talkCommit(it.a,it.acn,"model");
   const alts=talkAlts();
-  wrap.querySelectorAll("[data-alt]").forEach(b=>b.onclick=()=>{ const a=alts[+b.dataset.alt]; talkCommit(a.es,a.cn,"alt"); });
+  /* 「另一種說法」整張卡就是按鈕:點卡片、或聚焦後按 Enter／空白鍵;點小喇叭只播音不選 */
+  wrap.querySelectorAll("[data-alt]").forEach(card=>{
+    const pick=()=>{ const a=alts[+card.dataset.alt]; talkCommit(a.es,a.cn,"alt"); };
+    card.onclick=e=>{ if(e.target.closest(".spk"))return; pick(); };
+    card.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } };
+  });
+  $("#tk-fixtoggle").onclick=()=>{ const u=$("#tk-utils"); u.hidden=!u.hidden; };
   $("#tk-toggle").onclick=()=>{ const w=$("#tk-typewrap"); w.hidden=!w.hidden; if(!w.hidden)$("#tk-input").focus(); };
   wrap.querySelectorAll(".tk-util").forEach(b=>b.onclick=()=>{ const u=TALKFIX[+b.dataset.u]; talkCommit(u.es,u.cn,"fix"); });
+  /* 打字區只留一件事要先問:用陽性還是陰性自稱(影響 -o/-a 的判定)。本機判得到什麼、判不到什麼,送出後在結果裡講 */
   const paintHint=()=>{
-    const ans=document.querySelector('input[name="tk-intent"]:checked').value==="answer";
     const g=talkGender();
-    $("#tk-typehint").innerHTML=(ans
-      ? "會做的事:去重音比對、地區用法查表、ser/estar 陷阱提醒、跟範例句逐字比對。"
-      : "你說要講別的,所以<b>不拿範例句比對</b>。只做地區用法查表與 ser/estar 提醒。")
-      + "<br>這些全是本機規則判定,可以斬釘截鐵講;<b>「這句西語整體對不對」本機判不到</b>,判不到的就不會給你分數。"
-      + (g?"":' <span class="tk-gset">還沒設定:<button class="tk-link" data-g="m">我用陽性自稱</button> · <button class="tk-link" data-g="f">我用陰性自稱</button>(影響 -o/-a 的判定)</span>');
+    $("#tk-typehint").innerHTML=g?"":'<span class="tk-gset">你用哪個自稱?<button class="tk-link" data-g="m">陽性(-o)</button> · <button class="tk-link" data-g="f">陰性(-a)</button></span>';
     $("#tk-typehint").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{ talkSetGender(b.dataset.g); paintHint(); showToast("已記住:以"+(b.dataset.g==="m"?"陽性":"陰性")+"自稱"); });
   };
   wrap.querySelectorAll('input[name="tk-intent"]').forEach(r=>r.onchange=paintHint);
@@ -4693,7 +4703,7 @@ function renderTalk(){
         這個網站現在沒有那個能力,所以<b>不判、也不計分</b> — 而不是隨便給你過。</p>
       <p class="tk-v-note">還有一件事要先講:這是<b>照劇本走的對話練習,不是真的 AI 對話</b>。
         你說了劇本以外的話之後,對方還是會問劇本上的下一句,<b>不會接你這句</b>。
-        想讓話題連得上,就照上面的提示句卡回答;想請他重說,用下面那三顆。</p>
+        想讓話題連得上,就照上面的句子回答;想請他重說,點「沒聽懂」。</p>
       <div class="tk-acts"><button class="btn" id="tk-keep">記下來,繼續下一句</button>
         <button class="tk-link" id="tk-redo">我改一下</button></div>`;
     $("#tk-keep").onclick=()=>talkCommit(v,"","typed",answering?rep.pct:null);
@@ -5938,6 +5948,20 @@ function renderHoy(){
 
 const _showBase=show;
 show=function(id){ _showBase(id); if(id==="progreso")renderProgreso(); if(id==="hoy"){ rtBarHide(); renderHoy(); } };
+
+/* 對話頁頂端原本 3 顆模式＋7 顆場景一字排開;改成一行「目前的選擇 · 更換」,點了才展開。
+   晶片本身沒拆,所以「今天的五分鐘」照樣用 .click() 切場景 */
+const MODE_LABEL={talk:"逐句對話",read:"一般模式",rp:"角色扮演"};
+const dlgPick=document.createElement("div"); dlgPick.className="dlg-pick reveal"; dlgPick.id="dlg-pick";
+$("#dlg-mode").before(dlgPick);
+function dlgPickRender(open){
+  $("#dialogos").classList.toggle("dlg-open",!!open);
+  dlgPick.innerHTML=`<span class="dlg-pick-cur">${MODE_LABEL[dlgMode]||dlgMode} · ${esc(DATA.dialogos[dScene].scene)}</span><button class="tk-link" id="dlg-pick-btn">${open?"收起":"更換"}</button>`;
+  $("#dlg-pick-btn").onclick=()=>dlgPickRender(!open);
+}
+const _renderDlgBase=renderDlg;
+renderDlg=function(){ _renderDlgBase(); dlgPickRender(false); };
+dlgPickRender(false);
 checkLogros();
 
 renderDlg(); buildVList(); renderSong(); buildVerbos(); renderDaily(); show("hoy");
