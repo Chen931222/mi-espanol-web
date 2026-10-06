@@ -396,11 +396,41 @@ footer code{background:var(--paper-2);border:1px solid var(--line);border-radius
 .hoy-hero{background:linear-gradient(180deg,#FBEEE2,var(--card));border:1.5px solid var(--line);border-radius:var(--r);padding:24px 26px}
 .hoy-hi{font-family:var(--font-display);font-weight:900;font-size:1.75rem;color:var(--terra-deep)}
 .hoy-hi span{font-size:1rem;color:var(--ink-soft);font-family:var(--font-body);font-weight:700;margin-left:8px}
-.hoy-main{display:flex;gap:20px;align-items:center;margin-top:16px;flex-wrap:wrap}
-.hoy-main .stat-grid{flex:1;margin:0;grid-template-columns:repeat(3,1fr);min-width:240px}
-.hoy-cta{margin-top:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.hoy-go{font-size:1rem;padding:13px 24px}
-.hoy-done{font-weight:800;color:var(--good)}
+/* 今天的五分鐘:三步清單＋一顆主按鈕。數字是步驟順序,做完換成勾 */
+.rt-steps{list-style:none;margin:18px 0 0;padding:0;border-top:1.5px solid var(--line)}
+.rt-step{display:grid;grid-template-columns:34px 4.6em 1fr;align-items:baseline;gap:2px 12px;padding:13px 2px;border-bottom:1.5px solid var(--line)}
+.rt-n{font-family:var(--font-display);font-weight:900;font-size:1.35rem;line-height:1;color:var(--ink-soft);text-align:center;align-self:center;display:flex;justify-content:center}
+.rt-t{font-weight:800;font-size:1.02rem;color:var(--ink)}
+.rt-d{font-size:.92rem;color:var(--ink-soft)}
+.rt-step.now .rt-n{color:var(--terra-deep)}
+.rt-step.done .rt-n{color:var(--good)}
+.rt-step.done .rt-t{color:var(--ink-soft)}
+.hoy-cta{margin-top:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.btn.rt-go{background:var(--terra-deep);border-color:var(--terra-deep);color:#FCF8EE}
+.btn.rt-go:hover{background:var(--ink);border-color:var(--ink)}
+.hoy-cta .rt-go{font-size:1rem;padding:13px 26px}
+.rt-meta{font-size:.9rem;font-weight:700;color:var(--ink-soft)}
+.rt-sum{margin-top:14px;font-family:var(--font-display);font-weight:600;font-size:1.12rem;color:var(--ink)}
+.rt-next{margin-top:4px;color:var(--ink-soft);font-weight:700}
+@media(max-width:480px){
+  .rt-step{grid-template-columns:30px 1fr}
+  .rt-d{grid-column:2}
+  .hoy-cta .rt-go{width:100%}
+}
+/* 一步做完時浮在下面的提示:帶你去下一步。會浮起來,所以用陰影不用框 */
+#rt-bar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:55;display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;
+  width:max-content;max-width:calc(100vw - 32px);background:var(--card);border-radius:14px;padding:10px 8px 10px 18px;box-shadow:var(--shadow)}
+#rt-bar[hidden]{display:none}
+.rt-bar-msg{font-weight:800;color:var(--ink)}
+#rt-bar .rt-go{padding:9px 16px}
+.rt-bar-x{width:32px;height:32px;border:none;border-radius:50%;background:none;color:var(--ink-soft);font-size:1rem;cursor:pointer}
+.rt-bar-x:hover{background:var(--paper-2);color:var(--ink)}
+body.rt-bar-on #toast-box{bottom:92px}
+@media(min-width:861px){ #rt-bar{left:calc(50% + 106px)} }   /* 桌機置中在內容欄,不是整個視窗(左邊 212px 是側欄) */
+@media(max-width:860px){
+  #rt-bar{bottom:calc(72px + env(safe-area-inset-bottom))}
+  body.rt-bar-on #toast-box{bottom:calc(140px + env(safe-area-inset-bottom))}
+}
 #hoy-quick{margin-top:22px}
 .hoy-quick-h{font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:var(--terra-deep);display:flex;align-items:center;gap:7px}
 .hoy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px}
@@ -4446,6 +4476,7 @@ function talkCommit(said,cn,kind,pct){
   }
   dTalkStep++; dTalkFix=0;
   if(kind!=="typed" || (pct!=null && pct>=0.6)){ award(1); cnt("dialog"); }
+  if(dTalkStep>=DATA.dialogos[dScene].items.length) rtDone("talk",{said:dTalkLog.filter(t=>t.kind!=="fix").length});
   renderDaily(); renderTalk();
 }
 function talkBadge(t){
@@ -4999,15 +5030,17 @@ function rate(grade){
 $("#fc-bad").onclick=()=>rate(0);
 $("#fc-ok").onclick=()=>rate(1);
 $("#fc-good").onclick=()=>rate(2);
-function startReview(){
-  const due=CARDS.filter(w=>isDue(w.es));
+function startReview(q){
+  const due=Array.isArray(q)?q:CARDS.filter(w=>isDue(w.es));   // 「今天的五分鐘」會傳自己挑好的卡;當按鈕事件呼叫時 q 是 event,不算
   if(!due.length){ renderDaily(); return; }
   rvActive=true; rvQueue=due.slice();
   const fs=$("#flash-stage"); if(fs)fs.classList.add("reviewing");
   renderReview(); if(fs)fs.scrollIntoView({behavior:"smooth",block:"center"});
 }
 function renderReview(){ vList=rvQueue; vIdx=0; renderCard(); const bar=$("#rv-bar"); if(bar){ bar.style.display="flex"; const l=$("#rv-left"); if(l)l.textContent=rvQueue.length; } }
-function endReview(){ rvActive=false; const fs=$("#flash-stage"); if(fs)fs.classList.remove("reviewing"); const bar=$("#rv-bar"); if(bar)bar.style.display="none"; buildVList(); renderDaily(); }
+function endReview(){ rvActive=false; const fs=$("#flash-stage"); if(fs)fs.classList.remove("reviewing"); const bar=$("#rv-bar"); if(bar)bar.style.display="none"; buildVList(); renderDaily();
+  /* 「今天的五分鐘」那一輪:卡片全部評完才算這步做完,中途按「結束複習」不算 */
+  if(rtCards){ const n=rtCards; rtCards=0; const lbl=$("#rv-bar span"); if(lbl) lbl.innerHTML='複習中 · 剩 <b id="rv-left">0</b> 張'; if(!rvQueue.length) rtDone("cards",{cardsN:n}); } }
 const _rvEnd=$("#rv-end"); if(_rvEnd)_rvEnd.onclick=endReview;
 
 /* 4. Canciones（多首歌）*/
@@ -5178,6 +5211,7 @@ function exScore(){
   $("#ex-score").textContent=done?`本輪/Ronda ${ok} / ${round.length}`+(left?`(還有 ${left} 題)`:""):"";
   if(left||roundLogged) return;
   roundLogged=true; if(ok===round.length) cnt("perfect");
+  rtDone("drill",{drillOk:ok,drillN:round.length});
   const n=(exLog[0]&&exLog[0].n||0)+1;
   exLog.unshift({n:n,ok:ok,total:round.length}); if(exLog.length>30)exLog.length=30;
   localStorage.setItem(EXKEY,JSON.stringify(exLog));
@@ -5748,27 +5782,81 @@ function renderProgreso(){
   $("#pg-logros").innerHTML=LOGROS.map(L=>{ const on=!!logros[L.id];
     return `<div class="logro${on?" on":""}"><div class="li">${svgIcon(L.ic,18)}</div><div class="ln">${L.n}</div><div class="ld">${L.d}${on?"<br>✓ "+logros[L.id]:""}</div></div>`; }).join("");
   renderErr(); }
+/* ===== 今天的五分鐘 =====
+   每天固定三步:聊一段對話 → 單字卡 → 填空 5 題。三步都做完,首頁才說「做完了」。
+   每一步都是站上原本的練習,這裡只負責排順序、記今天做了哪幾步、做完一步時帶你去下一步。
+   完成點:對話把一個場景談完(talkCommit)、單字卡佇列清空(endReview)、填空一輪 5 題都有結果(exScore)。 */
+const RTKEY="miEspanol.ritual";
+/* 對話場景輪替:自我介紹先,健康話題最後(那是站主自己的病況,新手用不到) */
+const RT_SCENES=[6,2,0,3,5,4,1].filter(i=>i<DATA.dialogos.length);
+/* 新字從星期、月份、吃的開始,不照資料順序(資料最前面是站主自己的胃鏡、中藥) */
+const RT_CATS=["時間日期","飲食","數字金錢","地點方位","天氣季節","常用片語","情緒個性","運動健身","學業工作","人生情感","動作動詞","身體健康"];
+const RT_STEPS=[{k:"talk",t:"聊一段"},{k:"cards",t:"單字卡"},{k:"drill",t:"填空"}];
+let rt=lsGet(RTKEY,{}), rtCards=0;
+function rtSave(){ try{ localStorage.setItem(RTKEY,JSON.stringify(rt)); }catch(_){} }
+function rtToday(){ const t=dayStr();
+  if(rt.d!==t){ const n=rt.nTalk||0; rt={d:t,nTalk:n,scene:RT_SCENES[n%RT_SCENES.length]||0}; rtSave(); }
+  return rt; }
+function rtCatRank(w){ const i=RT_CATS.indexOf(catOf(w)); return i<0?RT_CATS.length:i; }
+function rtGo(k){ rtBarHide(); ({talk:rtGoTalk,cards:rtGoCards,drill:rtGoDrill})[k](); }
+/* 換到那一步的分頁後,練習區如果在畫面下半部,直接捲到它 */
+function rtScrollTo(el){ if(!el)return; const top=el.getBoundingClientRect().top;
+  if(top>innerHeight*0.45){ try{ window.scrollTo({top:top+scrollY-14,behavior:"instant"}); }catch(_){ window.scrollTo(0,top+scrollY-14); } } }
+function rtGoTalk(){ const r=rtToday(); show("dialogos");
+  if(dlgMode!=="talk"){ const m=$("#dlg-mode .chip"); if(m) m.click(); }
+  const c=$$(".chip",chipBox)[r.scene];
+  if(dScene!==r.scene&&c) c.click(); else renderDlg();
+  rtScrollTo(dlgList); }
+function rtGoCards(){ show("vocabulario");
+  const due=CARDS.filter(w=>isDue(w.es));
+  let q=due.slice(0,10);
+  if(q.length<5) q=q.concat(CARDS.filter(w=>!cardStatus(w.es)).sort((a,b)=>rtCatRank(a)-rtCatRank(b)).slice(0,5-q.length));
+  if(!q.length){ rtDone("cards",{cardsN:0}); return; }
+  rtCards=q.length; startReview(q);   // startReview 自己會把卡片捲到畫面中間
+  const lbl=$("#rv-bar span"); if(lbl) lbl.innerHTML=`今天的單字 · 剩 <b id="rv-left">${q.length}</b> 張`; }
+function rtGoDrill(){ show("ejercicios");
+  if($("#ex-fill").style.display==="none"){ const m=$("#ex-mode .chip"); if(m) m.click(); }
+  if(roundLogged) newRound();
+  rtScrollTo(exList);
+  if(matchMedia("(pointer:fine)").matches){ const p=Math.max(0,round.findIndex((_,i)=>!res[i])); const inp=$(`.blank[data-i="${p}"]`,exList); if(inp) inp.focus({preventScroll:true}); } }
+/* 記下今天完成了哪一步;還有下一步就在下面浮一條「下一步」,三步都做完就請你回首頁看收尾 */
+function rtDone(k,info){ const r=rtToday(); if(r[k])return;
+  r[k]=1; if(k==="talk") r.nTalk=(r.nTalk||0)+1; Object.assign(r,info||{}); rtSave();
+  const left=RT_STEPS.filter(s=>!r[s.k]);
+  if(!left.length) rtBar("今天的五分鐘做完了。","回今天看看",()=>show("hoy"));
+  else rtBar(`第 ${RT_STEPS.findIndex(s=>s.k===k)+1} 步完成。`,"下一步:"+left[0].t,()=>rtGo(left[0].k));
+}
+const rtBarEl=document.createElement("div"); rtBarEl.id="rt-bar"; rtBarEl.setAttribute("role","status"); rtBarEl.hidden=true; document.body.appendChild(rtBarEl);
+function rtBar(msg,label,fn){
+  rtBarEl.innerHTML=`<span class="rt-bar-msg">${msg}</span><button class="btn rt-go">${label} ›</button><button class="rt-bar-x" aria-label="關閉">✕</button>`;
+  rtBarEl.hidden=false; document.body.classList.add("rt-bar-on");
+  rtBarEl.querySelector(".rt-go").onclick=()=>{ rtBarHide(); fn(); };
+  rtBarEl.querySelector(".rt-bar-x").onclick=rtBarHide; }
+function rtBarHide(){ rtBarEl.hidden=true; document.body.classList.remove("rt-bar-on"); }
+
 /* ===== 0. 「今天」首頁 ===== */
 function renderHoy(){
   const box=$("#hoy-hero"); if(!box)return;
-  const dueN=CARDS.filter(w=>isDue(w.es)).length;
-  const ss=curStreak(), xpT=xpToday(), goal=xp.goal||30, pct=Math.min(1,xpT/goal);
+  const r=rtToday(), sc=DATA.dialogos[r.scene]||DATA.dialogos[0];
+  const due=CARDS.filter(w=>isDue(w.es)).length, ss=curStreak();
   const lines=songLines(), ln=lines.length?lines[dayIndex()%lines.length]:null;
-  box.innerHTML=`<div class="hoy-hi">¡Hola!<span>今天也來一點西班牙文</span></div>
-    <div class="hoy-main">
-      <div class="goal-ring"><svg width="92" height="92" viewBox="0 0 92 92"><circle cx="46" cy="46" r="40" fill="none" stroke="var(--line)" stroke-width="9"/><circle cx="46" cy="46" r="40" fill="none" stroke="${pct>=1?"var(--good)":"var(--terra)"}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(pct*251.3).toFixed(1)} 251.3"/></svg><div class="gr-n">${xpT}<small>/ ${goal} XP</small></div></div>
-      <div class="stat-grid">
-        <div class="stat"><span class="stat-n">${ss}</span><span class="stat-l">${svgIcon(ICON.flame,12)} 連續天數</span></div>
-        <div class="stat${dueN?" hot":""}"><span class="stat-n">${dueN}</span><span class="stat-l">到期卡片</span></div>
-        <div class="stat"><span class="stat-n">${learnedCount()}</span><span class="stat-l">已學會單字</span></div>
-      </div>
-    </div>
-    <div class="hoy-cta">${dueN>0
-      ? '<button class="btn hoy-go" id="hoy-review">'+svgIcon(ICON.cards,15)+' 開始今天的複習('+dueN+' 張)</button>'
-      : '<span class="hoy-done">'+svgIcon(ICON.check,14)+' 今日複習完成!從下面挑一個玩玩</span>'}</div>
-    ${ln?`<div class="daily-line"><span class="daily-tag">今日一句</span><span class="daily-es">${esc(ln.es)}</span> ${spkHTML(ln.es)}<div class="daily-cn">${esc(ln.cn)}</div></div>`:""}`;
-  const rv=$("#hoy-review"); if(rv)rv.onclick=()=>{ show("vocabulario"); startReview(); };
-  $("#hoy-quick").innerHTML=`<div class="hoy-quick-h">${svgIcon(ICON.game,17)} 快速練習 · Rápido</div><div class="hoy-grid">
+  const desc={talk:`${sc.scene} · ${sc.items.length} 句,照範例句回`, cards:due?`複習 ${Math.min(due,10)} 張到期的卡`:"認識 5 張新字", drill:"5 題,沒打重音也算對"};
+  const next=RT_STEPS.find(s=>!r[s.k]), doneN=RT_STEPS.filter(s=>r[s.k]).length;
+  const list=`<ol class="rt-steps">${RT_STEPS.map((s,i)=>`<li class="rt-step${r[s.k]?" done":""}${s===next?" now":""}"><span class="rt-n">${r[s.k]?svgIcon(ICON.check,18):i+1}</span><span class="rt-t">${s.t}</span><span class="rt-d">${esc(desc[s.k])}</span></li>`).join("")}</ol>`;
+  let head, foot;
+  if(next){
+    head=`<div class="hoy-hi">¡Hola!<span>${doneN?`今天的五分鐘,做完 ${doneN} 步了`:"今天的五分鐘"}</span></div>`;
+    foot=`<div class="hoy-cta"><button class="btn rt-go" id="rt-start">${doneN?"繼續:"+next.t:"開始今天的五分鐘"} ›</button><span class="rt-meta">${ss?`連續 ${ss} 天`:"三步,大約五分鐘"}</span></div>`;
+  } else {
+    const tomorrow=DATA.dialogos[RT_SCENES[(r.nTalk||0)%RT_SCENES.length]]||sc;
+    const sum=[r.said!=null?`回了 ${r.said} 句`:"", r.cardsN?`單字 ${r.cardsN} 張`:"", r.drillN?`填空 ${r.drillOk} / ${r.drillN}`:""].filter(Boolean).join(" · ");
+    head=`<div class="hoy-hi">¡Listo!<span>今天的五分鐘做完了</span></div>`;
+    foot=`${sum?`<p class="rt-sum">${sum}</p>`:""}<p class="rt-next">${ss?`連續 ${ss} 天。`:""}明天聊:${esc(tomorrow.scene)}。</p>`;
+  }
+  box.innerHTML=head+list+foot+
+    (ln?`<div class="daily-line"><span class="daily-tag">今日一句</span><span class="daily-es">${esc(ln.es)}</span> ${spkHTML(ln.es)}<div class="daily-cn">${esc(ln.cn)}</div></div>`:"");
+  const st=$("#rt-start"); if(st) st.onclick=()=>rtGo(next.k);
+  $("#hoy-quick").innerHTML=`<div class="hoy-quick-h">${svgIcon(ICON.game,17)} 還想多練 · Más</div><div class="hoy-grid">
     <button class="hoy-card" data-go="vocabulario">${svgIcon(ICON.game,22)}<b>配對小遊戲</b><span>三分鐘熱身</span></button>
     <button class="hoy-card" data-go="escucha">${svgIcon(ICON.ear,22)}<b>聽寫一句</b><span>練耳朵</span></button>
     <button class="hoy-card" data-go="verbos">${svgIcon(ICON.verb,22)}<b>動詞變化</b><span>練手感</span></button>
@@ -5793,7 +5881,7 @@ function renderHoy(){
 })();
 
 const _showBase=show;
-show=function(id){ _showBase(id); if(id==="progreso")renderProgreso(); if(id==="hoy")renderHoy(); };
+show=function(id){ _showBase(id); if(id==="progreso")renderProgreso(); if(id==="hoy"){ rtBarHide(); renderHoy(); } };
 checkLogros();
 
 renderDlg(); buildVList(); renderSong(); buildVerbos(); renderDaily(); show("hoy");
