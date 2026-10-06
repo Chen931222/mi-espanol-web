@@ -211,7 +211,8 @@ td.conj{font-family:var(--font-display);font-weight:600;font-size:1.08rem;color:
 .fc-ej .ejen,.fc-ej-front .ejen{display:block;margin-top:4px;font-family:var(--font-body);font-style:italic;color:var(--terra-deep);font-size:.9em;opacity:.85}
 .ex-en{font-style:italic;color:var(--terra-deep);opacity:.85}
 body.hide-en .en-line{display:none}
-#en-toggle{position:fixed;top:12px;right:12px;z-index:60;font-family:var(--font-body);font-weight:700;font-size:.8rem;padding:7px 13px;border:1.5px solid var(--terra);border-radius:999px;background:var(--paper);color:var(--terra-deep);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+/* 英文對照開關原本固定在右上角每頁都在,只影響少數幾行;2026-10-06 收進「學習進度」的設定卡 */
+#en-toggle{font-family:var(--font-body);font-weight:700;font-size:.8rem;padding:7px 13px;border:1.5px solid var(--terra);border-radius:999px;background:var(--paper);color:var(--terra-deep);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.1)}
 #en-toggle:hover{background:var(--terra);color:#fff}
 .lyric-sec{font-family:var(--font-body);font-weight:700;font-size:.74rem;letter-spacing:.12em;color:var(--terra);margin:18px 0 6px;text-transform:uppercase;opacity:.85}
 .excerpt-note{font-size:.85rem;line-height:1.55;color:var(--ink-soft);margin:16px 0 0}
@@ -363,6 +364,16 @@ footer code{background:var(--paper-2);border:1px solid var(--line);border-radius
 .backup-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .backup-row .reset{margin-top:0}
 .foot-note{font-size:.82rem;color:var(--ink-soft);line-height:1.6}
+/* 同步與備份兩框原本每一頁底部都重複;只在「學習進度」顯示,署名那行每頁都留 */
+.sync,.backup{display:none}
+body.on-progreso .sync,body.on-progreso .backup{display:block}
+body:not(.on-progreso) footer{margin-top:34px}
+.pg-set-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:.9rem}
+.pg-set-row .sub{color:var(--ink-soft);font-size:.82rem}
+/* 單字卡的 24 顆晶片收成一行「目前的選擇 · 更換」 */
+.vc-pick{display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:.92rem;flex-wrap:wrap;justify-content:center}
+.vc-pick-cur{font-weight:700}
+#vocabulario:not(.vc-open) #vc-mode,#vocabulario:not(.vc-open) #vc-cats,#vocabulario:not(.vc-open) #vc-filters{display:none}
 .foot-credit{margin-top:22px}
 .foot-credit a{color:var(--terra-deep);text-underline-offset:2px}
 .sync{max-width:580px;margin:0 auto 18px;padding:20px 22px;background:linear-gradient(180deg,var(--paper-2),var(--paper));border:1.5px solid var(--terra);border-radius:16px;text-align:left}
@@ -809,6 +820,8 @@ body.np-open .note-pop{transform:translateY(0)}
     <div class="card pg-card reveal"><div class="pg-h" id="pg-heat-h"></div><div class="heat-scroll"><div id="pg-heat"></div></div><div class="heat-legend" id="pg-heat-lg"></div></div>
     <div class="card pg-card reveal"><div class="pg-h" id="pg-logros-h"></div><div class="logro-grid" id="pg-logros"></div></div>
     <div class="card pg-card reveal"><div class="pg-h" id="pg-err-h"></div><div id="pg-err"></div></div>
+    <div class="card pg-card reveal" id="pg-settings"><div class="pg-h">設定 · Ajustes</div>
+      <div class="pg-set-row" id="pg-set-en"><span class="sub">對話與歌詞的英文對照</span></div></div>
   </section>
 
   <footer>
@@ -4108,7 +4121,7 @@ const ICON={
   const lab=()=>{ b.innerHTML = svgIcon(ICON.lang,15) + (document.body.classList.contains("hide-en") ? " 英文 OFF" : " 英文 ON"); };
   lab();
   b.onclick=()=>{ const hide=document.body.classList.toggle("hide-en"); localStorage.setItem("miEspanol.hideEN", hide?"1":"0"); lab(); };
-  document.body.appendChild(b);
+  const row=document.getElementById("pg-set-en"); (row||document.body).prepend(b);
 })();
 /* 動詞人稱變化表(歌詞註解的「詞形變化」會自動帶出) */
 const CONJ = {
@@ -5947,7 +5960,21 @@ function renderHoy(){
 })();
 
 const _showBase=show;
-show=function(id){ _showBase(id); if(id==="progreso")renderProgreso(); if(id==="hoy"){ rtBarHide(); renderHoy(); } };
+show=function(id){ _showBase(id); document.body.classList.toggle("on-progreso",id==="progreso"); if(id==="progreso")renderProgreso(); if(id==="hoy"){ rtBarHide(); renderHoy(); } };
+
+/* 單字卡頂端 2 顆顯示＋14 顆主題＋4 顆狀態晶片,收成一行「目前的選擇 · 更換」。晶片沒拆,只是收起來 */
+const VC_MODE_LABEL={both:"中西對照",flip:"翻卡測驗"}, VC_FILTER_LABEL={all:"全部",due:"今日到期",review:"學習中",learned:"已學會"};
+const vcPick=document.createElement("div"); vcPick.className="vc-pick"; vcPick.id="vc-pick";
+$("#vc-mode").before(vcPick);
+function vcPickRender(open){
+  $("#vocabulario").classList.toggle("vc-open",!!open);
+  vcPick.innerHTML=`<span class="vc-pick-cur">${VC_MODE_LABEL[vMode]} · ${vCat==="all"?"全部主題":esc(vCat)} · ${VC_FILTER_LABEL[vFilter]||vFilter}</span><button class="tk-link" id="vc-pick-btn">${open?"收起":"更換"}</button>`;
+  $("#vc-pick-btn").onclick=()=>vcPickRender(!open);
+}
+const _buildVListBase=buildVList;
+buildVList=function(){ _buildVListBase(); vcPickRender(false); };
+$("#vc-mode").addEventListener("click",e=>{ if(e.target.closest(".chip")) vcPickRender(false); });
+vcPickRender(false);
 
 /* 對話頁頂端原本 3 顆模式＋7 顆場景一字排開;改成一行「目前的選擇 · 更換」,點了才展開。
    晶片本身沒拆,所以「今天的五分鐘」照樣用 .click() 切場景 */
