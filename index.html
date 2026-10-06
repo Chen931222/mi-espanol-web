@@ -363,6 +363,8 @@ footer code{background:var(--paper-2);border:1px solid var(--line);border-radius
 .backup-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .backup-row .reset{margin-top:0}
 .foot-note{font-size:.82rem;color:var(--ink-soft);line-height:1.6}
+.foot-credit{margin-top:22px}
+.foot-credit a{color:var(--terra-deep);text-underline-offset:2px}
 .sync{max-width:580px;margin:0 auto 18px;padding:20px 22px;background:linear-gradient(180deg,var(--paper-2),var(--paper));border:1.5px solid var(--terra);border-radius:16px;text-align:left}
 .sync-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
 .sync-h{font-family:var(--font-display);font-weight:900;font-size:1.05rem;color:var(--ink)}
@@ -834,6 +836,8 @@ body.np-open .note-pop{transform:translateY(0)}
       </div>
       <input type="file" id="imp-file" accept="application/json,.json" hidden>
     </div>
+    <!-- Tatoeba 的句子是 CC BY 2.0 FR,放上網站要署名並註明有修改 -->
+    <p class="foot-note foot-credit">部分例句與填空題取自 <a href="https://tatoeba.org" target="_blank" rel="noopener">Tatoeba</a>,授權 CC BY 2.0 FR,中文翻譯經過修改 · <a href="https://github.com/Chen931222/mi-espanol-web#例句來源" target="_blank" rel="noopener">逐句出處</a></p>
   </footer>
 
     </div>
@@ -3105,6 +3109,58 @@ const DATA = {
     {before:"En verano ", after:" mucho calor.", answer:"hace", inf:"天氣 hacer", cn:"夏天很熱。"},
     {before:"Quiero que ", after:" feliz.", answer:"seas", inf:"虛擬式(ser)", cn:"我希望你快樂。"},
     {before:"La temperatura está por encima de ", after:" grados.", answer:"treinta", inf:"數字 30", cn:"溫度超過30度。"},
+    /* ↓ 2026-10-06 加:A1 填空 50 題。句子取自 Tatoeba(tatoeba.org,CC BY 2.0 FR),西文沒改,
+       只挖掉一個字;中文改成台灣用語。src 是 Tatoeba 句子編號,逐句出處在 README「例句來源」。 */
+    {before:"¿Cómo te ", after:"?", answer:"llamas", inf:"llamarse", cn:"你叫什麼名字？", src:"tatoeba:449153"},
+    {before:"¿", after:" de Australia?", answer:"Eres", inf:"ser", cn:"你是澳洲人嗎？", src:"tatoeba:5755707"},
+    {before:"No ", after:" médico.", answer:"soy", inf:"ser", cn:"我不是醫生。", src:"tatoeba:1198554"},
+    {before:"Sí, yo ", after:" soy estudiante.", answer:"también", inf:"副詞:也", cn:"對，我也是學生。", src:"tatoeba:2213121"},
+    {before:"Mi hijo ", after:" ocho años.", answer:"tiene", inf:"tener", cn:"我兒子八歲。", src:"tatoeba:5023312"},
+    {before:"¿Usted dónde ", after:"?", answer:"vive", inf:"vivir", cn:"您住在哪裡？", src:"tatoeba:9035999"},
+    {before:"Él ", after:" ser médico.", answer:"quiere", inf:"querer", cn:"他想當醫生。", src:"tatoeba:970018"},
+    {before:"", after:" dos hijos.", answer:"Tengo", inf:"tener", cn:"我有兩個孩子。", src:"tatoeba:1240412"},
+    {before:"¿Tu padre es ", after:"?", answer:"español", inf:"國籍形容詞:西班牙的(陽性)", cn:"你爸爸是西班牙人嗎？", src:"tatoeba:10223398"},
+    {before:"Ese es ", after:" hijo.", answer:"mi", inf:"所有格:我的", cn:"那是我兒子。", src:"tatoeba:1970583"},
+    {before:"Ella tiene ", after:" familia grande.", answer:"una", inf:"不定冠詞(陰性單數)", cn:"她有一個大家庭。", src:"tatoeba:2003543"},
+    {before:"Mi padre ", after:" todas las mañanas.", answer:"corre", inf:"correr", cn:"我爸爸每天早上都跑步。", src:"tatoeba:5628647"},
+    {before:"¿", after:" hermanos tienes?", answer:"Cuántos", inf:"疑問詞:幾個(陽性複數)", cn:"你有幾個兄弟姊妹？", src:"tatoeba:562035"},
+    {before:"Me ", after:" mucho el helado.", answer:"gusta", inf:"gustar", cn:"我很喜歡冰淇淋。", src:"tatoeba:1032284"},
+    {before:"¿Te gusta ", after:" fruta?", answer:"comer", inf:"原形動詞:吃", cn:"你喜歡吃水果嗎？", src:"tatoeba:10092593"},
+    {before:"No ", after:" hambre.", answer:"tengo", inf:"tener", cn:"我不餓。", src:"tatoeba:864893"},
+    {before:"¿", after:" tiene sed?", answer:"Quién", inf:"疑問詞:誰", cn:"誰口渴？", src:"tatoeba:9462450"},
+    {before:"", after:" comer helado.", answer:"Quiero", inf:"querer", cn:"我想吃冰淇淋。", src:"tatoeba:5146808"},
+    {before:"¿Carne ", after:" pescado?", answer:"o", inf:"連接詞:或、還是", cn:"要肉還是魚？", src:"tatoeba:1173653"},
+    {before:"Normalmente ", after:" aquí.", answer:"desayuno", inf:"desayunar", cn:"我通常在這裡吃早餐。", src:"tatoeba:549401"},
+    {before:"¿Qué hora ", after:"?", answer:"es", inf:"ser", cn:"現在幾點？", src:"tatoeba:2830"},
+    {before:"", after:" las dos.", answer:"Son", inf:"ser(報時)", cn:"現在兩點。", src:"tatoeba:2225009"},
+    {before:"Mañana es ", after:".", answer:"domingo", inf:"名詞:星期天", cn:"明天是星期天。", src:"tatoeba:656878"},
+    {before:"Hoy es mi ", after:".", answer:"cumpleaños", inf:"名詞:生日", cn:"今天是我的生日。", src:"tatoeba:985107"},
+    {before:"Hoy no ", after:" clases.", answer:"tengo", inf:"tener", cn:"我今天沒課。", src:"tatoeba:1128209"},
+    {before:"Nos vemos ", after:".", answer:"mañana", inf:"副詞:明天", cn:"明天見。", src:"tatoeba:2216149"},
+    {before:"Hoy ", after:" mucho calor.", answer:"hace", inf:"hacer(天氣)", cn:"今天很熱。", src:"tatoeba:2858"},
+    {before:"Hace mucho ", after:".", answer:"frío", inf:"名詞:冷", cn:"天氣好冷。", src:"tatoeba:623776"},
+    {before:"Hace mucho viento, ", after:" no hace frío.", answer:"pero", inf:"連接詞:但是", cn:"風很大，但是不冷。", src:"tatoeba:10097437"},
+    {before:"No me gusta el ", after:".", answer:"verano", inf:"名詞:夏天", cn:"我不喜歡夏天。", src:"tatoeba:501964"},
+    {before:"¿Te ", after:" la lluvia?", answer:"gusta", inf:"gustar", cn:"你喜歡下雨嗎？", src:"tatoeba:566126"},
+    {before:"Mi casa ", after:" aquí.", answer:"está", inf:"estar", cn:"我家在這裡。", src:"tatoeba:1275958"},
+    {before:"¿", after:" está tu madre?", answer:"Dónde", inf:"疑問詞:哪裡", cn:"你媽媽在哪裡？", src:"tatoeba:3555037"},
+    {before:"¿Por qué no ", after:" en casa?", answer:"estás", inf:"estar", cn:"你為什麼不在家？", src:"tatoeba:2783046"},
+    {before:"Mi país está ", after:" de Japón.", answer:"lejos", inf:"副詞:遠", cn:"我的國家離日本很遠。", src:"tatoeba:1932119"},
+    {before:"Aquí no ", after:" nada.", answer:"hay", inf:"haber(hay)", cn:"這裡什麼都沒有。", src:"tatoeba:1591598"},
+    {before:"¿Cuántos gatos hay en ", after:" casa?", answer:"esta", inf:"指示詞:這(陰性)", cn:"這間房子裡有幾隻貓？", src:"tatoeba:751831"},
+    {before:"¿Cuánto ", after:" esta cámara?", answer:"cuesta", inf:"costar", cn:"這台相機多少錢？", src:"tatoeba:5367928"},
+    {before:"Esto es ", after:" caro.", answer:"muy", inf:"副詞:很", cn:"這個很貴。", src:"tatoeba:969977"},
+    {before:"No tengo tiempo ", after:" dinero.", answer:"ni", inf:"連接詞:也不", cn:"我沒時間也沒錢。", src:"tatoeba:642185"},
+    {before:"¿Cuántos libros ", after:"?", answer:"tienes", inf:"tener", cn:"你有幾本書？", src:"tatoeba:600171"},
+    {before:"", after:" más dinero.", answer:"Necesito", inf:"necesitar", cn:"我需要更多錢。", src:"tatoeba:2432098"},
+    {before:"", after:" bien, gracias.", answer:"Estoy", inf:"estar", cn:"我很好，謝謝。", src:"tatoeba:493008"},
+    {before:"Estoy muy ", after:".", answer:"cansado", inf:"形容詞:累(陽性)", cn:"我好累。", src:"tatoeba:377265"},
+    {before:"Siempre ", after:" ocupado.", answer:"estoy", inf:"estar", cn:"我總是很忙。", src:"tatoeba:746893"},
+    {before:"¿No estás ", after:"?", answer:"cansada", inf:"形容詞:累(陰性)", cn:"你不累嗎？", src:"tatoeba:540018"},
+    {before:"¿Te gusta el ", after:"?", answer:"béisbol", inf:"名詞:棒球", cn:"你喜歡棒球嗎？", src:"tatoeba:1856745"},
+    {before:"No me ", after:" los perros.", answer:"gustan", inf:"gustar", cn:"我不喜歡狗。", src:"tatoeba:1970668"},
+    {before:"No ", after:" nadar.", answer:"sabe", inf:"saber(會)", cn:"他不會游泳。", src:"tatoeba:1089628"},
+    {before:"Su libro es muy ", after:".", answer:"interesante", inf:"形容詞:有趣的", cn:"她的書很有趣。", src:"tatoeba:2635959"},
   ],
 };
 
