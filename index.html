@@ -273,7 +273,7 @@ body.hide-en .en-line{display:none}
 .spk:hover{border-color:var(--terra);color:var(--terra);background:#fff}
 .spk.speaking{background:var(--terra);border-color:var(--terra);color:#fff;animation:spkPulse 1s ease-in-out infinite}
 @keyframes spkPulse{50%{opacity:.6}}
-.lyr-spk{width:22px;height:22px;opacity:.45;margin-left:6px}
+.lyr-spk{width:24px;height:24px;opacity:.45;margin-left:6px}
 .lyr-spk.speaking,.lyric-line:hover .lyr-spk{opacity:1}
 .fc-word .spk{width:30px;height:30px}
 .ejw-c{cursor:pointer}
@@ -708,7 +708,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="ejercicios">
     <div class="reveal sec-head"><div class="sec-num">5</div>
       <div><span class="sec-title">綜合練習</span> <span class="sec-es">Ejercicios</span></div></div>
-    <p class="reveal sec-desc"><b>填空</b>:每輪隨機 5 題,填好按「檢查全部」。<b>句子重組</b>:看中文,把打亂的單字磚塊照順序點回去。有沒有打重音符號都算對。</p>
+    <p class="reveal sec-desc"><b>填空</b>:每輪隨機 5 題,填一題按 Enter 就對那一題,也可以填完再按「檢查全部」。<b>句子重組</b>:看中文,把打亂的單字磚塊照順序點回去。有沒有打重音符號都算對。</p>
     <div class="filters reveal" id="ex-mode"></div>
     <div id="ex-fill">
     <div id="ex-list"></div>
@@ -4233,6 +4233,8 @@ function show(id){
   $$("button.tab").forEach((b,i)=>b.classList.toggle("active",TABS[i].id===id));
   $$("section").forEach(s=>s.classList.remove("active","in"));
   const el=document.getElementById(id); el.classList.add("active");
+  /* 換分頁回到最上面。html 設了 scroll-behavior:smooth,這裡要瞬間跳,不然從長頁底部會慢慢滑上來 */
+  try{ window.scrollTo({top:0,left:0,behavior:"instant"}); }catch(_){ window.scrollTo(0,0); }
   requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("in")));
   el.querySelectorAll(".reveal").forEach((r,i)=>r.style.transitionDelay=(i*0.05)+"s");
 }
@@ -5134,34 +5136,48 @@ const POOL=DATA.ejercicios;
 const exList=$("#ex-list");
 const EXKEY="miEspanol.exLog";
 let exLog=lsGet(EXKEY,[]);
-let round=[];
+let round=[], res=[], roundLogged=false;   // res[pos]:沒值=還沒檢查;"ok"/"no"=檢查過;"seen"=先按了看答案,不計分
 function pick5(){
   const idx=[...POOL.keys()];
   for(let i=idx.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=idx[i]; idx[i]=idx[j]; idx[j]=t; }
   return idx.slice(0,Math.min(5,idx.length));
 }
 function newRound(){
-  round=pick5();
+  round=pick5(); res=[]; roundLogged=false;
   exList.innerHTML=round.map((qi,pos)=>{ const e=POOL[qi];
     return `<div class="card ex"><div class="ex-sent">${e.before}<input class="blank" data-i="${pos}" autocomplete="off" spellcheck="false">${e.after}</div>`+
       `<div class="ex-hint">提示 · Pista:${e.inf} ｜ ${e.cn}${EN[e.before+e.answer+e.after]?` ｜ <span class="ex-en en-line">${esc(EN[e.before+e.answer+e.after])}</span>`:""} <button class="ex-show" data-show="${pos}">看答案<span class="es2">Ver</span></button></div><div class="ex-fb" data-fb="${pos}"></div></div>`;
   }).join("");
   $("#ex-score").textContent="";
-  $$(".blank",exList).forEach(inp=>inp.addEventListener("keydown",ev=>{if(ev.key==="Enter")checkAll();}));
+  /* Enter 只檢查這一題,然後跳到下一個還沒檢查的空格;原本 Enter 會檢查全部,把沒填的答案一起掀開 */
+  $$(".blank",exList).forEach(inp=>inp.addEventListener("keydown",ev=>{ if(ev.key!=="Enter")return; ev.preventDefault();
+    const pos=+inp.dataset.i; if(checkOne(pos)||res[pos]) exFocusNext(pos); }));
   $$(".ex-show",exList).forEach(btn=>btn.onclick=()=>{ const pos=+btn.dataset.show, e=POOL[round[pos]]; const inp=$(`.blank[data-i="${pos}"]`,exList), fb=$(`.ex-fb[data-fb="${pos}"]`,exList);
-    if(btn.classList.toggle("on")){ inp.value=e.answer; inp.className="blank"; fb.className="ex-fb show"; fb.textContent="答案 · Respuesta:"+e.answer; btn.innerHTML='隱藏答案<span class="es2">Ocultar</span>'; }
+    if(btn.classList.toggle("on")){ if(!res[pos]){ res[pos]="seen"; exScore(); } inp.value=e.answer; inp.className="blank"; fb.className="ex-fb show"; fb.textContent="答案 · Respuesta:"+e.answer; btn.innerHTML='隱藏答案<span class="es2">Ocultar</span>'; }
     else{ inp.value=""; inp.className="blank"; fb.className="ex-fb"; fb.textContent=""; btn.innerHTML='看答案<span class="es2">Ver</span>'; } });
 }
-function checkAll(){
-  let ok=0, answered=0;
-  round.forEach((qi,pos)=>{ const e=POOL[qi]; const inp=$(`.blank[data-i="${pos}"]`,exList), fb=$(`.ex-fb[data-fb="${pos}"]`,exList); const val=strip(inp.value);
-    if(!val){inp.className="blank";fb.className="ex-fb show";fb.textContent="答案 · Respuesta:"+e.answer;return;}
-    answered++;
-    if(val===strip(e.answer)){inp.className="blank ok";fb.className="ex-fb ok";fb.textContent="✓ 正確！";ok++;}
-    else{inp.className="blank no";fb.className="ex-fb no";fb.textContent="✗ 正確答案:"+e.answer; recordMistake("填空", e.before+" ___ "+e.after+"("+e.cn+")", e.answer, inp.value);}
-  });
-  if(answered){ award(ok*2+(answered-ok)); cnt("exq",answered); if(ok===round.length)cnt("perfect"); }
-  $("#ex-score").textContent=`本輪/Ronda ${ok} / ${round.length}`;
+/* 檢查一題。沒填的只提示「還沒填」,不掀答案;檢查過或看過答案的不重算。回傳這次有沒有真的檢查 */
+function checkOne(pos){
+  const e=POOL[round[pos]]; const inp=$(`.blank[data-i="${pos}"]`,exList), fb=$(`.ex-fb[data-fb="${pos}"]`,exList);
+  if(res[pos]){ if(res[pos]==="seen"&&!fb.textContent){ fb.className="ex-fb show"; fb.textContent="答案 · Respuesta:"+e.answer+"(看過答案,這題不計分)"; } return false; }
+  const val=strip(inp.value);
+  if(!val){ inp.className="blank"; fb.className="ex-fb"; fb.textContent="還沒填。不會的話按「看答案」"; return false; }
+  if(val===strip(e.answer)){ res[pos]="ok"; inp.className="blank ok"; fb.className="ex-fb ok"; fb.textContent="✓ 正確！"; award(2); }
+  else { res[pos]="no"; inp.className="blank no"; fb.className="ex-fb no"; fb.textContent="✗ 正確答案:"+e.answer; award(1); recordMistake("填空", e.before+" ___ "+e.after+"("+e.cn+")", e.answer, inp.value); }
+  cnt("exq",1); exScore(); return true;
+}
+/* 「檢查全部」只對填了的題;沒填的留著繼續作答 */
+function checkAll(){ round.forEach((_,pos)=>checkOne(pos)); const p=round.findIndex((_,i)=>!res[i]); if(p>=0) $(`.blank[data-i="${p}"]`,exList).focus(); }
+function exFocusNext(pos){
+  for(let k=1;k<=round.length;k++){ const p=(pos+k)%round.length; if(!res[p]){ $(`.blank[data-i="${p}"]`,exList).focus(); return; } }
+  $("#ex-new").focus();
+}
+/* 分數跟著每題更新;5 題都有結果(含看過答案)才記成一輪 */
+function exScore(){
+  const done=res.filter(Boolean).length, ok=res.filter(r=>r==="ok").length, left=round.length-done;
+  $("#ex-score").textContent=done?`本輪/Ronda ${ok} / ${round.length}`+(left?`(還有 ${left} 題)`:""):"";
+  if(left||roundLogged) return;
+  roundLogged=true; if(ok===round.length) cnt("perfect");
   const n=(exLog[0]&&exLog[0].n||0)+1;
   exLog.unshift({n:n,ok:ok,total:round.length}); if(exLog.length>30)exLog.length=30;
   localStorage.setItem(EXKEY,JSON.stringify(exLog));
@@ -5257,17 +5273,18 @@ let vbTense="pres", vbQ=null, vbScore={ok:0,total:0};
 function vbPick(){ const v=VERBOS[Math.floor(Math.random()*VERBOS.length)]; const p=Math.floor(Math.random()*6); const t=(vbTense==="mix")?TKEYS[Math.floor(Math.random()*TKEYS.length)]:vbTense; vbQ={v:v,p:p,t:t,ans:v[t][p]}; }
 function vbRender(){ if(!vbQ)vbPick(); const inp=$("#vb-input"),fb=$("#vb-fb"); const tl=TLABEL[vbQ.t]||vbQ.t;
   $("#vb-prompt").innerHTML=`<span class="vb-inf">${vbQ.v.inf}</span><span class="vb-cn">${vbQ.v.cn}</span><div class="vb-ask">寫出 <b>${PRON6[vbQ.p]}</b> 的 <b>${tl}</b></div>`;
-  inp.value="";inp.className="vb-input";inp.disabled=false; fb.textContent="";fb.className="vb-fb"; inp.focus(); }
-function vbCheck(){ const inp=$("#vb-input"),fb=$("#vb-fb"); if(!vbQ||inp.disabled)return; vbScore.total++;
+  inp.value="";inp.className="vb-input";inp.readOnly=false; fb.textContent="";fb.className="vb-fb"; inp.focus(); }
+/* 檢查後用 readOnly 鎖住,不用 disabled:disabled 會讓輸入框失焦,第二次 Enter 就收不到,換不了題 */
+function vbCheck(){ const inp=$("#vb-input"),fb=$("#vb-fb"); if(!vbQ||inp.readOnly)return; vbScore.total++;
   if(strip(inp.value)===strip(vbQ.ans)){ vbScore.ok++; inp.classList.add("ok"); fb.className="vb-fb ok"; fb.innerHTML=svgIcon(ICON.check,15)+" 正確!"+(inp.value.trim()!==vbQ.ans?" ("+esc(vbQ.ans)+")":"")+" "+spkHTML(vbQ.ans); award(2); cnt("verbOk"); }
   else { inp.classList.add("no"); fb.className="vb-fb no"; fb.innerHTML="正確答案:"+esc(vbQ.ans)+" "+spkHTML(vbQ.ans); award(1); recordMistake("動詞", vbQ.v.inf+"("+vbQ.v.cn+") · "+PRON6[vbQ.p]+" · "+(TLABEL[vbQ.t]||vbQ.t), vbQ.ans, inp.value); }
-  inp.disabled=true; $("#vb-score").textContent="本回合 "+vbScore.ok+" / "+vbScore.total; }
+  inp.readOnly=true; $("#vb-score").textContent="本回合 "+vbScore.ok+" / "+vbScore.total; }
 function vbNext(){ vbPick(); vbRender(); }
 function buildVerbos(){ const tb=$("#vb-tense"); if(!tb)return; tb.innerHTML="";
   [["pres","現在式"],["pret","簡單過去"],["imp","未完成過去"],["fut","未來式"],["presubj","現在虛擬"],["mix","全部混合"]].forEach(([k,label])=>{ const c=document.createElement("button"); c.className="chip"+(k===vbTense?" active":""); c.textContent=label;
     c.onclick=()=>{ vbTense=k; $$(".chip",tb).forEach(x=>x.classList.remove("active")); c.classList.add("active"); vbScore={ok:0,total:0}; $("#vb-score").textContent=""; vbNext(); }; tb.appendChild(c); });
   $("#vb-check").onclick=vbCheck; $("#vb-next").onclick=vbNext;
-  $("#vb-input").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); if($("#vb-input").disabled) vbNext(); else vbCheck(); } });
+  $("#vb-input").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); if($("#vb-input").readOnly) vbNext(); else vbCheck(); } });
   vbNext(); }
 
 /* ===== 每日複習(輕量) ===== */
