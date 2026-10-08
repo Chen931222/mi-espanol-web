@@ -151,3 +151,45 @@ PowerShell HttpListener，port 8181。（`file://` 開不起來，Service Worker
 | 44 | muy | [#955344](https://tatoeba.org/sentences/show/955344)（cueyayotl） | [#408845](https://tatoeba.org/sentences/show/408845)（fucongcong） | 修改 |
 | 45 | pero | [#672904](https://tatoeba.org/sentences/show/672904)（Shishir） | [#340150](https://tatoeba.org/sentences/show/340150)（nickyeow） | 修改 |
 | 46 | claro | [#1767402](https://tatoeba.org/sentences/show/1767402)（Shishir） | [#421347](https://tatoeba.org/sentences/show/421347)（GlossaMatik） | 修改 |
+
+### 單字卡 A2 字的例句
+
+單字卡裡標了 `lv:"A2"` 的 35 張（2026-10-08 加入）。字取自 Instituto Cervantes《Plan Curricular》〈Nociones específicas〉A1–A2 頁的 A2 欄（[原頁](https://cvc.cervantes.es/ensenanza/biblioteca_ele/plan_curricular/niveles/09_nociones_especificas_inventario_a1-a2.htm)），例句取自 Tatoeba，同一批匯出檔、同一個授權。西班牙文沒有改字；中譯規則同上。
+
+| # | 單字 | 西文句（作者） | 中文句（作者） | 中譯 |
+|---|---|---|---|---|
+| 1 | doler | [#929944](https://tatoeba.org/sentences/show/929944)（Shishir） | [#4493476](https://tatoeba.org/sentences/show/4493476)（egg0073） | 原文 |
+| 2 | invitar | [#2676431](https://tatoeba.org/sentences/show/2676431)（Shishir） | [#2682164](https://tatoeba.org/sentences/show/2682164)（iainmb93） | 原文 |
+| 3 | sentirse | [#2693463](https://tatoeba.org/sentences/show/2693463)（Julio） | [#848807](https://tatoeba.org/sentences/show/848807)（Martha） | 原文 |
+| 4 | barrio | [#493272](https://tatoeba.org/sentences/show/493272)（darinmex） | [#1517752](https://tatoeba.org/sentences/show/1517752)（gonnastop） | 修改 |
+| 5 | ponerse | [#7842050](https://tatoeba.org/sentences/show/7842050)（arh） | [#6047505](https://tatoeba.org/sentences/show/6047505)（verdastelo9604） | 原文 |
+| 6 | preocupado | [#540438](https://tatoeba.org/sentences/show/540438)（Shishir） | [#348010](https://tatoeba.org/sentences/show/348010)（zhouj1955） | 原文 |
+| 7 | rico | [#2127086](https://tatoeba.org/sentences/show/2127086)（Shishir） | [#4061626](https://tatoeba.org/sentences/show/4061626)（egg0073） | 原文 |
+| 8 | fiebre | [#1084642](https://tatoeba.org/sentences/show/1084642)（hayastan） | [#848733](https://tatoeba.org/sentences/show/848733)（Martha） | 原文 |
+| 9 | ir de compras | [#1672848](https://tatoeba.org/sentences/show/1672848)（Shishir） | [#1670073](https://tatoeba.org/sentences/show/1670073)（fengli） | 修改 |
+| 10 | pasillo | [#508613](https://tatoeba.org/sentences/show/508613)（Shishir） | [#9035055](https://tatoeba.org/sentences/show/9035055)（xjjAstrus） | 修改 |
+| 11 | encantar | [#673003](https://tatoeba.org/sentences/show/673003)（Shishir） | [#3742409](https://tatoeba.org/sentences/show/3742409)（egg0073） | 原文 |
+| 12 | paraguas | [#11173107](https://tatoeba.org/sentences/show/11173107)（emitxab111） | [#5574438](https://tatoeba.org/sentences/show/5574438)（verdastelo9604） | 修改 |
+| 13 | vecino | [#5364099](https://tatoeba.org/sentences/show/5364099)（cueyayotl） | [#5364100](https://tatoeba.org/sentences/show/5364100)（egg0073） | 原文 |
+| 14 | sentarse | [#596048](https://tatoeba.org/sentences/show/596048)（Shishir） | [#13264856](https://tatoeba.org/sentences/show/13264856)（mimosawang） | 修改 |
+| 15 | arroz | [#1723136](https://tatoeba.org/sentences/show/1723136)（teskmon） | [#8362583](https://tatoeba.org/sentences/show/8362583)（xjjAstrus） | 修改 |
+| 16 | kilo | [#436222](https://tatoeba.org/sentences/show/436222)（lukaszpp） | [#8825038](https://tatoeba.org/sentences/show/8825038)（xjjAstrus） | 修改 |
+| 17 | limpiar | [#445679](https://tatoeba.org/sentences/show/445679)（Shishir） | [#512911](https://tatoeba.org/sentences/show/512911)（fucongcong） | 修改 |
+| 18 | bicicleta | [#853375](https://tatoeba.org/sentences/show/853375)（krash） | [#3713841](https://tatoeba.org/sentences/show/3713841)（egg0073） | 修改 |
+| 19 | regalo | [#1010163](https://tatoeba.org/sentences/show/1010163)（Shishir） | [#3076593](https://tatoeba.org/sentences/show/3076593)（tommyfang95） | 原文 |
+| 20 | lluvia | [#10118323](https://tatoeba.org/sentences/show/10118323)（Shishir） | [#618148](https://tatoeba.org/sentences/show/618148)（nickyeow） | 原文 |
+| 21 | alergia | [#1702904](https://tatoeba.org/sentences/show/1702904)（marcelostockle） | [#10324155](https://tatoeba.org/sentences/show/10324155)（DaoSeng） | 原文 |
+| 22 | bebida | [#1097487](https://tatoeba.org/sentences/show/1097487)（darinmex） | [#10265153](https://tatoeba.org/sentences/show/10265153)（DaoSeng） | 原文 |
+| 23 | cocinar | [#794366](https://tatoeba.org/sentences/show/794366)（chinopinyin） | [#334082](https://tatoeba.org/sentences/show/334082)（fucongcong） | 修改 |
+| 24 | contestar | [#1031082](https://tatoeba.org/sentences/show/1031082)（hayastan） | [#834491](https://tatoeba.org/sentences/show/834491)（Martha） | 原文 |
+| 25 | amable | [#1147907](https://tatoeba.org/sentences/show/1147907)（christian80） | [#11698419](https://tatoeba.org/sentences/show/11698419)（Jokubas） | 原文 |
+| 26 | tener miedo | [#384884](https://tatoeba.org/sentences/show/384884)（hayastan） | [#3210453](https://tatoeba.org/sentences/show/3210453)（visualtoday） | 原文 |
+| 27 | caminar | [#900931](https://tatoeba.org/sentences/show/900931)（Shishir） | [#5707229](https://tatoeba.org/sentences/show/5707229)（xjjAstrus） | 原文 |
+| 28 | librería | [#11702379](https://tatoeba.org/sentences/show/11702379)（Jokubas） | [#6486885](https://tatoeba.org/sentences/show/6486885)（xjjAstrus） | 原文 |
+| 29 | negocio | [#1649518](https://tatoeba.org/sentences/show/1649518)（marcelostockle） | [#349668](https://tatoeba.org/sentences/show/349668)（fucongcong） | 原文 |
+| 30 | nube | [#580165](https://tatoeba.org/sentences/show/580165)（Shishir） | [#801567](https://tatoeba.org/sentences/show/801567)（Martha） | 原文 |
+| 31 | cita | [#355740](https://tatoeba.org/sentences/show/355740)（yorickvidal） | [#354513](https://tatoeba.org/sentences/show/354513)（ruicong） | 修改 |
+| 32 | bebé | [#746906](https://tatoeba.org/sentences/show/746906)（Shishir） | [#359014](https://tatoeba.org/sentences/show/359014)（rmgao） | 修改 |
+| 33 | pobre | [#2176884](https://tatoeba.org/sentences/show/2176884)（marcelostockle） | [#10192239](https://tatoeba.org/sentences/show/10192239)（iiujik） | 修改 |
+| 34 | hijo único | [#475887](https://tatoeba.org/sentences/show/475887)（Espi） | [#926769](https://tatoeba.org/sentences/show/926769)（Martha） | 原文 |
+| 35 | cielo | [#1088214](https://tatoeba.org/sentences/show/1088214)（Shishir） | [#825138](https://tatoeba.org/sentences/show/825138)（Martha） | 原文 |
