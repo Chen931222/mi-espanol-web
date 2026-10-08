@@ -97,3 +97,57 @@ PowerShell HttpListener，port 8181。（`file://` 開不起來，Service Worker
 | 48 | No me gustan los perros. | [#1970668](https://tatoeba.org/sentences/show/1970668)（Shishir） | [#1959163](https://tatoeba.org/sentences/show/1959163)（egg0073） | 原文 |
 | 49 | No sabe nadar. | [#1089628](https://tatoeba.org/sentences/show/1089628)（Shishir） | [#5689031](https://tatoeba.org/sentences/show/5689031)（xjjAstrus） | 修改 |
 | 50 | Su libro es muy interesante. | [#2635959](https://tatoeba.org/sentences/show/2635959)（Shishir） | [#1441683](https://tatoeba.org/sentences/show/1441683)（egg0073） | 修改 |
+
+### 單字卡基本字的例句
+
+單字卡裡標了 `src:"tatoeba:編號"`、`lv:"A1"` 的 46 張（2026-10-08 加入），例句同樣取自 Tatoeba，同一批匯出檔、同一個授權。
+這批是填空題和對話會用到、原本卡組卻沒有的基本字（ser、estar、tener…），刻意避開填空題已經用過的句子。西班牙文沒有改字；中譯規則同上。
+
+| # | 單字 | 西文句（作者） | 中文句（作者） | 中譯 |
+|---|---|---|---|---|
+| 1 | ser | [#449942](https://tatoeba.org/sentences/show/449942)（Shishir） | [#4](https://tatoeba.org/sentences/show/4)（Martha） | 修改 |
+| 2 | estar | [#2329029](https://tatoeba.org/sentences/show/2329029)（BraveSentry） | [#13254701](https://tatoeba.org/sentences/show/13254701)（mimosawang） | 修改 |
+| 3 | tener | [#338693](https://tatoeba.org/sentences/show/338693)（Sprachprofi） | [#686662](https://tatoeba.org/sentences/show/686662)（offdare） | 原文 |
+| 4 | hay | [#4417815](https://tatoeba.org/sentences/show/4417815)（cueyayotl） | [#6152672](https://tatoeba.org/sentences/show/6152672)（xjjAstrus） | 修改 |
+| 5 | gustar | [#1100397](https://tatoeba.org/sentences/show/1100397)（hayastan） | [#12080245](https://tatoeba.org/sentences/show/12080245)（FishlandicFishy） | 原文 |
+| 6 | hacer | [#1922641](https://tatoeba.org/sentences/show/1922641)（Shishir） | [#832927](https://tatoeba.org/sentences/show/832927)（Martha） | 原文 |
+| 7 | ir | [#1017617](https://tatoeba.org/sentences/show/1017617)（Shishir） | [#5714618](https://tatoeba.org/sentences/show/5714618)（xjjAstrus） | 修改 |
+| 8 | poder | [#580891](https://tatoeba.org/sentences/show/580891)（Shishir） | [#4071819](https://tatoeba.org/sentences/show/4071819)（egg0073） | 修改 |
+| 9 | saber | [#536711](https://tatoeba.org/sentences/show/536711)（Leono） | [#816880](https://tatoeba.org/sentences/show/816880)（Martha） | 修改 |
+| 10 | soler | [#1758194](https://tatoeba.org/sentences/show/1758194)（Shishir） | [#894942](https://tatoeba.org/sentences/show/894942)（Martha） | 修改 |
+| 11 | llamarse | [#2975119](https://tatoeba.org/sentences/show/2975119)（hayastan） | [#5710170](https://tatoeba.org/sentences/show/5710170)（xjjAstrus） | 修改 |
+| 12 | decir | [#436542](https://tatoeba.org/sentences/show/436542)（lukaszpp） | [#426418](https://tatoeba.org/sentences/show/426418)（fucongcong） | 修改 |
+| 13 | hablar | [#1477888](https://tatoeba.org/sentences/show/1477888)（marcelostockle） | [#9238308](https://tatoeba.org/sentences/show/9238308)（xjjAstrus） | 修改 |
+| 14 | creer | [#1664063](https://tatoeba.org/sentences/show/1664063)（Shishir） | [#6467630](https://tatoeba.org/sentences/show/6467630)（xjjAstrus） | 修改 |
+| 15 | escuchar | [#965019](https://tatoeba.org/sentences/show/965019)（hayastan） | [#883401](https://tatoeba.org/sentences/show/883401)（Martha） | 修改 |
+| 16 | salir | [#1020778](https://tatoeba.org/sentences/show/1020778)（Shishir） | [#848941](https://tatoeba.org/sentences/show/848941)（Martha） | 原文 |
+| 17 | comer | [#1831900](https://tatoeba.org/sentences/show/1831900)（Shishir） | [#6017368](https://tatoeba.org/sentences/show/6017368)（xjjAstrus） | 原文 |
+| 18 | beber | [#564512](https://tatoeba.org/sentences/show/564512)（Shishir） | [#2638680](https://tatoeba.org/sentences/show/2638680)（cienias） | 原文 |
+| 19 | desayunar | [#508145](https://tatoeba.org/sentences/show/508145)（Shishir） | [#406718](https://tatoeba.org/sentences/show/406718)（fucongcong） | 修改 |
+| 20 | pedir | [#776604](https://tatoeba.org/sentences/show/776604)（chinopinyin） | [#334622](https://tatoeba.org/sentences/show/334622)（fucongcong） | 修改 |
+| 21 | agua | [#990276](https://tatoeba.org/sentences/show/990276)（hundo） | [#6158476](https://tatoeba.org/sentences/show/6158476)（xjjAstrus） | 原文 |
+| 22 | café | [#3435393](https://tatoeba.org/sentences/show/3435393)（konrad509） | [#4117354](https://tatoeba.org/sentences/show/4117354)（egg0073） | 原文 |
+| 23 | hambre | [#5012409](https://tatoeba.org/sentences/show/5012409)（don_ramon） | [#5708688](https://tatoeba.org/sentences/show/5708688)（xjjAstrus） | 修改 |
+| 24 | sed | [#743869](https://tatoeba.org/sentences/show/743869)（chinopinyin） | [#367908](https://tatoeba.org/sentences/show/367908)（fucongcong） | 原文 |
+| 25 | costar | [#330686](https://tatoeba.org/sentences/show/330686)（Raimondi） | [#4903269](https://tatoeba.org/sentences/show/4903269)（musclegirlxyp） | 修改 |
+| 26 | cuánto | [#500057](https://tatoeba.org/sentences/show/500057)（darinmex） | [#8824080](https://tatoeba.org/sentences/show/8824080)（xjjAstrus） | 修改 |
+| 27 | estudiar | [#436966](https://tatoeba.org/sentences/show/436966)（lukaszpp） | [#3713624](https://tatoeba.org/sentences/show/3713624)（egg0073） | 修改 |
+| 28 | aprender | [#1139941](https://tatoeba.org/sentences/show/1139941)（Shishir） | [#1455143](https://tatoeba.org/sentences/show/1455143)（nickyeow） | 原文 |
+| 29 | trabajar | [#2857710](https://tatoeba.org/sentences/show/2857710)（Besatnias） | [#10361416](https://tatoeba.org/sentences/show/10361416)（DaoSeng） | 修改 |
+| 30 | correr | [#963755](https://tatoeba.org/sentences/show/963755)（hundo） | [#834632](https://tatoeba.org/sentences/show/834632)（Martha） | 原文 |
+| 31 | cansado | [#2442530](https://tatoeba.org/sentences/show/2442530)（Shishir） | [#5973319](https://tatoeba.org/sentences/show/5973319)（xjjAstrus） | 原文 |
+| 32 | ocupado | [#497576](https://tatoeba.org/sentences/show/497576)（Shishir） | [#409710](https://tatoeba.org/sentences/show/409710)（egg0073） | 原文 |
+| 33 | amigo | [#562159](https://tatoeba.org/sentences/show/562159)（Shishir） | [#338631](https://tatoeba.org/sentences/show/338631)（nickyeow） | 原文 |
+| 34 | dónde | [#2224558](https://tatoeba.org/sentences/show/2224558)（Shishir） | [#5713529](https://tatoeba.org/sentences/show/5713529)（xjjAstrus） | 修改 |
+| 35 | lejos | [#527181](https://tatoeba.org/sentences/show/527181)（Shishir） | [#398388](https://tatoeba.org/sentences/show/398388)（GlossaMatik） | 原文 |
+| 36 | casa | [#2673354](https://tatoeba.org/sentences/show/2673354)（Shishir） | [#3701751](https://tatoeba.org/sentences/show/3701751)（egg0073） | 修改 |
+| 37 | habitación | [#9469313](https://tatoeba.org/sentences/show/9469313)（Shishir） | [#6284515](https://tatoeba.org/sentences/show/6284515)（xjjAstrus） | 原文 |
+| 38 | hoy | [#1496966](https://tatoeba.org/sentences/show/1496966)（marcelostockle） | [#5363951](https://tatoeba.org/sentences/show/5363951)（egg0073） | 修改 |
+| 39 | nunca | [#1173058](https://tatoeba.org/sentences/show/1173058)（alexmarcelo） | [#347049](https://tatoeba.org/sentences/show/347049)（fucongcong） | 原文 |
+| 40 | antes | [#667173](https://tatoeba.org/sentences/show/667173)（Shishir） | [#517561](https://tatoeba.org/sentences/show/517561)（fucongcong） | 修改 |
+| 41 | cumpleaños | [#476055](https://tatoeba.org/sentences/show/476055)（Fernanto） | [#382981](https://tatoeba.org/sentences/show/382981)（sysko） | 修改 |
+| 42 | verano | [#2390519](https://tatoeba.org/sentences/show/2390519)（kuma） | [#834315](https://tatoeba.org/sentences/show/834315)（Martha） | 修改 |
+| 43 | quién | [#574321](https://tatoeba.org/sentences/show/574321)（Shishir） | [#895448](https://tatoeba.org/sentences/show/895448)（Martha） | 原文 |
+| 44 | muy | [#955344](https://tatoeba.org/sentences/show/955344)（cueyayotl） | [#408845](https://tatoeba.org/sentences/show/408845)（fucongcong） | 修改 |
+| 45 | pero | [#672904](https://tatoeba.org/sentences/show/672904)（Shishir） | [#340150](https://tatoeba.org/sentences/show/340150)（nickyeow） | 修改 |
+| 46 | claro | [#1767402](https://tatoeba.org/sentences/show/1767402)（Shishir） | [#421347](https://tatoeba.org/sentences/show/421347)（GlossaMatik） | 修改 |
