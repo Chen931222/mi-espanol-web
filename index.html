@@ -99,6 +99,7 @@ section.in .reveal{opacity:1;transform:none}
 .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
 .sec-num{font-family:var(--font-display);font-weight:900;font-size:1rem;color:#fff;background:var(--ink);width:34px;height:34px;flex:0 0 34px;
   border-radius:9px;display:grid;place-items:center;box-shadow:4px 4px 0 var(--ochre);transform:translateY(-2px)}
+.sec-h{margin:0;font:inherit;color:inherit}
 .sec-title{font-family:var(--font-display);font-weight:900;font-size:clamp(1.6rem,4.5vw,2.2rem);line-height:1}
 .sec-es{font-family:var(--font-display);font-style:italic;color:var(--terra);font-weight:600}
 .sec-desc{color:var(--ink-soft);margin:8px 0 24px;font-size:.97rem}
@@ -219,7 +220,7 @@ body.hide-en .en-line{display:none}
 /* 英文對照開關原本固定在右上角每頁都在,只影響少數幾行;2026-10-06 收進「學習進度」的設定卡 */
 #en-toggle{font-family:var(--font-body);font-weight:700;font-size:.8rem;padding:7px 13px;border:1.5px solid var(--terra);border-radius:999px;background:var(--paper);color:var(--terra-deep);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.1)}
 #en-toggle:hover{background:var(--terra);color:#fff}
-.lyric-sec{font-family:var(--font-body);font-weight:700;font-size:.74rem;letter-spacing:.12em;color:var(--terra);margin:18px 0 6px;text-transform:uppercase;opacity:.85}
+.lyric-sec{font-family:var(--font-body);font-weight:700;font-size:.74rem;letter-spacing:.12em;color:var(--terra-deep);margin:18px 0 6px;text-transform:uppercase}
 .excerpt-note{font-size:.85rem;line-height:1.55;color:var(--ink-soft);margin:16px 0 0}
 .gx-list{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:2px 20px}
 .gx-list li{font-family:var(--font-display);font-size:1.02rem;line-height:1.9;color:var(--ink)}
@@ -420,7 +421,7 @@ body:not(.on-progreso) footer{margin-top:34px}
 /* ===== 「今天」首頁 / 說明摺疊 / 側欄分組 ===== */
 .nav-group{font-size:.6875rem;font-weight:800;letter-spacing:.1em;color:var(--ink-soft);padding:12px 12px 3px}
 .hoy-hero{background:linear-gradient(180deg,#FBEEE2,var(--card));border:1.5px solid var(--line);border-radius:var(--r);padding:24px 26px}
-.hoy-hi{font-family:var(--font-display);font-weight:900;font-size:1.75rem;color:var(--terra-deep)}
+.hoy-hi{margin:0;line-height:normal;font-family:var(--font-display);font-weight:900;font-size:1.75rem;color:var(--terra-deep)}
 .hoy-hi span{font-size:1rem;color:var(--ink-soft);font-family:var(--font-body);font-weight:700;margin-left:8px}
 /* 今天的五分鐘:三步清單＋一顆主按鈕。數字是步驟順序,做完換成勾 */
 .rt-steps{list-style:none;margin:18px 0 0;padding:0;border-top:1.5px solid var(--line)}
@@ -538,8 +539,12 @@ body.rt-bar-on #toast-box{bottom:92px}
 .dlg-pick-cur{font-weight:700}
 #dialogos:not(.dlg-open) #dlg-mode,#dialogos:not(.dlg-open) #dlg-chips{display:none}
 /* 「另一種說法」整張卡可點 */
-.tk-cue.alt{cursor:pointer;transition:.18s}
-.tk-cue.alt:hover,.tk-cue.alt:focus-visible{border-style:solid;border-color:var(--ink-soft);background:var(--card)}
+.tk-cue.alt{cursor:pointer;transition:.18s;padding-right:52px}
+.tk-cue.alt:hover,.tk-cue.alt:focus-within{border-style:solid;border-color:var(--ink-soft);background:var(--card)}
+.tk-alt-pick{all:unset;display:block;width:100%;cursor:pointer;box-sizing:border-box}
+.tk-alt-pick > span{display:block}
+.tk-alt-pick:focus-visible{outline:2px solid var(--azul);outline-offset:6px;border-radius:6px}
+.tk-cue.alt > .spk{position:absolute;top:50%;right:14px;transform:translateY(-50%)}
 .tk-more{display:flex;align-items:center;gap:10px;margin-top:12px}
 .tk-sep{color:var(--line-strong)}
 .tk-utils{margin-top:12px}
@@ -621,8 +626,10 @@ body.rt-bar-on #toast-box{bottom:92px}
 .heat-legend{display:flex;gap:10px;align-items:center;font-size:.72rem;color:var(--ink-soft);font-weight:700;margin-top:8px;flex-wrap:wrap}
 .heat-legend .heat-c{display:inline-block;vertical-align:-2px}
 .logro-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.logro{border:1.5px solid var(--line);border-radius:12px;padding:12px;background:var(--paper-2);opacity:.55}
-.logro.on{opacity:1;background:#FBEBE2;border-color:var(--terra)}
+/* 未解鎖:虛線框＋淡圖示,字照樣看得清楚(以前整塊 opacity .55,字的對比不夠) */
+.logro{border:1.5px dashed var(--line-strong);border-radius:12px;padding:12px;background:var(--paper-2)}
+.logro:not(.on) .li{color:var(--ink-soft);opacity:.6}
+.logro.on{border-style:solid;background:#FBEBE2;border-color:var(--terra)}
 .logro .li{color:var(--terra);margin-bottom:4px}
 .logro .ln{font-weight:900;font-size:.9rem;color:var(--ink)}
 .logro .ld{font-size:.74rem;color:var(--ink-soft);font-weight:700;line-height:1.4}
@@ -690,7 +697,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <!-- 1 -->
   <section id="dialogos">
     <div class="reveal sec-head"><div class="sec-num">1</div>
-      <div><span class="sec-title">對話練習</span> <span class="sec-es">Conversación</span></div></div>
+      <h2 class="sec-h"><span class="sec-title">對話練習</span> <span class="sec-es">Conversación</span></h2></div>
     <p class="reveal sec-desc">預設是<b>逐句對話</b>:對方說一句、你回一句,一次只出一句,談完的累積成一頁紀錄。想整份當清單查閱就切「一般模式」,想自己先講再對答案就切「角色扮演」。句子裡<b>有底線的字</b>都可以點開,看它的<b>文法重點</b>:時態、虛擬式、為什麼這樣用。</p>
     <div class="reveal chips" id="dlg-mode"></div>
     <div class="reveal chips" id="dlg-chips"></div>
@@ -700,7 +707,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <!-- 2 -->
   <section id="gramatica">
     <div class="reveal sec-head"><div class="sec-num">2</div>
-      <div><span class="sec-title">文法筆記</span> <span class="sec-es">Gramática</span></div></div>
+      <h2 class="sec-h"><span class="sec-title">文法筆記</span> <span class="sec-es">Gramática</span></h2></div>
     <p class="reveal sec-desc">隨時查的文法資料庫(46 條)。在搜尋框打關鍵字 —— 中文、西班牙文、時態名稱都行 —— 立刻找到你要的文法。</p>
     <div class="gram-search-wrap reveal">
       <svg class="gram-search-ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -713,7 +720,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <!-- 3 -->
   <section id="vocabulario">
     <div class="reveal sec-head"><div class="sec-num">4</div>
-      <div><span class="sec-title">單字卡</span> <span class="sec-es">Vocabulario</span></div></div>
+      <h2 class="sec-h"><span class="sec-title">單字卡</span> <span class="sec-es">Vocabulario</span></h2></div>
     <p class="reveal sec-desc">預設<b>中西對照</b>直接看中文;切到<b>翻卡測驗</b>可自我測驗(點卡片翻面)。標記「已學會 / 還需複習」,進度自動存。</p>
     <div class="daily reveal" id="daily"></div>
     <div class="reveal flash-stage" id="flash-stage">
@@ -760,7 +767,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <!-- 4 -->
   <section id="canciones">
     <div class="reveal sec-head"><div class="sec-num">3</div>
-      <div><span class="sec-title">歌詞分析</span> <span class="sec-es">Canciones</span></div></div>
+      <h2 class="sec-h"><span class="sec-title">歌詞分析</span> <span class="sec-es">Canciones</span></h2></div>
     <p class="reveal sec-desc">用歌學單字。歌曲<b>依歌手分類</b>,點一首開始;點歌詞裡<b>有底線的字</b>看解析。也可以按 <b><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 5v14M5 12h14"/></svg> 自己加歌</b> 加自己的歌詞(存在你的瀏覽器)。</p>
     <div class="reveal chips song-genres" id="song-genres"></div>
     <div class="reveal chips song-artists" id="song-artists"></div>
@@ -774,7 +781,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <!-- 5 -->
   <section id="ejercicios">
     <div class="reveal sec-head"><div class="sec-num">5</div>
-      <div><span class="sec-title">綜合練習</span> <span class="sec-es">Ejercicios</span></div></div>
+      <h2 class="sec-h"><span class="sec-title">綜合練習</span> <span class="sec-es">Ejercicios</span></h2></div>
     <p class="reveal sec-desc"><b>填空</b>:每輪隨機 5 題,填一題按 Enter 就對那一題,也可以填完再按「檢查全部」。<b>句子重組</b>:看中文,把打亂的單字磚塊照順序點回去。有沒有打重音符號都算對。</p>
     <div class="filters reveal" id="ex-mode"></div>
     <div id="ex-fill">
@@ -797,7 +804,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <!-- 6 -->
   <section id="verbos">
     <div class="reveal sec-head"><div class="sec-num">6</div>
-      <div><span class="sec-title">動詞練習</span> <span class="sec-es">Verbos</span></div></div>
+      <h2 class="sec-h"><span class="sec-title">動詞練習</span> <span class="sec-es">Verbos</span></h2></div>
     <p class="reveal sec-desc">給你<b>原形 + 人稱 + 時態</b>,你寫出變化。共五種時態可選;沒打重音也算對;按 <b>Enter</b> 檢查,再按一次換下一題。最下面有<b>變位總表</b>可以隨時查。</p>
     <div class="filters reveal" id="vb-tense"></div>
     <div class="card vb-card reveal">
@@ -819,7 +826,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <!-- 7 -->
   <section id="escucha">
     <div class="reveal sec-head"><div class="sec-num">7</div>
-      <div><span class="sec-title">聽力口說</span> <span class="sec-es">Escuchar y hablar</span></div></div>
+      <h2 class="sec-h"><span class="sec-title">聽力口說</span> <span class="sec-es">Escuchar y hablar</span></h2></div>
     <p class="reveal sec-desc"><b>聽寫</b>:按播放聽句子(不看字),把聽到的打出來。<b>口說跟讀</b>:看句子唸出來,瀏覽器幫你比對發音。句子都來自你的對話和單字例句。</p>
     <div class="filters reveal" id="lp-mode"></div>
     <div class="card lp-card reveal" id="lp-stage"></div>
@@ -828,7 +835,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <!-- 8 -->
   <section id="progreso">
     <div class="reveal sec-head"><div class="sec-num">8</div>
-      <div><span class="sec-title">學習進度</span> <span class="sec-es">Progreso</span></div></div>
+      <h2 class="sec-h"><span class="sec-title">學習進度</span> <span class="sec-es">Progreso</span></h2></div>
     <p class="reveal sec-desc">每天練習賺 <b>XP</b>:答對 +2、有練 +1。達成每日目標保住連勝;每賺 100 XP 得一張<b>連勝保護卡</b>(漏練一天自動抵),下面還有熱力圖、成就和錯題本。</p>
     <div class="card pg-card reveal" id="pg-goal"></div>
     <div class="card pg-card reveal"><div class="pg-h" id="pg-heat-h"></div><div class="heat-scroll"><div id="pg-heat"></div></div><div class="heat-legend" id="pg-heat-lg"></div></div>
@@ -4621,10 +4628,13 @@ function renderTalk(){
         <div class="tk-acts"><button class="btn" id="tk-say">我唸完這句了 ›</button></div>
       </div>
       ${talkAlts().map((alt,i)=>`
-      <div class="tk-cue alt" role="button" tabindex="0" data-alt="${i}" aria-label="選這句:${esc(alt.es)}">
-        <div class="tk-cue-tag">另一種說法 · 唸完點這裡</div>
-        <div class="tk-cue-es" lang="es">${esc(alt.es)} ${spkHTML(alt.es)}</div>
-        <div class="tk-cue-cn">${esc(alt.cn)}</div>
+      <div class="tk-cue alt" data-alt="${i}">
+        <button class="tk-alt-pick" type="button" aria-label="我唸了這句:${esc(alt.es)}">
+          <span class="tk-cue-tag">另一種說法 · 唸完點這裡</span>
+          <span class="tk-cue-es" lang="es">${esc(alt.es)}</span>
+          <span class="tk-cue-cn">${esc(alt.cn)}</span>
+        </button>
+        ${spkHTML(alt.es)}
       </div>`).join("")}
       <div class="tk-more">
         <button class="tk-link" id="tk-fixtoggle">沒聽懂</button><span class="tk-sep">·</span>
@@ -4654,11 +4664,10 @@ function renderTalk(){
   $("#tk-slow").onclick=()=>speak(it.q,null,0.55);
   $("#tk-say").onclick=()=>talkCommit(it.a,it.acn,"model");
   const alts=talkAlts();
-  /* 「另一種說法」整張卡就是按鈕:點卡片、或聚焦後按 Enter／空白鍵;點小喇叭只播音不選 */
+  /* 「另一種說法」:點卡片任何地方都算選這句(卡片裡那顆按鈕給鍵盤和螢幕閱讀器用);點小喇叭只播音不選 */
   wrap.querySelectorAll("[data-alt]").forEach(card=>{
     const pick=()=>{ const a=alts[+card.dataset.alt]; talkCommit(a.es,a.cn,"alt"); };
     card.onclick=e=>{ if(e.target.closest(".spk"))return; pick(); };
-    card.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } };
   });
   $("#tk-fixtoggle").onclick=()=>{ const u=$("#tk-utils"); u.hidden=!u.hidden; };
   $("#tk-toggle").onclick=()=>{ const w=$("#tk-typewrap"); w.hidden=!w.hidden; if(!w.hidden)$("#tk-input").focus(); };
@@ -4724,14 +4733,12 @@ function renderTalk(){
     /* 到這裡就是本機判不到的區域:要嘛你在說別的話,要嘛跟範例句差太多。
        本機能講的都講完了,剩下的老實說不知道,不給分。 */
     vd.hidden=false; vd.className="tk-verdict";
-    vd.innerHTML=`<div class="tk-v-h">${answering?`跟範例句只對上 ${Math.round(rep.pct*100)}%`:"你說要講別的,所以沒有拿範例句比對"}</div>
+    /* 跟範例句不同不代表錯(「Estoy cansado.」比範例句短,一樣是對的),所以標題不寫「只對上幾 %」,只講跟範例句哪裡不同 */
+    vd.innerHTML=`<div class="tk-v-h">${answering?"跟範例句說法不一樣":"你說要講別的,所以沒有拿範例句比對"}</div>
       ${answering?`<div class="tk-v-diff">${rep.diffHtml}</div>`:""}
-      ${blocks.join("")||'<p class="tk-v-note">本機查表沒有查到地區用法或 ser/estar 陷阱。</p>'}
-      <p class="tk-v-note"><b>本機到這裡就沒了。</b>「這句西語整體對不對」需要真的懂西語才判得出來,
-        這個網站現在沒有那個能力,所以<b>不判、也不計分</b> — 而不是隨便給你過。</p>
-      <p class="tk-v-note">還有一件事要先講:這是<b>照劇本走的對話練習,不是真的 AI 對話</b>。
-        你說了劇本以外的話之後,對方還是會問劇本上的下一句,<b>不會接你這句</b>。
-        想讓話題連得上,就照上面的句子回答;想請他重說,點「沒聽懂」。</p>
+      ${blocks.join("")||'<p class="tk-v-note">查表沒有查到地區用法或 ser/estar 陷阱。</p>'}
+      <p class="tk-v-note"><b>整句對不對,這個網站判斷不了</b>,所以這句不計分,也不會隨便算你過。</p>
+      <p class="tk-v-note">這是照劇本走的對話,不是 AI:對方會照劇本問下一句,不會接你這句。</p>
       <div class="tk-acts"><button class="btn" id="tk-keep">記下來,繼續下一句</button>
         <button class="tk-link" id="tk-redo">我改一下</button></div>`;
     $("#tk-keep").onclick=()=>talkCommit(v,"","typed",answering?rep.pct:null);
@@ -4744,6 +4751,9 @@ function renderTalk(){
     e.stopPropagation();
     wrap.querySelectorAll(".w").forEach(s=>s.classList.remove("sel")); span.classList.add("sel");
     gnote.innerHTML=noteHTML(it.notes[+span.dataset.k]); gnote.classList.add("show");
+    /* 說明插在被點的那句正下方(手機上原本排在整張卡最底,點了像沒反應),還是在畫面外就捲進來 */
+    const host=span.closest(".tk-cue,.tk-ask"); if(host && host.nextElementSibling!==gnote) host.after(gnote);
+    requestAnimationFrame(()=>{ const r=gnote.getBoundingClientRect(); if(r.bottom>innerHeight-90||r.top<0) gnote.scrollIntoView({block:"nearest",behavior:"smooth"}); });
   });
   reflow("dialogos");
 }
@@ -5358,15 +5368,19 @@ const exList=$("#ex-list");
 const EXKEY="miEspanol.exLog";
 let exLog=lsGet(EXKEY,[]);
 let round=[], res=[], roundLogged=false;   // res[pos]:沒值=還沒檢查;"ok"/"no"=檢查過;"seen"=先按了看答案,不計分
-function pick5(){
-  const idx=[...POOL.keys()];
+/* a1=true:只從標了 src 的 50 題 A1 題庫抽(「今天的五分鐘」用)。
+   原本那 20 題有過去式、虛擬式、現在完成式,新手第一天抽到會卡住,留在「綜合練習」自己按「換一組」時才會出現 */
+function pick5(a1){
+  const idx=[...POOL.keys()].filter(i=>!a1||POOL[i].src);
   for(let i=idx.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=idx[i]; idx[i]=idx[j]; idx[j]=t; }
   return idx.slice(0,Math.min(5,idx.length));
 }
-function newRound(){
-  round=pick5(); res=[]; roundLogged=false;
+let roundA1=false;
+function newRound(a){
+  const a1=(a===true);   // 按鈕事件呼叫時 a 是 event,不算
+  round=pick5(a1); roundA1=a1; res=[]; roundLogged=false;
   exList.innerHTML=round.map((qi,pos)=>{ const e=POOL[qi];
-    return `<div class="card ex"><div class="ex-sent">${e.before}<input class="blank" data-i="${pos}" autocomplete="off" spellcheck="false">${e.after}</div>`+
+    return `<div class="card ex"><div class="ex-sent">${e.before}<input class="blank" data-i="${pos}" autocomplete="off" spellcheck="false" lang="es" aria-label="第 ${pos+1} 題填空">${e.after}</div>`+
       `<div class="ex-hint">提示 · Pista:${e.inf} ｜ ${e.cn}${EN[e.before+e.answer+e.after]?` ｜ <span class="ex-en en-line">${esc(EN[e.before+e.answer+e.after])}</span>`:""} <button class="ex-show" data-show="${pos}">看答案<span class="es2">Ver</span></button></div><div class="ex-fb" data-fb="${pos}"></div></div>`;
   }).join("");
   $("#ex-score").textContent="";
@@ -5962,7 +5976,7 @@ function renderProgreso(){
         <div class="gstat"><div class="n">${stats.total||0}</div><div class="l">累積練習次數</div></div>
       </div>
     </div>
-    <div class="goal-set">每日目標:${[10,30,50,100].map(v=>`<button class="chip${v===goal?" active":""}" data-g="${v}">${v} XP</button>`).join("")}<span style="opacity:.75">答對 +2~3 · 有練 +1 · 配對完成 +10</span></div>`;
+    <div class="goal-set">每日目標:${[10,30,50,100].map(v=>`<button class="chip${v===goal?" active":""}" data-g="${v}">${v} XP</button>`).join("")}<span>答對 +2~3 · 有練 +1 · 配對完成 +10</span></div>`;
   $$(".goal-set .chip",g).forEach(b=>b.onclick=()=>{ xp.goal=+b.dataset.g; saveXP(); renderProgreso(); renderDaily(); showToast("每日目標改為 "+xp.goal+" XP"); });
   $("#pg-heat-h").innerHTML=svgIcon(ICON.calendar,15)+' 學習熱力圖 · 近一年 <span class="sub">顏色越深 = 當天練越多</span>';
   renderHeat();
@@ -6052,7 +6066,7 @@ function rtGoCards(){ show("vocabulario");
   const lbl=$("#rv-bar span"); if(lbl) lbl.innerHTML=`今天的單字 · 剩 <b id="rv-left">${q.length}</b> 張`; }
 function rtGoDrill(){ show("ejercicios");
   if($("#ex-fill").style.display==="none"){ const m=$("#ex-mode .chip"); if(m) m.click(); }
-  if(roundLogged) newRound();
+  if(roundLogged||!roundA1) newRound(true);
   rtScrollTo(exList);
   if(matchMedia("(pointer:fine)").matches){ const p=Math.max(0,round.findIndex((_,i)=>!res[i])); const inp=$(`.blank[data-i="${p}"]`,exList); if(inp) inp.focus({preventScroll:true}); } }
 /* 記下今天完成了哪一步;還有下一步就在下面浮一條「下一步」,三步都做完就請你回首頁看收尾 */
@@ -6081,12 +6095,12 @@ function renderHoy(){
   const list=`<ol class="rt-steps">${RT_STEPS.map((s,i)=>`<li class="rt-step${r[s.k]?" done":""}${s===next?" now":""}"><span class="rt-n">${r[s.k]?svgIcon(ICON.check,18):i+1}</span><span class="rt-t">${s.t}</span><span class="rt-d">${esc(desc[s.k])}</span></li>`).join("")}</ol>`;
   let head, foot;
   if(next){
-    head=`<div class="hoy-hi">¡Hola!<span>${doneN?`今天的五分鐘,做完 ${doneN} 步了`:"今天的五分鐘"}</span></div>`;
+    head=`<h2 class="hoy-hi">¡Hola!<span>${doneN?`今天的五分鐘,做完 ${doneN} 步了`:"今天的五分鐘"}</span></h2>`;
     foot=`<div class="hoy-cta"><button class="btn rt-go" id="rt-start">${doneN?"繼續:"+next.t:"開始今天的五分鐘"} ›</button><span class="rt-meta">${ss?`連續 ${ss} 天`:"三步,大約五分鐘"}</span></div>`;
   } else {
     const tomorrow=DATA.dialogos[RT_SCENES[(r.nTalk||0)%RT_SCENES.length]]||sc;
     const sum=[r.said!=null?`回了 ${r.said} 句`:"", r.cardsN?`單字 ${r.cardsN} 張`:"", r.drillN?`填空 ${r.drillOk} / ${r.drillN}`:""].filter(Boolean).join(" · ");
-    head=`<div class="hoy-hi">¡Listo!<span>今天的五分鐘做完了</span></div>`;
+    head=`<h2 class="hoy-hi">¡Listo!<span>今天的五分鐘做完了</span></h2>`;
     foot=`${sum?`<p class="rt-sum">${sum}</p>`:""}<p class="rt-next">${ss?`連續 ${ss} 天。`:""}明天聊:${esc(tomorrow.scene)}。</p>`;
   }
   box.innerHTML=head+list+foot+

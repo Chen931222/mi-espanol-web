@@ -199,7 +199,7 @@ body{
 /* 開場/結尾置中排版 */
 .center-scene .inner{justify-content:center}
 /* 用 margin auto 置中(不能用 translateX,否則它會變成 fixed 子元素的參考框,手機版標語會位移) */
-.center-scene .mid{position:absolute;left:0;right:0;margin:0 auto;text-align:center;z-index:4;width:min(760px,92%)}
+.center-scene .mid{position:absolute;left:0;right:0;margin:0 auto;text-align:center;z-index:4;width:min(760px,calc(100% - 40px))}   /* 手機兩側至少留 20px,92% 在 375 寬只剩 15px */
 .center-scene .mid.top{top:9vh}
 .center-scene .mid.bottom{bottom:7vh}
 .hero-kick{font-size:.78rem;font-weight:800;letter-spacing:.32em;color:var(--terra-deep);margin-bottom:12px}
@@ -365,7 +365,7 @@ body{
       <h1 class="hero-h1">把西班牙文<br>學成<i>生活的一部分</i></h1>
     </div>
     <div class="mid bottom">
-      <p class="hero-sub">對話、單字、歌詞、聽力、口說、遊戲化進度——自學需要的一切,都在同一頁裡。</p>
+      <p class="hero-sub">每天五分鐘:聊一段對話、填 5 題空、複習當天卡住的字。對話、文法、歌詞、聽力口說,都在同一頁裡。</p>
       <div class="hero-tags"><span>免費 · 免註冊</span><span>手機電腦皆可</span><span>PWA 可安裝</span><span>進度雲端同步</span></div>
     </div>
     <div class="hero-hint">滾動開始 · Desliza
@@ -398,7 +398,7 @@ body{
         <div class="prog"><i></i></div>
         <div class="seg"><h3>科學的<em>遺忘曲線</em></h3><p>答完「忘了/普通/記得」,SRS 間隔重複幫你排下次複習:記得的越排越遠,忘了的明天再來。</p></div>
         <div class="seg"><h3>三種小遊戲換著練</h3><p>配對消除、選擇題、拼寫測驗——答錯的字自動排回今日複習,還會進錯題本。</p></div>
-        <div class="seg"><h3>字庫規模</h3><p>每個字都有例句,從對話和歌詞裡長出來。<div class="stats"><div class="stat"><b>281</b>張單字卡</div><div class="stat"><b>0→90天</b>SRS 排程</div></div></p></div>
+        <div class="seg"><h3>字庫規模</h3><p>每個字都有例句,從對話和歌詞裡長出來。<div class="stats"><div class="stat"><b>362</b>張單字卡</div><div class="stat"><b>0→90天</b>SRS 排程</div></div></p></div>
         <div class="seg-dots"></div>
         <div class="card-hint">點卡片看下一段 ›</div>
       </div>
@@ -414,7 +414,7 @@ body{
         <div class="prog"><i></i></div>
         <div class="seg"><h3>用你<em>本來就愛聽</em>的歌</h3><p>Karol G、Marc Anthony……逐句中譯,每個生字都能點開看解析。</p></div>
         <div class="seg"><h3>歌詞填空挑戰</h3><p>一鍵把整首歌挖空,邊聽邊把字填回去——最不像唸書的背單字法。想學哪首,自己加進來。</p></div>
-        <div class="seg"><h3>歌庫</h3><p><div class="stats"><div class="stat"><b>14</b>首完整解析</div><div class="stat"><b>逐句</b>中譯+文法</div><div class="stat"><b>∞</b>自己加歌</div></div></p></div>
+        <div class="seg"><h3>歌庫</h3><p><div class="stats"><div class="stat"><b>15</b>首完整解析</div><div class="stat"><b>逐句</b>中譯+文法</div><div class="stat"><b>∞</b>自己加歌</div></div></p></div>
         <div class="seg-dots"></div>
         <div class="card-hint">點卡片看下一段 ›</div>
       </div>
@@ -429,7 +429,7 @@ body{
       <div class="card">
         <div class="prog"><i></i></div>
         <div class="seg"><h3>填空 + <em>句子重組</em></h3><p>看中文,把打亂的單字磚拼回正確語序——最快抓到語感的練習。</p></div>
-        <div class="seg"><h3>句庫來自你學過的內容</h3><p>全部來自對話課文和例句,不會冒出沒學過的字。<div class="stats"><div class="stat"><b>327</b>句重組句庫</div><div class="stat"><b>自動</b>收錄錯題</div></div></p></div>
+        <div class="seg"><h3>句庫來自你學過的內容</h3><p>全部來自對話課文和例句,不會冒出沒學過的字。<div class="stats"><div class="stat"><b>379</b>句重組句庫</div><div class="stat"><b>自動</b>收錄錯題</div></div></p></div>
         <div class="seg-dots"></div>
         <div class="card-hint">點卡片看下一段 ›</div>
       </div>
@@ -459,7 +459,7 @@ body{
       <div class="card">
         <div class="prog"><i></i></div>
         <div class="seg"><h3><em>聽寫</em>:自學者最缺的訓練</h3><p>播一句(不看字),把聽到的打出來,逐字批改,還有慢速播放。</p></div>
-        <div class="seg"><h3>對著它說,它聽得懂</h3><p>語音辨識逐字比對你唸對幾成。不用找語伴、不怕丟臉,在房間就能練到敢開口。<div class="stats"><div class="stat"><b>312</b>句聽寫句庫</div><div class="stat"><b>逐字</b>比對回饋</div></div></p></div>
+        <div class="seg"><h3>對著它說,它幫你比對</h3><p>瀏覽器支援語音辨識時(Chrome、Safari),會逐字比對你唸對幾成;辨識不準的時候,聽寫一樣能練耳朵。不用找語伴、不怕丟臉。<div class="stats"><div class="stat"><b>393</b>句聽寫句庫</div><div class="stat"><b>逐字</b>比對回饋</div></div></p></div>
         <div class="seg-dots"></div>
         <div class="card-hint">點卡片看下一段 ›</div>
       </div>
@@ -501,7 +501,7 @@ body{
     <div class="mid bottom">
       <a class="cta" href="https://mi-espanol-web.vercel.app" target="_blank" rel="noopener">開始學習 · Empezar
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
-      <div class="fin-tags"><span>281 單字卡</span><span>62 條文法</span><span>15 首歌</span><span>327 句句庫</span><span>免費 · 免註冊</span></div>
+      <div class="fin-tags"><span>362 單字卡</span><span>62 條文法</span><span>15 首歌</span><span>379 句句庫</span><span>免費 · 免註冊</span></div>
     </div>
   </section>
 
