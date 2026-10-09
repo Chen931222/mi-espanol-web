@@ -4555,7 +4555,7 @@ const TALKALT={
   "5-4":[{es:"Sí, de siete a diez.",cn:"有,七點到十點。"},{es:"Sí, el desayuno es de siete a diez en el comedor.",cn:"有,早餐七到十點在餐廳。"}],
   "5-5":[{es:"A las doce.",cn:"十二點。"},{es:"Hay que dejarla antes del mediodía.",cn:"中午前要退房。"}],
   "6-0":[{es:"Soy Chen. ¿Y tú?",cn:"我是 Chen。你呢?"},{es:"Me llamo Chen, encantado.",cn:"我叫 Chen,幸會。"}],
-  "6-1":[{es:"Soy de Taiwán.",cn:"我是台灣人。"},{es:"De Taiwán, pero vivo en Madrid.",cn:"台灣,不過住在馬德里。"}],
+  "6-1":[{es:"Soy de Taiwán.",cn:"我是台灣人。"},{es:"De Taiwán. Vivo en Taipéi.",cn:"台灣,住在台北。"}],
   "6-2":[{es:"Soy estudiante.",cn:"我是學生。"},{es:"Estudio y trabajo a tiempo parcial.",cn:"我讀書也打工。"}],
   "6-3":[{es:"Veinticinco.",cn:"二十五。"},{es:"Tengo veinticinco años, ¿y tú?",cn:"我二十五歲,你呢?"}],
   "6-4":[{es:"Escuchar música y aprender idiomas.",cn:"聽音樂和學語言。"},{es:"Me gusta la música y estudiar idiomas.",cn:"我喜歡音樂和學語言。"}],
@@ -5405,7 +5405,8 @@ const CONJ_IRR={ser:"soy eres es somos son",estar:"estoy estás está estamos es
   soler:"suelo sueles suele solemos suelen",pedir:"pido pides pide pedimos piden",decir:"digo dices dice decimos dicen",
   llevar:"llevo llevas lleva llevamos llevan",llamarse:"me llamo|te llamas|se llama|nos llamamos|se llaman"};
 const CONJ_PRON=["yo","tú","él / ella / usted","nosotros","ellos / ustedes"];
-function conjOf(inf){ const v=(/^([a-záéíóúñ]+)/i.exec(inf||"")||[])[1]; if(!v) return null; const k=v.toLowerCase();
+function conjOf(inf){ if(/過去|完成|虛擬|進行|未來|命令|條件/.test(inf||"")) return null;
+  const v=(/^([a-záéíóúñ]+)/i.exec(inf||"")||[])[1]; if(!v) return null; const k=v.toLowerCase();
   if(k==="gustar") return "me gusta + 單數 / me gustan + 複數(te gusta、le gusta…)";
   if(k==="haber") return "有(某處有某物)固定用 hay";
   let f=CONJ_IRR[k]; if(f) f=f.split(f.indexOf("|")>=0?"|":" ");
@@ -5569,7 +5570,16 @@ function buildVerbos(){ const tb=$("#vb-tense"); if(!tb)return; tb.innerHTML="";
 
 /* ===== 每日複習(輕量) ===== */
 function dayIndex(){ const d=new Date(); return Math.floor((d-new Date(d.getFullYear(),0,0))/86400000); }
-function songLines(){ const out=[]; DATA.songs.forEach(s=>(s.lines||[]).forEach(l=>{ if(l&&typeof l==="object"&&l.es&&l.cn&&!/^[(（]/.test(l.cn.trim())&&/[.!?…]["»”]?$/.test(l.es.trim())&&!/[,，、]$/.test(l.cn.trim())&&l.es.trim().split(/\s+/).length>=3) out.push(l); })); return out; }
+/* 今日一句的候選:完整的一句西文。擋掉中文以逗號結尾的半句、小寫開頭的接續句、歌詞裡夾的英文句,同一句只留一次 */
+const EN_WORDS=/\b(the|you|you're|that|and|your|is|are|i'm|i|it|it's|of|what|with|this|don't|can't|will|than|my|me|be|feel|worse|love|baby|oh)\b/i;
+const ES_WORDS=/\b(de|la|el|que|en|y|los|las|se|no|te|mi|tu|por|con|para|es|lo|un|una|yo|ya|si|sí|qué|cómo|más|pero|soy|estoy|quiero)\b/i;
+function songLines(){ const out=[], seen={}; DATA.songs.forEach(s=>(s.lines||[]).forEach(l=>{
+  if(!(l&&typeof l==="object"&&l.es&&l.cn)) return; const es=l.es.trim(), cn=l.cn.trim();
+  if(/^[(（]/.test(cn) || /[,，、]$/.test(cn)) return;
+  if(!/[.!?…]["»”]?$/.test(es) || es.split(/\s+/).length<3 || !/^[¿¡"«]?[A-ZÁÉÍÓÚÑ]/.test(es)) return;
+  const words=es.toLowerCase().replace(/[¿?¡!.,"«»]/g," ");
+  if(!ES_WORDS.test(words) || (EN_WORDS.test(words.replace(/\bme\b/g,"")) && !/[áéíóúñ¿¡]/i.test(es))) return;
+  if(seen[es]) return; seen[es]=1; out.push(l); })); return out; }
 function renderDaily(){ const box=$("#daily"); if(!box)return;
   const total=CARDS.length;
   const dueN=CARDS.filter(w=>isDue(w.es)).length;
