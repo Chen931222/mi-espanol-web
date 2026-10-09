@@ -1,9 +1,12 @@
 // /api/feedback — 匿名的「願不願意付費」與「這句有錯」計數,給站主決定定價、找出要修的句子。
-// 只收固定選項,只做計數(Redis hash 的 HINCRBY),不收任何文字、不記 IP 以外的東西;IP 只用來限流,一小時後自動消失。
+// 問卷與回報只收固定選項、只做計數(Redis hash 的 HINCRBY);唯一的文字是使用者自願留在候補名單的 email。
+// IP 只用來限流,一小時後自動消失,不跟其他資料綁在一起。
 // 跟 /api/sync 共用同一個 Upstash KV(環境變數 KV_REST_API_URL / KV_REST_API_TOKEN),key 用 "espfb:" 開頭,不碰同步資料。
 //   POST { type:"wtp",    choice }                → espfb:wtp      欄位 choice +1
 //   POST { type:"report", item:"7-2", field, reason } → espfb:report 欄位 "7-2|a|es" +1
-//   GET                                            → 兩張表的目前計數(只有數字,可以公開)
+//   POST { type:"waitlist", email, remove? }      → espfb:waitlist 集合加入／移除這個 email(付費版上線時通知用)
+//   GET                                            → 兩張表的目前計數＋候補名單人數(只有數字,可以公開;email 本身不回傳)
+// 候補名單的 email 只能在 Upstash 主控台(Vercel → Storage → 這個 KV → Data Browser,key espfb:waitlist)看到。
 
 const BASE = process.env.KV_REST_API_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN;
@@ -30,8 +33,8 @@ export default async function handler(req, res) {
   if (!BASE || !TOKEN) return res.status(503).json({ error: "not_configured" });
   try {
     if (req.method === "GET") {
-      const [wtp, report] = await Promise.all([kv(["HGETALL", "espfb:wtp"]), kv(["HGETALL", "espfb:report"])]);
-      return res.status(200).json({ wtp: toObj(wtp), report: toObj(report) });
+      const [wtp, report, wl] = await Promise.all([kv(["HGETALL", "espfb:wtp"]), kv(["HGETALL", "espfb:report"]), kv(["SCARD", "espfb:waitlist"])]);
+      return res.status(200).json({ wtp: toObj(wtp), report: toObj(report), waitlist: Number(wl) || 0 });
     }
     if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
 
@@ -39,8 +42,11 @@ export default async function handler(req, res) {
     if (typeof body === "string") { try { body = JSON.parse(body || "{}"); } catch (_) { body = {}; } }
     body = body || {};
 
-    let key, field;
-    if (body.type === "wtp" && WTP.includes(body.choice)) {
+    let key, field, setOp = null, member = null;
+    const email = String(body.email || "").trim().toLowerCase();
+    if (body.type === "waitlist" && email.length <= 120 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      setOp = body.remove ? "SREM" : "SADD"; member = email;
+    } else if (body.type === "wtp" && WTP.includes(body.choice)) {
       key = "espfb:wtp"; field = body.choice;
     } else if (body.type === "report" && /^\d{1,2}-\d{1,2}$/.test(String(body.item || "")) && FIELDS.includes(body.field) && REASONS.includes(body.reason)) {
       key = "espfb:report"; field = `${body.item}|${body.field}|${body.reason}`;
@@ -56,7 +62,8 @@ export default async function handler(req, res) {
     if (n === 1) await kv(["EXPIRE", rk, 3600]);
     if (n > RATE_MAX) return res.status(429).json({ error: "rate_limited" });
 
-    await kv(["HINCRBY", key, field, 1]);
+    if (setOp) await kv([setOp, "espfb:waitlist", member]);
+    else await kv(["HINCRBY", key, field, 1]);
     return res.status(200).json({ ok: true });
   } catch (e) {
     console.error("feedback error:", e);

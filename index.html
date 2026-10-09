@@ -456,6 +456,9 @@ body:not(.on-progreso) footer{margin-top:34px}
 .wtp-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .wtp-row .chip{min-height:40px}
 .wtp-note{margin:8px 0 0;font-size:.75rem;color:var(--ink-soft)}
+.wtp-mail{margin-top:12px}
+.wtp-mail .wtp-note{display:block;margin:0 0 8px;font-size:.8rem;line-height:1.5}
+.wtp-mail input{flex:1 1 180px;min-height:44px;padding:8px 12px;border:1.5px solid var(--line-strong);border-radius:10px;background:var(--card);font:inherit;color:var(--ink)}
 @media(max-width:480px){
   .rt-step{grid-template-columns:30px 1fr}
   .rt-d{grid-column:2}
@@ -861,7 +864,7 @@ body.np-open .note-pop{transform:translateY(0)}
     <div class="card pg-card reveal"><div class="pg-h" id="pg-logros-h"></div><div class="logro-grid" id="pg-logros"></div></div>
     <div class="card pg-card reveal"><div class="pg-h" id="pg-err-h"></div><div id="pg-err"></div></div>
     <div class="card pg-card reveal" id="pg-settings"><div class="pg-h">設定 · Ajustes</div>
-      <div class="pg-set-row" id="pg-set-en"><span class="sub">對話與歌詞的英文對照</span></div></div>
+      <div class="pg-set-row" id="pg-set-en"><span class="sub">對話與歌詞的英文對照</span></div><div class="pg-set-row" id="pg-set-wl" hidden></div></div>
   </section>
 
   <footer>
@@ -5206,8 +5209,23 @@ function wtpHTML(){ let asked=null; try{ asked=localStorage.getItem(WTPKEY); }ca
   return `<div class="wtp" id="wtp"><p class="wtp-q">問一件事:如果這五分鐘要付費,你最多願意付多少?</p>
     <div class="wtp-row">${WTP_OPTS.map(([v,t])=>`<button class="chip" type="button" data-wtp="${v}">${t}</button>`).join("")}</div>
     <p class="wtp-note">匿名,只記你選了哪一個。</p></div>`; }
+/* 候補名單的 email 只存在這台裝置(key 不用 miEspanol. 開頭,不會跟著同步碼上傳),讓人之後能自己移除 */
+const WLKEY="miEsp_waitlistEmail";
 function wtpAnswer(v){ try{ localStorage.setItem(WTPKEY,v); }catch(_){}
-  fbSend({type:"wtp",choice:v}); const w=$("#wtp"); if(w) w.innerHTML='<p class="wtp-q">謝謝,收到了。</p>'; }
+  fbSend({type:"wtp",choice:v}); const w=$("#wtp"); if(!w) return;
+  w.innerHTML='<p class="wtp-q">謝謝,收到了。</p>'+(v==="none"?"":`
+    <form class="wtp-mail" id="wtp-mail">
+      <label class="wtp-note" for="wtp-email">付費版上線時要通知你嗎?留 email 就好。只用來寄那一封通知,不會給別人;之後想取消,到「學習進度 · 設定」按移除。</label>
+      <div class="wtp-row"><input id="wtp-email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required maxlength="120"><button class="btn" type="submit">通知我</button></div>
+    </form>`);
+  const f=$("#wtp-mail"); if(f) f.onsubmit=e=>{ e.preventDefault(); const em=$("#wtp-email").value.trim().toLowerCase(); if(!em) return;
+    fbSend({type:"waitlist",email:em}); try{ localStorage.setItem(WLKEY,em); }catch(_){}
+    w.innerHTML='<p class="wtp-q">好,付費版上線時寄信給你。</p>'; wlRender(); }; }
+/* 學習進度 · 設定:留過 email 的人可以自己移除 */
+function wlRender(){ const box=$("#pg-set-wl"); if(!box) return; let em=null; try{ em=localStorage.getItem(WLKEY); }catch(_){}
+  box.hidden=!em; if(!em) return;
+  box.innerHTML=`<span class="sub">付費版候補名單:${esc(em)}</span><button class="tk-link" type="button" id="wl-remove">移除我的 email</button>`;
+  $("#wl-remove").onclick=()=>{ fbSend({type:"waitlist",email:em,remove:true}); try{ localStorage.removeItem(WLKEY); }catch(_){} box.innerHTML='<span class="sub">已從候補名單移除。</span>'; }; }
 
 /* ===== 0. 「今天」首頁 ===== */
 function renderHoy(){
@@ -5257,7 +5275,7 @@ function renderHoy(){
 })();
 
 const _showBase=show;
-show=function(id){ _showBase(id); if(rtCrumbEl.dataset.sec&&rtCrumbEl.dataset.sec!==id) rtCrumbEl.remove(); document.body.classList.toggle("on-progreso",id==="progreso"); if(id==="progreso")renderProgreso(); if(id==="hoy"){ rtBarHide(); renderHoy(); } };
+show=function(id){ _showBase(id); if(rtCrumbEl.dataset.sec&&rtCrumbEl.dataset.sec!==id) rtCrumbEl.remove(); document.body.classList.toggle("on-progreso",id==="progreso"); if(id==="progreso"){ renderProgreso(); wlRender(); } if(id==="hoy"){ rtBarHide(); renderHoy(); } };
 
 /* 單字卡頂端 2 顆顯示＋14 顆主題＋4 顆狀態晶片,收成一行「目前的選擇 · 更換」。晶片沒拆,只是收起來 */
 const VC_MODE_LABEL={both:"中西對照",flip:"翻卡測驗"}, VC_FILTER_LABEL={all:"全部",due:"今日到期",review:"學習中",learned:"已學會"};
