@@ -7,10 +7,10 @@
 <!-- impeccable-disable layout-transition -- 實測（2026-09-29，手機尺寸、CPU 降速 4 倍）：展開文法註最慢一格 5ms、動詞變位表 15ms，都沒有掉格；展開動畫是體驗的一部分，改成只動 transform 會讓下面的內容瞬間跳位 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mi Español · 我的西班牙文學習筆記</title>
-<meta name="description" content="我學西班牙文用的筆記站：7 個對話場景、281 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
+<meta name="description" content="我學西班牙文用的筆記站：7 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Mi Español · 我的西班牙文學習筆記">
-<meta property="og:description" content="7 個對話場景、281 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
+<meta property="og:description" content="7 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
 <meta property="og:url" content="https://mi-espanol-web.vercel.app/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -317,6 +317,12 @@ body.hide-en .en-line{display:none}
 .flash-stage.reviewing .vc-pick,.flash-stage.reviewing .progress,.flash-stage.reviewing .fc-meta{display:none}
 /* 複習中把上面的統計框收起來:它會在「剩 6 張」的同時寫「今天複習完成」 */
 body.rv-on #daily{display:none}
+.fc-show-btn{display:none}
+body.rv-on .flash-stage.both:not(.shown) .fc-cn-front,body.rv-on .flash-stage.both:not(.shown) .fc-ej-front{visibility:hidden}
+body.rv-on .flash-stage.both:not(.shown) .fc{cursor:pointer}
+body.rv-on .flash-stage.both:not(.shown) .srs-btns{display:none}
+body.rv-on .flash-stage.both:not(.shown) .fc-show-btn{display:inline-flex;min-height:46px;align-items:center}
+body.rv-on .flash-stage.both:not(.shown) .fc-front::after{content:"先想想意思,再點一下翻開";position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:.75rem;color:var(--ink-soft)}
 .rv-bar{width:100%;max-width:460px;box-sizing:border-box}
 /* 這張卡為什麼出現在今天:對話卡住、填空錯過、到期、新字 */
 .fc-why{font-size:.75rem;font-weight:700;letter-spacing:.04em;color:var(--ink-soft);margin-bottom:8px}
@@ -343,6 +349,9 @@ body.rv-on #daily{display:none}
 .vb-fb.ok{color:var(--good)}
 .vb-fb.no{color:var(--bad)}
 .vb-ctrls{display:flex;gap:10px;justify-content:center;margin-top:4px}
+/* 「下一題 ›」借了圓形箭頭鈕的 .nav,46px 的圓塞不下字;在這裡改回膠囊形 */
+.vb-ctrls .btn.nav{width:auto;height:auto;min-height:44px;padding:10px 18px;font-size:.92rem;display:inline-flex;align-items:center}
+.rt-crumb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 12px;font-size:.84rem;font-weight:700;color:var(--terra-deep)}
 .vb-score{margin-top:14px;color:var(--ink-soft);font-size:.9rem;font-weight:700}
 
 /* 5. Ejercicios */
@@ -353,10 +362,13 @@ body.rv-on #daily{display:none}
 .blank.ok{border-color:var(--good);color:var(--good);background:#EAF2E3}
 .blank.no{border-color:var(--bad);color:var(--bad);background:#F6E4E1}
 .ex-hint{color:var(--ink-soft);font-size:.88rem;margin-top:9px}
+.ex-conj{margin-top:8px;padding:8px 12px;border:1px dashed var(--line-strong);border-radius:10px;font-size:.84rem;color:var(--ink-soft);line-height:1.7}
+.ex-conj b{color:var(--ink);font-family:var(--font-display)}
 .ex-hint .inf{font-family:var(--font-display);font-style:italic;color:var(--terra)}
 .ex-fb{font-weight:700;font-size:.86rem;margin-top:7px;min-height:1.1em}
 .ex-fb.ok{color:var(--good)} .ex-fb.no{color:var(--bad)} .ex-fb.show{color:var(--azul)}
 .ex-show{margin-left:8px;font-family:var(--font-body);font-size:.76rem;font-weight:700;cursor:pointer;color:var(--azul);background:#E5EEF1;border:1px solid #cfe0e6;border-radius:999px;padding:3px 11px;transition:.18s;vertical-align:middle}
+.ex-conj-btn{margin-left:8px;font-family:var(--font-body);font-size:.76rem;font-weight:700;cursor:pointer;color:var(--azul);background:#E5EEF1;border:1px solid #cfe0e6;border-radius:999px;padding:3px 11px;transition:.18s;vertical-align:middle}   /* 跟「看答案」同樣式,但不同 class:.ex-show 會被綁上看答案的點擊 */
 .ex-show:hover{background:var(--azul);color:#fff;border-color:var(--azul)}
 .ex-show.on{background:var(--azul);color:#fff;border-color:var(--azul)}
 .ex-bar{display:flex;gap:14px;align-items:center;margin-top:6px;flex-wrap:wrap}
@@ -708,7 +720,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="gramatica">
     <div class="reveal sec-head"><div class="sec-num">2</div>
       <h2 class="sec-h"><span class="sec-title">文法筆記</span> <span class="sec-es">Gramática</span></h2></div>
-    <p class="reveal sec-desc">隨時查的文法資料庫(46 條)。在搜尋框打關鍵字 —— 中文、西班牙文、時態名稱都行 —— 立刻找到你要的文法。</p>
+    <p class="reveal sec-desc">隨時查的文法資料庫(<span id="gram-n">62</span> 條)。在搜尋框打關鍵字 —— 中文、西班牙文、時態名稱都行 —— 立刻找到你要的文法。</p>
     <div class="gram-search-wrap reveal">
       <svg class="gram-search-ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
       <input id="gram-search" class="gram-search" type="search" placeholder="搜尋文法… 例如:虛擬式、命令式、gustar、ir a、過去式、quiera">
@@ -721,7 +733,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="vocabulario">
     <div class="reveal sec-head"><div class="sec-num">4</div>
       <h2 class="sec-h"><span class="sec-title">單字卡</span> <span class="sec-es">Vocabulario</span></h2></div>
-    <p class="reveal sec-desc">預設<b>中西對照</b>直接看中文;切到<b>翻卡測驗</b>可自我測驗(點卡片翻面)。標記「已學會 / 還需複習」,進度自動存。</p>
+    <p class="reveal sec-desc">平常翻閱是<b>中西對照</b>;<b>複習</b>時先只看西文,想好意思再點開,照實按「忘了／普通／記得」,系統依此排下次複習。也可以切到<b>翻卡測驗</b>。進度自動存。</p>
     <div class="daily reveal" id="daily"></div>
     <div class="reveal flash-stage" id="flash-stage">
       <div class="vc-mode" id="vc-mode"></div>
@@ -747,6 +759,7 @@ body.np-open .note-pop{transform:translateY(0)}
       </div></div>
       <div class="fc-ctrls">
         <button class="btn nav" id="fc-prev">‹</button>
+        <button class="btn fc-show-btn" id="fc-show" type="button">看意思 ›</button>
         <div class="srs-btns">
           <button class="btn srs-bad" id="fc-bad">忘了<span class="srs-iv" id="iv-bad"></span></button>
           <button class="btn srs-ok" id="fc-ok">普通<span class="srs-iv" id="iv-ok"></span></button>
@@ -836,7 +849,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="progreso">
     <div class="reveal sec-head"><div class="sec-num">8</div>
       <h2 class="sec-h"><span class="sec-title">學習進度</span> <span class="sec-es">Progreso</span></h2></div>
-    <p class="reveal sec-desc">每天練習賺 <b>XP</b>:答對 +2、有練 +1。達成每日目標保住連勝;每賺 100 XP 得一張<b>連勝保護卡</b>(漏練一天自動抵),下面還有熱力圖、成就和錯題本。</p>
+    <p class="reveal sec-desc">每天練習賺 <b>XP</b>:答對 +2、有練 +1,做完「今天的五分鐘」再 +10。每天有練就算連勝一天;每賺 100 XP 得一張<b>連勝保護卡</b>(漏練一天自動抵),下面還有熱力圖、成就和錯題本。</p>
     <div class="card pg-card reveal" id="pg-goal"></div>
     <div class="card pg-card reveal"><div class="pg-h" id="pg-heat-h"></div><div class="heat-scroll"><div id="pg-heat"></div></div><div class="heat-legend" id="pg-heat-lg"></div></div>
     <div class="card pg-card reveal"><div class="pg-h" id="pg-logros-h"></div><div class="logro-grid" id="pg-logros"></div></div>
@@ -1065,7 +1078,7 @@ const DATA = {
         {t:"Cómo te llamas", g:"反身動詞 llamarse", cn:"你叫什麼名字", why:"字面「你怎麼稱呼自己」。<b>llamarse</b> = 名叫(反身):me llamo / te llamas / se llama。"},
         {t:"Me llamo", g:"llamarse 現在式 yo", cn:"我叫…", why:"<b>me llamo</b> + 名字 = 我叫…。"},
         {t:"Y tú", g:"反問", cn:"那你呢?", why:"<b>¿Y tú?</b> = 把問題丟回去:「你呢?」"} ]},
-      { q:"¿De dónde eres?", qcn:"你是哪裡人?", a:"Soy de Taiwán, pero ahora vivo en Madrid.", acn:"我是台灣人,不過現在住在馬德里。", notes:[
+      { q:"¿De dónde eres?", qcn:"你是哪裡人?", a:"Soy de Taiwán y vivo en Taipéi.", acn:"我是台灣人,住在台北。", notes:[
         {t:"De dónde eres", g:"ser 表出身", cn:"你來自哪裡", why:"問國籍/出身用 <b>ser</b>:¿De dónde eres? = 你是哪裡人?"},
         {t:"Soy de", g:"ser de + 地方", cn:"我來自…", why:"<b>ser de</b> + 地名 = 來自…。Soy de Taiwán = 我是台灣人。"},
         {t:"vivo", g:"vivir 現在式 yo", cn:"我住", why:"<b>vivir</b> = 住、生活;vivo en + 地點 = 我住在…。"} ]},
@@ -1093,7 +1106,7 @@ const DATA = {
   ],
 
   /* ---- 2. 文法表 ---- */
-  pronombres:["yo","tú","él / ella / Ud.","nosotros","vosotros","ellos / ellas / Uds."],
+  pronombres:["yo","tú","él / ella / Ud.","nosotros","vosotros(西班牙用)","ellos / ellas / Uds."],
   gramatica:[
     { type:"note", title:"ser vs estar", mean:"兩個「是」的差別", tag:"概念", points:[
       {k:"ser", v:"本質、身分(永久)", ej:"Soy padre.", ejcn:"我是爸爸。"},
@@ -3155,56 +3168,56 @@ const DATA = {
     {before:"La temperatura está por encima de ", after:" grados.", answer:"treinta", inf:"數字 30", cn:"溫度超過30度。"},
     /* ↓ 2026-10-06 加:A1 填空 50 題。句子取自 Tatoeba(tatoeba.org,CC BY 2.0 FR),西文沒改,
        只挖掉一個字;中文改成台灣用語。src 是 Tatoeba 句子編號,逐句出處在 README「例句來源」。 */
-    {before:"¿Cómo te ", after:"?", answer:"llamas", inf:"llamarse", cn:"你叫什麼名字？", src:"tatoeba:449153"},
-    {before:"¿", after:" de Australia?", answer:"Eres", inf:"ser", cn:"你是澳洲人嗎？", src:"tatoeba:5755707"},
-    {before:"No ", after:" médico.", answer:"soy", inf:"ser", cn:"我不是醫生。", src:"tatoeba:1198554"},
-    {before:"Sí, yo ", after:" soy estudiante.", answer:"también", inf:"副詞:也", cn:"對，我也是學生。", src:"tatoeba:2213121"},
-    {before:"Mi hijo ", after:" ocho años.", answer:"tiene", inf:"tener", cn:"我兒子八歲。", src:"tatoeba:5023312"},
-    {before:"¿Usted dónde ", after:"?", answer:"vive", inf:"vivir", cn:"您住在哪裡？", src:"tatoeba:9035999"},
-    {before:"Él ", after:" ser médico.", answer:"quiere", inf:"querer", cn:"他想當醫生。", src:"tatoeba:970018"},
-    {before:"", after:" dos hijos.", answer:"Tengo", inf:"tener", cn:"我有兩個孩子。", src:"tatoeba:1240412"},
-    {before:"¿Tu padre es ", after:"?", answer:"español", inf:"國籍形容詞:西班牙的(陽性)", cn:"你爸爸是西班牙人嗎？", src:"tatoeba:10223398"},
-    {before:"Ese es ", after:" hijo.", answer:"mi", inf:"所有格:我的", cn:"那是我兒子。", src:"tatoeba:1970583"},
-    {before:"Ella tiene ", after:" familia grande.", answer:"una", inf:"不定冠詞(陰性單數)", cn:"她有一個大家庭。", src:"tatoeba:2003543"},
-    {before:"Mi padre ", after:" todas las mañanas.", answer:"corre", inf:"correr", cn:"我爸爸每天早上都跑步。", src:"tatoeba:5628647"},
-    {before:"¿", after:" hermanos tienes?", answer:"Cuántos", inf:"疑問詞:幾個(陽性複數)", cn:"你有幾個兄弟姊妹？", src:"tatoeba:562035"},
-    {before:"Me ", after:" mucho el helado.", answer:"gusta", inf:"gustar", cn:"我很喜歡冰淇淋。", src:"tatoeba:1032284"},
-    {before:"¿Te gusta ", after:" fruta?", answer:"comer", inf:"原形動詞:吃", cn:"你喜歡吃水果嗎？", src:"tatoeba:10092593"},
-    {before:"No ", after:" hambre.", answer:"tengo", inf:"tener", cn:"我不餓。", src:"tatoeba:864893"},
-    {before:"¿", after:" tiene sed?", answer:"Quién", inf:"疑問詞:誰", cn:"誰口渴？", src:"tatoeba:9462450"},
-    {before:"", after:" comer helado.", answer:"Quiero", inf:"querer", cn:"我想吃冰淇淋。", src:"tatoeba:5146808"},
-    {before:"¿Carne ", after:" pescado?", answer:"o", inf:"連接詞:或、還是", cn:"要肉還是魚？", src:"tatoeba:1173653"},
-    {before:"Normalmente ", after:" aquí.", answer:"desayuno", inf:"desayunar", cn:"我通常在這裡吃早餐。", src:"tatoeba:549401"},
-    {before:"¿Qué hora ", after:"?", answer:"es", inf:"ser", cn:"現在幾點？", src:"tatoeba:2830"},
-    {before:"", after:" las dos.", answer:"Son", inf:"ser(報時)", cn:"現在兩點。", src:"tatoeba:2225009"},
-    {before:"Mañana es ", after:".", answer:"domingo", inf:"名詞:星期天", cn:"明天是星期天。", src:"tatoeba:656878"},
-    {before:"Hoy es mi ", after:".", answer:"cumpleaños", inf:"名詞:生日", cn:"今天是我的生日。", src:"tatoeba:985107"},
-    {before:"Hoy no ", after:" clases.", answer:"tengo", inf:"tener", cn:"我今天沒課。", src:"tatoeba:1128209"},
-    {before:"Nos vemos ", after:".", answer:"mañana", inf:"副詞:明天", cn:"明天見。", src:"tatoeba:2216149"},
-    {before:"Hoy ", after:" mucho calor.", answer:"hace", inf:"hacer(天氣)", cn:"今天很熱。", src:"tatoeba:2858"},
-    {before:"Hace mucho ", after:".", answer:"frío", inf:"名詞:冷", cn:"天氣好冷。", src:"tatoeba:623776"},
-    {before:"Hace mucho viento, ", after:" no hace frío.", answer:"pero", inf:"連接詞:但是", cn:"風很大，但是不冷。", src:"tatoeba:10097437"},
-    {before:"No me gusta el ", after:".", answer:"verano", inf:"名詞:夏天", cn:"我不喜歡夏天。", src:"tatoeba:501964"},
-    {before:"¿Te ", after:" la lluvia?", answer:"gusta", inf:"gustar", cn:"你喜歡下雨嗎？", src:"tatoeba:566126"},
-    {before:"Mi casa ", after:" aquí.", answer:"está", inf:"estar", cn:"我家在這裡。", src:"tatoeba:1275958"},
-    {before:"¿", after:" está tu madre?", answer:"Dónde", inf:"疑問詞:哪裡", cn:"你媽媽在哪裡？", src:"tatoeba:3555037"},
-    {before:"¿Por qué no ", after:" en casa?", answer:"estás", inf:"estar", cn:"你為什麼不在家？", src:"tatoeba:2783046"},
-    {before:"Mi país está ", after:" de Japón.", answer:"lejos", inf:"副詞:遠", cn:"我的國家離日本很遠。", src:"tatoeba:1932119"},
-    {before:"Aquí no ", after:" nada.", answer:"hay", inf:"haber(hay)", cn:"這裡什麼都沒有。", src:"tatoeba:1591598"},
-    {before:"¿Cuántos gatos hay en ", after:" casa?", answer:"esta", inf:"指示詞:這(陰性)", cn:"這間房子裡有幾隻貓？", src:"tatoeba:751831"},
-    {before:"¿Cuánto ", after:" esta cámara?", answer:"cuesta", inf:"costar", cn:"這台相機多少錢？", src:"tatoeba:5367928"},
-    {before:"Esto es ", after:" caro.", answer:"muy", inf:"副詞:很", cn:"這個很貴。", src:"tatoeba:969977"},
-    {before:"No tengo tiempo ", after:" dinero.", answer:"ni", inf:"連接詞:也不", cn:"我沒時間也沒錢。", src:"tatoeba:642185"},
-    {before:"¿Cuántos libros ", after:"?", answer:"tienes", inf:"tener", cn:"你有幾本書？", src:"tatoeba:600171"},
-    {before:"", after:" más dinero.", answer:"Necesito", inf:"necesitar", cn:"我需要更多錢。", src:"tatoeba:2432098"},
-    {before:"", after:" bien, gracias.", answer:"Estoy", inf:"estar", cn:"我很好，謝謝。", src:"tatoeba:493008"},
-    {before:"Estoy muy ", after:".", answer:"cansado", inf:"形容詞:累(陽性)", cn:"我好累。", src:"tatoeba:377265"},
-    {before:"Siempre ", after:" ocupado.", answer:"estoy", inf:"estar", cn:"我總是很忙。", src:"tatoeba:746893"},
-    {before:"¿No estás ", after:"?", answer:"cansada", inf:"形容詞:累(陰性)", cn:"你不累嗎？", src:"tatoeba:540018"},
-    {before:"¿Te gusta el ", after:"?", answer:"béisbol", inf:"名詞:棒球", cn:"你喜歡棒球嗎？", src:"tatoeba:1856745"},
-    {before:"No me ", after:" los perros.", answer:"gustan", inf:"gustar", cn:"我不喜歡狗。", src:"tatoeba:1970668"},
-    {before:"No ", after:" nadar.", answer:"sabe", inf:"saber(會)", cn:"他不會游泳。", src:"tatoeba:1089628"},
-    {before:"Su libro es muy ", after:".", answer:"interesante", inf:"形容詞:有趣的", cn:"她的書很有趣。", src:"tatoeba:2635959"},
+    {before:"¿Cómo te ", after:"?", answer:"llamas", inf:"llamarse", cn:"你叫什麼名字？", src:"tatoeba:449153", tp:"自我介紹"},
+    {before:"¿", after:" de Australia?", answer:"Eres", inf:"ser", cn:"你是澳洲人嗎？", src:"tatoeba:5755707", tp:"自我介紹"},
+    {before:"No ", after:" médico.", answer:"soy", inf:"ser", cn:"我不是醫生。", src:"tatoeba:1198554", tp:"自我介紹"},
+    {before:"Sí, yo ", after:" soy estudiante.", answer:"también", inf:"副詞:也", cn:"對，我也是學生。", src:"tatoeba:2213121", tp:"自我介紹"},
+    {before:"Mi hijo ", after:" ocho años.", answer:"tiene", inf:"tener", cn:"我兒子八歲。", src:"tatoeba:5023312", tp:"自我介紹"},
+    {before:"¿Usted dónde ", after:"?", answer:"vive", inf:"vivir", cn:"您住在哪裡？", src:"tatoeba:9035999", tp:"自我介紹"},
+    {before:"Él ", after:" ser médico.", answer:"quiere", inf:"querer", cn:"他想當醫生。", src:"tatoeba:970018", tp:"自我介紹"},
+    {before:"", after:" dos hijos.", answer:"Tengo", inf:"tener", cn:"我有兩個孩子。", src:"tatoeba:1240412", tp:"家人朋友"},
+    {before:"¿Tu padre es ", after:"?", answer:"español", inf:"國籍形容詞:西班牙的(陽性)", cn:"你爸爸是西班牙人嗎？", src:"tatoeba:10223398", tp:"家人朋友"},
+    {before:"Ese es ", after:" hijo.", answer:"mi", inf:"所有格:我的", cn:"那是我兒子。", src:"tatoeba:1970583", tp:"家人朋友"},
+    {before:"Ella tiene ", after:" familia grande.", answer:"una", inf:"不定冠詞(陰性單數)", cn:"她有一個大家庭。", src:"tatoeba:2003543", tp:"家人朋友"},
+    {before:"Mi padre ", after:" todas las mañanas.", answer:"corre", inf:"correr", cn:"我爸爸每天早上都跑步。", src:"tatoeba:5628647", tp:"家人朋友"},
+    {before:"¿", after:" hermanos tienes?", answer:"Cuántos", inf:"疑問詞:幾個(陽性複數)", cn:"你有幾個兄弟姊妹？", src:"tatoeba:562035", tp:"家人朋友"},
+    {before:"Me ", after:" mucho el helado.", answer:"gusta", inf:"gustar", cn:"我很喜歡冰淇淋。", src:"tatoeba:1032284", tp:"吃喝"},
+    {before:"¿Te gusta ", after:" fruta?", answer:"comer", inf:"原形動詞:吃", cn:"你喜歡吃水果嗎？", src:"tatoeba:10092593", tp:"吃喝"},
+    {before:"No ", after:" hambre.", answer:"tengo", inf:"tener", cn:"我不餓。", src:"tatoeba:864893", tp:"吃喝"},
+    {before:"¿", after:" tiene sed?", answer:"Quién", inf:"疑問詞:誰", cn:"誰口渴？", src:"tatoeba:9462450", tp:"吃喝"},
+    {before:"", after:" comer helado.", answer:"Quiero", inf:"querer", cn:"我想吃冰淇淋。", src:"tatoeba:5146808", tp:"吃喝"},
+    {before:"¿Carne ", after:" pescado?", answer:"o", inf:"連接詞:或、還是", cn:"要肉還是魚？", src:"tatoeba:1173653", tp:"吃喝"},
+    {before:"Normalmente ", after:" aquí.", answer:"desayuno", inf:"desayunar", cn:"我通常在這裡吃早餐。", src:"tatoeba:549401", tp:"吃喝"},
+    {before:"¿Qué hora ", after:"?", answer:"es", inf:"ser", cn:"現在幾點？", src:"tatoeba:2830", tp:"時間日期"},
+    {before:"", after:" las dos.", answer:"Son", inf:"ser(報時)", cn:"現在兩點。", src:"tatoeba:2225009", tp:"時間日期"},
+    {before:"Mañana es ", after:".", answer:"domingo", inf:"名詞:星期天", cn:"明天是星期天。", src:"tatoeba:656878", tp:"時間日期"},
+    {before:"Hoy es mi ", after:".", answer:"cumpleaños", inf:"名詞:生日", cn:"今天是我的生日。", src:"tatoeba:985107", tp:"時間日期"},
+    {before:"Hoy no ", after:" clases.", answer:"tengo", inf:"tener", cn:"我今天沒課。", src:"tatoeba:1128209", tp:"時間日期"},
+    {before:"Nos vemos ", after:".", answer:"mañana", inf:"副詞:明天", cn:"明天見。", src:"tatoeba:2216149", tp:"時間日期"},
+    {before:"Hoy ", after:" mucho calor.", answer:"hace", inf:"hacer(天氣)", cn:"今天很熱。", src:"tatoeba:2858", tp:"天氣"},
+    {before:"Hace mucho ", after:".", answer:"frío", inf:"名詞:冷", cn:"天氣好冷。", src:"tatoeba:623776", tp:"天氣"},
+    {before:"Hace mucho viento, ", after:" no hace frío.", answer:"pero", inf:"連接詞:但是", cn:"風很大，但是不冷。", src:"tatoeba:10097437", tp:"天氣"},
+    {before:"No me gusta el ", after:".", answer:"verano", inf:"名詞:夏天", cn:"我不喜歡夏天。", src:"tatoeba:501964", tp:"天氣"},
+    {before:"¿Te ", after:" la lluvia?", answer:"gusta", inf:"gustar", cn:"你喜歡下雨嗎？", src:"tatoeba:566126", tp:"天氣"},
+    {before:"Mi casa ", after:" aquí.", answer:"está", inf:"estar", cn:"我家在這裡。", src:"tatoeba:1275958", tp:"地點方位"},
+    {before:"¿", after:" está tu madre?", answer:"Dónde", inf:"疑問詞:哪裡", cn:"你媽媽在哪裡？", src:"tatoeba:3555037", tp:"地點方位"},
+    {before:"¿Por qué no ", after:" en casa?", answer:"estás", inf:"estar", cn:"你為什麼不在家？", src:"tatoeba:2783046", tp:"地點方位"},
+    {before:"Mi país está ", after:" de Japón.", answer:"lejos", inf:"副詞:遠", cn:"我的國家離日本很遠。", src:"tatoeba:1932119", tp:"地點方位"},
+    {before:"Aquí no ", after:" nada.", answer:"hay", inf:"haber(hay)", cn:"這裡什麼都沒有。", src:"tatoeba:1591598", tp:"地點方位"},
+    {before:"¿Cuántos gatos hay en ", after:" casa?", answer:"esta", inf:"指示詞:這(陰性)", cn:"這間房子裡有幾隻貓？", src:"tatoeba:751831", tp:"地點方位"},
+    {before:"¿Cuánto ", after:" esta cámara?", answer:"cuesta", inf:"costar", cn:"這台相機多少錢？", src:"tatoeba:5367928", tp:"購物數字"},
+    {before:"Esto es ", after:" caro.", answer:"muy", inf:"副詞:很", cn:"這個很貴。", src:"tatoeba:969977", tp:"購物數字"},
+    {before:"No tengo tiempo ", after:" dinero.", answer:"ni", inf:"連接詞:也不", cn:"我沒時間也沒錢。", src:"tatoeba:642185", tp:"購物數字"},
+    {before:"¿Cuántos libros ", after:"?", answer:"tienes", inf:"tener", cn:"你有幾本書？", src:"tatoeba:600171", tp:"購物數字"},
+    {before:"", after:" más dinero.", answer:"Necesito", inf:"necesitar", cn:"我需要更多錢。", src:"tatoeba:2432098", tp:"購物數字"},
+    {before:"", after:" bien, gracias.", answer:"Estoy", inf:"estar", cn:"我很好，謝謝。", src:"tatoeba:493008", tp:"感受狀態"},
+    {before:"Estoy muy ", after:".", answer:"cansado", inf:"形容詞:累(陽性)", cn:"我好累。", src:"tatoeba:377265", tp:"感受狀態"},
+    {before:"Siempre ", after:" ocupado.", answer:"estoy", inf:"estar", cn:"我總是很忙。", src:"tatoeba:746893", tp:"感受狀態"},
+    {before:"¿No estás ", after:"?", answer:"cansada", inf:"形容詞:累(陰性)", cn:"你不累嗎？", src:"tatoeba:540018", tp:"感受狀態"},
+    {before:"¿Te gusta el ", after:"?", answer:"béisbol", inf:"名詞:棒球", cn:"你喜歡棒球嗎？", src:"tatoeba:1856745", tp:"喜好休閒"},
+    {before:"No me ", after:" los perros.", answer:"gustan", inf:"gustar", cn:"我不喜歡狗。", src:"tatoeba:1970668", tp:"喜好休閒"},
+    {before:"No ", after:" nadar.", answer:"sabe", inf:"saber(會)", cn:"他不會游泳。", src:"tatoeba:1089628", tp:"喜好休閒"},
+    {before:"Su libro es muy ", after:".", answer:"interesante", inf:"形容詞:有趣的", cn:"她的書很有趣。", src:"tatoeba:2635959", tp:"喜好休閒"},
   ],
 };
 
@@ -3438,7 +3451,7 @@ const EN = {
   "¡Hola! ¿Cómo te llamas?": "Hi! What's your name?",
   "Me llamo Chen. ¿Y tú?": "My name is Chen. And you?",
   "¿De dónde eres?": "Where are you from?",
-  "Soy de Taiwán, pero ahora vivo en Madrid.": "I'm from Taiwan, but I live in Madrid now.",
+  "Soy de Taiwán y vivo en Taipéi.": "I'm from Taiwan and I live in Taipei.",
   "¿A qué te dedicas?": "What do you do for a living?",
   "Soy estudiante y trabajo a tiempo parcial.": "I'm a student and I work part-time.",
   "¿Cuántos años tienes?": "How old are you?",
@@ -4622,7 +4635,7 @@ function renderTalk(){
     <div class="tk-turn">
       <span class="tk-turn-h">換你說</span>
       <div class="tk-cue">
-        <div class="tk-cue-tag">範例句</div>
+        <div class="tk-cue-tag">範例句${/Chen/.test(it.a)?" · Chen 換成你的名字":""}</div>
         <div class="tk-cue-es">${annotate(it.a,it.notes)} ${spkHTML(it.a)}</div>
         <div class="tk-cue-cn">${esc(it.acn)}</div>
         <div class="tk-acts"><button class="btn" id="tk-say">我唸完這句了 ›</button></div>
@@ -4736,7 +4749,7 @@ function renderTalk(){
     /* 跟範例句不同不代表錯(「Estoy cansado.」比範例句短,一樣是對的),所以標題不寫「只對上幾 %」,只講跟範例句哪裡不同 */
     vd.innerHTML=`<div class="tk-v-h">${answering?"跟範例句說法不一樣":"你說要講別的,所以沒有拿範例句比對"}</div>
       ${answering?`<div class="tk-v-diff">${rep.diffHtml}</div>`:""}
-      ${blocks.join("")||'<p class="tk-v-note">查表沒有查到地區用法或 ser/estar 陷阱。</p>'}
+      ${blocks.join("")}
       <p class="tk-v-note"><b>整句對不對,這個網站判斷不了</b>,所以這句不計分,也不會隨便算你過。</p>
       <p class="tk-v-note">這是照劇本走的對話,不是 AI:對方會照劇本問下一句,不會接你這句。</p>
       <div class="tk-acts"><button class="btn" id="tk-keep">記下來,繼續下一句</button>
@@ -4797,6 +4810,7 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
   /* 既有 33 條依序對應的分類(新加的條目自帶 cat,不靠這張表) */
   const GRAMCAT=["特殊句型 · Estructuras","詞彙與其他 · Léxico","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞結構 · Perífrasis","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞結構 · Perífrasis","動詞結構 · Perífrasis","特殊句型 · Estructuras","代名詞 · Pronombres","代名詞 · Pronombres","語氣 · Modos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","語氣 · Modos","詞彙與其他 · Léxico","代名詞 · Pronombres","詞彙與其他 · Léxico"];
   const byCat={}; DATA.gramatica.forEach((g,i)=>{ const c=g.cat||GRAMCAT[i]||"其他"; (byCat[c]=byCat[c]||[]).push(g); });
+  Object.keys(byCat).forEach(c=>{ const a=byCat[c]; byCat[c]=a.map((g,i)=>[g,i]).sort((x,y)=>((/現在/.test(x[0].tag||"")?0:1)-(/現在/.test(y[0].tag||"")?0:1))||x[1]-y[1]).map(x=>x[0]); });
   const cats=GRAM_ORDER.filter(c=>byCat[c]).concat(Object.keys(byCat).filter(c=>GRAM_ORDER.indexOf(c)<0));
   const norm=s=>(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
   cats.forEach(cat=>{
@@ -5193,6 +5207,7 @@ function ejBreak(ej){ var arr=EJW[ej]; if(!arr||!arr.length) return ""; var h='<
 let rtWhy={};   /* 「今天的五分鐘」排進來的卡,各自的理由;rtQueue() 填 */
 const RT_WHY_LABEL={talk:"今天對話卡住的字",miss:"今天填空錯的字",scene:"今天對話裡的字",due:"到期複習",fresh:"新字"};
 function renderCard(){
+  $("#flash-stage").classList.remove("shown");
   const total=CARDS.length, done=CARDS.filter(w=>cardStatus(w.es)==="learned").length;
   $("#fc-total").textContent=total; $("#fc-done").textContent=done; $("#vc-prog").style.width=(done/total*100)+"%";
   const fc=$("#fc"); fc.classList.remove("flip");
@@ -5208,7 +5223,10 @@ function renderCard(){
   $$("#fc .spk").forEach(b=>{ b.onclick=e=>{ e.stopPropagation(); speak(b.dataset.t,b); }; });
   $$("#fc .ejw-c").forEach(c=>{ c.onclick=e=>{ e.stopPropagation(); const t=c.querySelector(".ejw-w"); if(t) speak(t.textContent,c); }; });
 }
-$("#fc").onclick=()=>{ if(vMode==="flip") $("#fc").classList.toggle("flip"); };
+/* 複習中:先只看西文想意思,點卡片(或「看意思」)才翻開;沒翻開不能評分,不然「忘了/記得」沒有意義 */
+function fcReveal(){ $("#flash-stage").classList.add("shown"); }
+$("#fc").onclick=()=>{ if(rvActive && vMode==="both"){ fcReveal(); return; } if(vMode==="flip") $("#fc").classList.toggle("flip"); };
+$("#fc-show").onclick=fcReveal;
 $("#fc-next").onclick=()=>{if(vList.length){vIdx=(vIdx+1)%vList.length;renderCard();}};
 $("#fc-prev").onclick=()=>{if(vList.length){vIdx=(vIdx-1+vList.length)%vList.length;renderCard();}};
 let rvActive=false, rvQueue=[];
@@ -5370,20 +5388,40 @@ let exLog=lsGet(EXKEY,[]);
 let round=[], res=[], roundLogged=false;   // res[pos]:沒值=還沒檢查;"ok"/"no"=檢查過;"seen"=先按了看答案,不計分
 /* a1=true:只從標了 src 的 50 題 A1 題庫抽(「今天的五分鐘」用)。
    原本那 20 題有過去式、虛擬式、現在完成式,新手第一天抽到會卡住,留在「綜合練習」自己按「換一組」時才會出現 */
-function pick5(a1){
+function pick5(a1,tps){
   const idx=[...POOL.keys()].filter(i=>!a1||POOL[i].src);
   for(let i=idx.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=idx[i]; idx[i]=idx[j]; idx[j]=t; }
+  /* 給了話題(今天對話的場景)就先放最多 3 題同話題的,其餘隨機 */
+  if(tps&&tps.length){ const on=idx.filter(i=>tps.indexOf(POOL[i].tp)>=0).slice(0,3); return on.concat(idx.filter(i=>on.indexOf(i)<0)).slice(0,5); }
   return idx.slice(0,Math.min(5,idx.length));
 }
+/* 對話場景 → 填空題的話題(題目的話題寫在 tp,來自挑句子時的分類) */
+const SCENE_TOPICS={"日常閒聊":["感受狀態","喜好休閒"],"健康話題":["感受狀態","時間日期"],"咖啡廳點餐":["吃喝","購物數字"],
+  "天氣與運動":["天氣","喜好休閒"],"工作與學業":["自我介紹","時間日期"],"旅遊與機場":["地點方位","時間日期"],"自我介紹與交友":["自我介紹","家人朋友"]};
+/* 填空提示裡的「變化表」:現在式,拉美用的五個人稱(不列 vosotros)。不規則的照表,規則的照字尾變 */
+const CONJ_IRR={ser:"soy eres es somos son",estar:"estoy estás está estamos están",tener:"tengo tienes tiene tenemos tienen",
+  ir:"voy vas va vamos van",hacer:"hago haces hace hacemos hacen",poder:"puedo puedes puede podemos pueden",
+  querer:"quiero quieres quiere queremos quieren",saber:"sé sabes sabe sabemos saben",costar:"cuesto cuestas cuesta costamos cuestan",
+  soler:"suelo sueles suele solemos suelen",pedir:"pido pides pide pedimos piden",decir:"digo dices dice decimos dicen",
+  llevar:"llevo llevas lleva llevamos llevan",llamarse:"me llamo|te llamas|se llama|nos llamamos|se llaman"};
+const CONJ_PRON=["yo","tú","él / ella / usted","nosotros","ellos / ustedes"];
+function conjOf(inf){ const v=(/^([a-záéíóúñ]+)/i.exec(inf||"")||[])[1]; if(!v) return null; const k=v.toLowerCase();
+  if(k==="gustar") return "me gusta + 單數 / me gustan + 複數(te gusta、le gusta…)";
+  if(k==="haber") return "有(某處有某物)固定用 hay";
+  let f=CONJ_IRR[k]; if(f) f=f.split(f.indexOf("|")>=0?"|":" ");
+  else { const m=/^(.+)(ar|er|ir)$/.exec(k); if(!m) return null; const st=m[1], e={ar:["o","as","a","amos","an"],er:["o","es","e","emos","en"],ir:["o","es","e","imos","en"]}[m[2]]; f=e.map(x=>st+x); }
+  return CONJ_PRON.map((p,i)=>`${p} <b lang="es">${f[i]}</b>`).join(" · "); }
 let roundA1=false;
 function newRound(a){
   const a1=(a===true);   // 按鈕事件呼叫時 a 是 event,不算
-  round=pick5(a1); roundA1=a1; res=[]; roundLogged=false;
+  const sc=a1&&DATA.dialogos[rtToday().scene];
+  round=pick5(a1, sc?SCENE_TOPICS[sc.scene]:null); roundA1=a1; res=[]; roundLogged=false;
   exList.innerHTML=round.map((qi,pos)=>{ const e=POOL[qi];
     return `<div class="card ex"><div class="ex-sent">${e.before}<input class="blank" data-i="${pos}" autocomplete="off" spellcheck="false" lang="es" aria-label="第 ${pos+1} 題填空">${e.after}</div>`+
-      `<div class="ex-hint">提示 · Pista:${e.inf} ｜ ${e.cn}${EN[e.before+e.answer+e.after]?` ｜ <span class="ex-en en-line">${esc(EN[e.before+e.answer+e.after])}</span>`:""} <button class="ex-show" data-show="${pos}">看答案<span class="es2">Ver</span></button></div><div class="ex-fb" data-fb="${pos}"></div></div>`;
+      `<div class="ex-hint">提示 · Pista:${e.inf} ｜ ${e.cn}${EN[e.before+e.answer+e.after]?` ｜ <span class="ex-en en-line">${esc(EN[e.before+e.answer+e.after])}</span>`:""} ${conjOf(e.inf)?` <button class="ex-conj-btn" type="button" data-conj="${pos}">變化表</button>`:""} <button class="ex-show" data-show="${pos}">看答案<span class="es2">Ver</span></button></div>${conjOf(e.inf)?`<div class="ex-conj" data-conjbox="${pos}" hidden>${conjOf(e.inf)}</div>`:""}<div class="ex-fb" data-fb="${pos}"></div></div>`;
   }).join("");
   $("#ex-score").textContent="";
+  $$(".ex-conj-btn",exList).forEach(b=>b.onclick=()=>{ const box=$(`[data-conjbox="${b.dataset.conj}"]`,exList); box.hidden=!box.hidden; });
   /* Enter 只檢查這一題,然後跳到下一個還沒檢查的空格;原本 Enter 會檢查全部,把沒填的答案一起掀開 */
   $$(".blank",exList).forEach(inp=>inp.addEventListener("keydown",ev=>{ if(ev.key!=="Enter")return; ev.preventDefault();
     const pos=+inp.dataset.i; if(checkOne(pos)||res[pos]) exFocusNext(pos); }));
@@ -5444,7 +5482,11 @@ $("#reset-all").onclick=()=>{ if(confirm("確定要清除『全部』進度嗎?(
   const CODEKEY="miEspanol.syncCode", ATKEY="miEspanol.syncAt";
   const stateEl=$("#sync-state"), linkedEl=$("#sync-linked"), unlinkedEl=$("#sync-unlinked"), codeEl=$("#sync-code");
   let code=localStorage.getItem(CODEKEY)||"", pushTimer=null;
-  const _set=localStorage.setItem.bind(localStorage);
+  /* 存檔時順便排一次上傳。攔截掛在 Storage.prototype 上:直接改 localStorage.setItem 在 Chrome 會生效,
+     但照規格,有些瀏覽器會把它當成「存一筆叫 setItem 的資料」,攔截就沒了(手機進度不會自動上傳) */
+  const _protoSet=Storage.prototype.setItem;
+  const _set=(k,v)=>_protoSet.call(localStorage,k,v);
+  try{ const junk=localStorage.getItem("setItem"); if(junk!==null && junk.indexOf("schedulePush")>=0) localStorage.removeItem("setItem"); }catch(_){}
   function progressData(){ const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf("miEspanol.")===0&&k!==CODEKEY&&k!==ATKEY) o[k]=localStorage.getItem(k); } return o; }
   function setState(t,on){ stateEl.textContent=t; stateEl.classList.toggle("on",!!on); }
   function paint(){ if(code){ linkedEl.hidden=false; unlinkedEl.hidden=true; codeEl.textContent=code; } else { linkedEl.hidden=true; unlinkedEl.hidden=false; setState("未連結",false); } }
@@ -5462,7 +5504,8 @@ $("#reset-all").onclick=()=>{ if(confirm("確定要清除『全部』進度嗎?(
         _set(ATKEY,String(cloudAt||Date.now())); _set(CODEKEY,code); setState("已更新 ✓",true); location.reload();
       } else { setState("已同步 ✓",true); }
     }catch(e){ setState("離線,稍後重試",false); } }
-  localStorage.setItem=function(k,v){ _set(k,v); if(code&&typeof k==="string"&&k.indexOf("miEspanol.")===0&&k!==CODEKEY&&k!==ATKEY) schedulePush(); };
+  Storage.prototype.setItem=function(k,v){ _protoSet.call(this,k,v);
+    if(this===localStorage&&code&&typeof k==="string"&&k.indexOf("miEspanol.")===0&&k!==CODEKEY&&k!==ATKEY) schedulePush(); };
   if(location.protocol==="file:"){ unlinkedEl.innerHTML='<p class="sync-note" style="margin:0">同步功能請用網路版:<b>mi-espanol-web.vercel.app</b>(本機開啟的檔案無法連雲端)。</p>'; setState("僅網路版",false); return; }
   $("#sync-create").onclick=async()=>{ code=genCode(); _set(CODEKEY,code); paint(); await push(); };
   $("#sync-link").onclick=async()=>{ const v=($("#sync-input").value||"").toUpperCase().replace(/[^A-Z0-9]/g,""); if(v.length<4){ alert("請輸入有效的同步碼。"); return; } code=v; _set(CODEKEY,code); paint(); setState("連結中…",false); await pull({adopt:true,seedIfEmpty:true}); };
@@ -5479,7 +5522,7 @@ function reflow(id){ const el=document.getElementById(id); el.querySelectorAll("
 
 /* init */
 /* ===== 動詞變化練習(現在式 + 過去式) ===== */
-const PRON6=["yo","tú","él / ella","nosotros","vosotros","ellos / ellas"];
+const PRON6=["yo","tú","él / ella","nosotros","vosotros(西班牙用)","ellos / ellas"];
 const VERBOS=[
   {inf:"hablar",cn:"說話",pres:["hablo","hablas","habla","hablamos","habláis","hablan"],pret:["hablé","hablaste","habló","hablamos","hablasteis","hablaron"]},
   {inf:"trabajar",cn:"工作",pres:["trabajo","trabajas","trabaja","trabajamos","trabajáis","trabajan"],pret:["trabajé","trabajaste","trabajó","trabajamos","trabajasteis","trabajaron"]},
@@ -5507,7 +5550,7 @@ const VERBOS=[
   {inf:"pedir",cn:"點;要求",pres:["pido","pides","pide","pedimos","pedís","piden"],pret:["pedí","pediste","pidió","pedimos","pedisteis","pidieron"]}
 ];
 let vbTense="pres", vbQ=null, vbScore={ok:0,total:0};
-function vbPick(){ const v=VERBOS[Math.floor(Math.random()*VERBOS.length)]; const p=Math.floor(Math.random()*6); const t=(vbTense==="mix")?TKEYS[Math.floor(Math.random()*TKEYS.length)]:vbTense; vbQ={v:v,p:p,t:t,ans:v[t][p]}; }
+function vbPick(){ const v=VERBOS[Math.floor(Math.random()*VERBOS.length)]; const p=[0,1,2,3,5][Math.floor(Math.random()*5)];   /* 不考 vosotros:本站教拉美 */ const t=(vbTense==="mix")?TKEYS[Math.floor(Math.random()*TKEYS.length)]:vbTense; vbQ={v:v,p:p,t:t,ans:v[t][p]}; }
 function vbRender(){ if(!vbQ)vbPick(); const inp=$("#vb-input"),fb=$("#vb-fb"); const tl=TLABEL[vbQ.t]||vbQ.t;
   $("#vb-prompt").innerHTML=`<span class="vb-inf">${vbQ.v.inf}</span><span class="vb-cn">${vbQ.v.cn}</span><div class="vb-ask">寫出 <b>${PRON6[vbQ.p]}</b> 的 <b>${tl}</b></div>`;
   inp.value="";inp.className="vb-input";inp.readOnly=false; fb.textContent="";fb.className="vb-fb"; inp.focus(); }
@@ -5526,7 +5569,7 @@ function buildVerbos(){ const tb=$("#vb-tense"); if(!tb)return; tb.innerHTML="";
 
 /* ===== 每日複習(輕量) ===== */
 function dayIndex(){ const d=new Date(); return Math.floor((d-new Date(d.getFullYear(),0,0))/86400000); }
-function songLines(){ const out=[]; DATA.songs.forEach(s=>(s.lines||[]).forEach(l=>{ if(l&&typeof l==="object"&&l.es&&l.cn&&!/^[(（]/.test(l.cn.trim())) out.push(l); })); return out; }
+function songLines(){ const out=[]; DATA.songs.forEach(s=>(s.lines||[]).forEach(l=>{ if(l&&typeof l==="object"&&l.es&&l.cn&&!/^[(（]/.test(l.cn.trim())&&/[.!?…]["»”]?$/.test(l.es.trim())&&!/[,，、]$/.test(l.cn.trim())&&l.es.trim().split(/\s+/).length>=3) out.push(l); })); return out; }
 function renderDaily(){ const box=$("#daily"); if(!box)return;
   const total=CARDS.length;
   const dueN=CARDS.filter(w=>isDue(w.es)).length;
@@ -5544,7 +5587,7 @@ function renderDaily(){ const box=$("#daily"); if(!box)return;
       `<div class="stat"><span class="stat-n">${learned}<small>/${total}</small></span><span class="stat-l">已學會</span></div>`+
     `</div>`+
     `<div class="prog-mini"><i style="width:${pct}%"></i></div>`+
-    `<div class="daily-row">${ dueN>0 ? ('有 <b>'+dueN+'</b> 張卡到期 <button class="btn daily-go" id="daily-go">開始複習</button>') : ('今天複習完成 '+svgIcon(ICON.check,14)+' 太棒了!') }</div>`+
+    `<div class="daily-row">${ dueN>0 ? ('有 <b>'+dueN+'</b> 張卡到期 <button class="btn daily-go" id="daily-go">開始複習</button>') : (todayN>0?('今天的複習做完了 '+svgIcon(ICON.check,14)):'今天沒有到期的卡。新字會排在首頁「今天的五分鐘」裡。') }</div>`+
     (ln?`<div class="daily-line"><span class="daily-tag">今日一句</span><span class="daily-es">${esc(ln.es)}</span> ${spkHTML(ln.es)}<div class="daily-cn">${esc(ln.cn)}</div></div>`:"");
   const go=$("#daily-go"); if(go) go.onclick=startReview; }
 
@@ -6050,7 +6093,13 @@ function rtToday(){ const t=dayStr();
   if(rt.d!==t){ const n=rt.nTalk||0; rt={d:t,nTalk:n,scene:RT_SCENES[n%RT_SCENES.length]||0}; rtSave(); }
   return rt; }
 function rtCatRank(w){ const i=RT_CATS.indexOf(catOf(w)); return i<0?RT_CATS.length:i; }
-function rtGo(k){ rtBarHide(); ({talk:rtGoTalk,cards:rtGoCards,drill:rtGoDrill})[k](); }
+const RT_SEC={talk:"dialogos",drill:"ejercicios",cards:"vocabulario"};
+const rtCrumbEl=document.createElement("div"); rtCrumbEl.className="rt-crumb"; rtCrumbEl.id="rt-crumb";
+function rtCrumb(k){ const sec=document.getElementById(RT_SEC[k]); const head=sec&&sec.querySelector(".sec-head"); if(!head){ rtCrumbEl.remove(); return; }
+  const i=RT_STEPS.findIndex(s=>s.k===k)+1;
+  rtCrumbEl.innerHTML=`今天的五分鐘 · 第 ${i} 步,共 ${RT_STEPS.length} 步 <button class="tk-link" type="button">回今天</button>`;
+  rtCrumbEl.dataset.sec=RT_SEC[k]; rtCrumbEl.querySelector("button").onclick=()=>show("hoy"); head.after(rtCrumbEl); }
+function rtGo(k){ rtBarHide(); ({talk:rtGoTalk,cards:rtGoCards,drill:rtGoDrill})[k](); if(!rtToday()[k]) rtCrumb(k); }
 /* 換到那一步的分頁後,練習區如果在畫面下半部,直接捲到它 */
 function rtScrollTo(el){ if(!el)return; const top=el.getBoundingClientRect().top;
   if(top>innerHeight*0.45){ try{ window.scrollTo({top:top+scrollY-14,behavior:"instant"}); }catch(_){ window.scrollTo(0,top+scrollY-14); } } }
@@ -6071,9 +6120,9 @@ function rtGoDrill(){ show("ejercicios");
   if(matchMedia("(pointer:fine)").matches){ const p=Math.max(0,round.findIndex((_,i)=>!res[i])); const inp=$(`.blank[data-i="${p}"]`,exList); if(inp) inp.focus({preventScroll:true}); } }
 /* 記下今天完成了哪一步;還有下一步就在下面浮一條「下一步」,三步都做完就請你回首頁看收尾 */
 function rtDone(k,info){ const r=rtToday(); if(r[k])return;
-  r[k]=1; if(k==="talk") r.nTalk=(r.nTalk||0)+1; Object.assign(r,info||{}); rtSave();
+  r[k]=1; if(k==="talk") r.nTalk=(r.nTalk||0)+1; Object.assign(r,info||{}); rtSave(); rtCrumbEl.remove();
   const left=RT_STEPS.filter(s=>!r[s.k]);
-  if(!left.length) rtBar("今天的五分鐘做完了。","回今天看看",()=>show("hoy"));
+  if(!left.length){ addXP(10); rtBar("今天的五分鐘做完了,+10 XP。","回今天看看",()=>show("hoy")); }
   else rtBar(`第 ${RT_STEPS.findIndex(s=>s.k===k)+1} 步完成。`,"下一步:"+left[0].t,()=>rtGo(left[0].k));
 }
 const rtBarEl=document.createElement("div"); rtBarEl.id="rt-bar"; rtBarEl.setAttribute("role","status"); rtBarEl.hidden=true; document.body.appendChild(rtBarEl);
@@ -6131,7 +6180,7 @@ function renderHoy(){
 })();
 
 const _showBase=show;
-show=function(id){ _showBase(id); document.body.classList.toggle("on-progreso",id==="progreso"); if(id==="progreso")renderProgreso(); if(id==="hoy"){ rtBarHide(); renderHoy(); } };
+show=function(id){ _showBase(id); if(rtCrumbEl.dataset.sec&&rtCrumbEl.dataset.sec!==id) rtCrumbEl.remove(); document.body.classList.toggle("on-progreso",id==="progreso"); if(id==="progreso")renderProgreso(); if(id==="hoy"){ rtBarHide(); renderHoy(); } };
 
 /* 單字卡頂端 2 顆顯示＋14 顆主題＋4 顆狀態晶片,收成一行「目前的選擇 · 更換」。晶片沒拆,只是收起來 */
 const VC_MODE_LABEL={both:"中西對照",flip:"翻卡測驗"}, VC_FILTER_LABEL={all:"全部",due:"今日到期",review:"學習中",learned:"已學會"};
@@ -6163,6 +6212,7 @@ dlgPickRender(false);
 checkLogros();
 
 renderDlg(); buildVList(); renderSong(); buildVerbos(); renderDaily(); show("hoy");
+{ const gn=$("#gram-n"); if(gn) gn.textContent=DATA.gramatica.length; }
 if("serviceWorker" in navigator){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
 </script>
 </body>
