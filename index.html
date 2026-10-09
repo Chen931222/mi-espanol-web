@@ -6,10 +6,10 @@
 <!-- impeccable-disable side-tab -- 文法註（藍）和例句（黃）用左邊線分類，是書裡引文的排法；左側是直角，不是圓角卡片加色條 -->
 <!-- impeccable-disable layout-transition -- 實測（2026-09-29，手機尺寸、CPU 降速 4 倍）：展開文法註最慢一格 5ms、動詞變位表 15ms，都沒有掉格；展開動畫是體驗的一部分，改成只動 transform 會讓下面的內容瞬間跳位 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mi Español · 我的西班牙文學習筆記</title>
-<meta name="description" content="我學西班牙文用的筆記站：14 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
+<title>Mi Español · 每天五分鐘的西班牙文</title>
+<meta name="description" content="每天五分鐘學拉美西班牙文：聊一段對話、填 5 題空、複習當天卡住的字。14 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Mi Español · 我的西班牙文學習筆記">
+<meta property="og:title" content="Mi Español · 每天五分鐘的西班牙文">
 <meta property="og:description" content="14 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
 <meta property="og:url" content="https://mi-espanol-web.vercel.app/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -451,6 +451,11 @@ body:not(.on-progreso) footer{margin-top:34px}
 .rt-meta{font-size:.9rem;font-weight:700;color:var(--ink-soft)}
 .rt-sum{margin-top:14px;font-family:var(--font-display);font-weight:600;font-size:1.12rem;color:var(--ink)}
 .rt-next{margin-top:4px;color:var(--ink-soft);font-weight:700}
+.wtp{margin-top:16px;padding:14px 16px;border:1.5px dashed var(--line-strong);border-radius:14px;background:var(--paper-2)}
+.wtp-q{margin:0;font-weight:700;color:var(--ink)}
+.wtp-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.wtp-row .chip{min-height:40px}
+.wtp-note{margin:8px 0 0;font-size:.75rem;color:var(--ink-soft)}
 @media(max-width:480px){
   .rt-step{grid-template-columns:30px 1fr}
   .rt-d{grid-column:2}
@@ -560,6 +565,7 @@ body.rt-bar-on #toast-box{bottom:92px}
 .tk-more{display:flex;align-items:center;gap:10px;margin-top:12px}
 .tk-sep{color:var(--line-strong)}
 .tk-utils{margin-top:12px}
+.tk-rep-row{display:flex;flex-wrap:wrap;gap:8px}
 .tk-utils[hidden]{display:none}
 .tk-utils-h{font-size:.76rem;color:var(--ink-soft);margin-bottom:8px}
 .tk-utils-row{display:flex;gap:9px;flex-wrap:wrap}
@@ -689,7 +695,7 @@ body.np-open .note-pop{transform:translateY(0)}
 <div class="grain"></div>
 <div class="app">
   <aside class="sidebar">
-    <h1 class="brand"><a class="brand-link" href="intro.html" title="回產品導覽 · Tour">Mi <span class="accent">Español</span><span class="brand-tag">我的西班牙文學習筆記</span></a></h1>
+    <h1 class="brand"><a class="brand-link" href="intro.html" title="回產品導覽 · Tour">Mi <span class="accent">Español</span><span class="brand-tag">每天五分鐘的西班牙文</span></a></h1>
     <nav class="side-nav" id="tabs"></nav>
   </aside>
   <!-- 手機底部分頁列與「更多」清單(內容由下面的 script 依 TABS 產生) -->
@@ -4823,7 +4829,17 @@ function renderTalk(){
       </div>`).join("")}
       <div class="tk-more">
         <button class="tk-link" id="tk-fixtoggle">沒聽懂</button><span class="tk-sep">·</span>
-        <button class="tk-link" id="tk-toggle">想說別的,打字</button>
+        <button class="tk-link" id="tk-toggle">想說別的,打字</button><span class="tk-sep">·</span>
+        <button class="tk-link" id="tk-reptoggle">回報錯誤</button>
+      </div>
+      <div class="tk-utils" id="tk-report" hidden>
+        <div class="tk-utils-h">這一回合哪裡有問題?匿名,只記選項。</div>
+        <div class="tk-utils-row tk-rep-row">
+          <button class="chip" type="button" data-rep="q|es">對方那句西文有錯</button>
+          <button class="chip" type="button" data-rep="a|es">範例句西文有錯</button>
+          <button class="chip" type="button" data-rep="a|cn">中文翻譯有錯</button>
+          <button class="chip" type="button" data-rep="a|odd">說法不自然</button>
+        </div>
       </div>
       <div class="tk-utils" id="tk-utils" hidden>
         <div class="tk-utils-h">對方會把同一句再說一遍(慢速),不會跳過。</div>
@@ -4855,6 +4871,10 @@ function renderTalk(){
     card.onclick=e=>{ if(e.target.closest(".spk"))return; pick(); };
   });
   $("#tk-fixtoggle").onclick=()=>{ const u=$("#tk-utils"); u.hidden=!u.hidden; };
+  $("#tk-reptoggle").onclick=()=>{ const u=$("#tk-report"); u.hidden=!u.hidden; };
+  wrap.querySelectorAll("[data-rep]").forEach(b=>b.onclick=()=>{ const [f,r]=b.dataset.rep.split("|");
+    fbSend({type:"report",item:dScene+"-"+dTalkStep,field:f,reason:r});
+    $("#tk-report").innerHTML='<div class="tk-utils-h">謝謝,記下了。站主會照這個去改。</div>'; });
   $("#tk-toggle").onclick=()=>{ const w=$("#tk-typewrap"); w.hidden=!w.hidden; if(!w.hidden)$("#tk-input").focus(); };
   wrap.querySelectorAll(".tk-util").forEach(b=>b.onclick=()=>{ const u=TALKFIX[+b.dataset.u]; talkCommit(u.es,u.cn,"fix"); });
   /* 打字區只留一件事要先問:用陽性還是陰性自稱(影響 -o/-a 的判定)。本機判得到什麼、判不到什麼,送出後在結果裡講 */
@@ -6316,6 +6336,18 @@ function rtBar(msg,label,fn){
   rtBarEl.querySelector(".rt-bar-x").onclick=rtBarHide; }
 function rtBarHide(){ rtBarEl.hidden=true; document.body.classList.remove("rt-bar-on"); }
 
+/* ===== 付費意願與錯誤回報:匿名計數,送到 /api/feedback(只收固定選項,不收文字) ===== */
+const WTPKEY="miEspanol.wtpAsked";
+const WTP_OPTS=[["none","不會付"],["m30","每月 NT$30"],["m60","每月 NT$60"],["m120","每月 NT$120"]];
+function fbSend(body){ try{ return fetch("/api/feedback",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}).catch(()=>{}); }catch(_){ return Promise.resolve(); } }
+function wtpHTML(){ let asked=null; try{ asked=localStorage.getItem(WTPKEY); }catch(_){}
+  if(asked) return "";
+  return `<div class="wtp" id="wtp"><p class="wtp-q">問一件事:如果這五分鐘要付費,你最多願意付多少?</p>
+    <div class="wtp-row">${WTP_OPTS.map(([v,t])=>`<button class="chip" type="button" data-wtp="${v}">${t}</button>`).join("")}</div>
+    <p class="wtp-note">匿名,只記你選了哪一個。</p></div>`; }
+function wtpAnswer(v){ try{ localStorage.setItem(WTPKEY,v); }catch(_){}
+  fbSend({type:"wtp",choice:v}); const w=$("#wtp"); if(w) w.innerHTML='<p class="wtp-q">謝謝,收到了。</p>'; }
+
 /* ===== 0. 「今天」首頁 ===== */
 function renderHoy(){
   const box=$("#hoy-hero"); if(!box)return;
@@ -6333,11 +6365,12 @@ function renderHoy(){
     const tomorrow=DATA.dialogos[RT_SCENES[(r.nTalk||0)%RT_SCENES.length]]||sc;
     const sum=[r.said!=null?`回了 ${r.said} 句`:"", r.cardsN?`單字 ${r.cardsN} 張`:"", r.drillN?`填空 ${r.drillOk} / ${r.drillN}`:""].filter(Boolean).join(" · ");
     head=`<h2 class="hoy-hi">¡Listo!<span>今天的五分鐘做完了</span></h2>`;
-    foot=`${sum?`<p class="rt-sum">${sum}</p>`:""}<p class="rt-next">${ss?`連續 ${ss} 天。`:""}明天聊:${esc(tomorrow.scene)}。</p>`;
+    foot=`${sum?`<p class="rt-sum">${sum}</p>`:""}<p class="rt-next">${ss?`連續 ${ss} 天。`:""}明天聊:${esc(tomorrow.scene)}。</p>`+wtpHTML();
   }
   box.innerHTML=head+list+foot+
     (ln?`<div class="daily-line"><span class="daily-tag">今日一句</span><span class="daily-es">${esc(ln.es)}</span> ${spkHTML(ln.es)}<div class="daily-cn">${esc(ln.cn)}</div></div>`:"");
   const st=$("#rt-start"); if(st) st.onclick=()=>rtGo(next.k);
+  $$("#wtp [data-wtp]").forEach(b=>b.onclick=()=>wtpAnswer(b.dataset.wtp));
   $("#hoy-quick").innerHTML=`<div class="hoy-quick-h">${svgIcon(ICON.game,17)} 還想多練 · Más</div><div class="hoy-grid">
     <button class="hoy-card" data-go="vocabulario">${svgIcon(ICON.game,22)}<b>配對小遊戲</b><span>三分鐘熱身</span></button>
     <button class="hoy-card" data-go="escucha">${svgIcon(ICON.ear,22)}<b>聽寫一句</b><span>練耳朵</span></button>
