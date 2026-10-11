@@ -3849,7 +3849,7 @@ document.addEventListener("click",function(e){
 });
 function noteHTML(n){
   const forms=(n.forms&&n.forms.length)?`<div class="note-forms"><div class="nf-h">詞形變化 · Formas</div>${n.forms.map(f=>`<div class="nf-row"><b class="nf-w">${esc(f.w)}</b><span class="nf-ar">←</span><span class="nf-inf">${esc(f.inf)}</span><span class="nf-m">${esc(f.m||"")}</span>${f.k?`<span class="nf-k">${esc(f.k)}</span>`:""}</div>${fConj(f)}`).join("")}</div>`:"";
-  return `<div class="note-word">${esc(n.t)} ${spkHTML(n.t)}</div><span class="note-pos">${esc(n.g)}</span>
+  return `<div class="note-word">${esc(n.d||n.t)} ${spkHTML(n.d||n.t)}</div><span class="note-pos">${esc(n.g)}</span>
     <div class="note-cn">${esc(n.cn)}</div><div class="note-detail">${safeHTML(n.why)}</div>${forms}`;
 }
 
@@ -4896,6 +4896,31 @@ function openNotePop(html){ notePop.innerHTML='<button class="np-close" id="np-c
 noteBack.onclick=closeNotePop;
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.body.classList.contains("np-open"))closeNotePop(); });
 function allSongs(){ return DATA.songs.concat(mySongs); }
+/* 自己加的歌,站上補寫的文法註(只有註解,不放歌詞)。歌名對上就自動套用,排在 GLOSS 前面、顯示成紅色。
+   t 是要在歌詞裡找的片段;歌詞網站常漏重音,所以每條另外自動補一個去掉重音的版本(顯示時仍用正確寫法)。 */
+const SONGPACK={
+  "tuyo":{by:"Rodrigo Amarante · Narcos 主題曲",notes:[
+    {t:"Soy el fuego", g:"ser + 名詞 · 隱喻", cn:"我是火", why:"說「我就是…」用 <b>ser</b>(身分、本質),不是 estar。歌的前半是一連串「我是…」的隱喻:火、水、城堡、劍。"},
+    {t:"arde tu piel", g:"arder 現在式 (él) · 詩意的及物用法", cn:"燒灼你的肌膚", why:"arder 平常不接受詞:la casa arde(房子在燒)。這裡直接接 tu piel 是詩的寫法,日常會說 <b>quema</b> tu piel。前面的 que 當子句主詞:(那團)燒你的火。"},
+    {t:"mata tu sed", g:"matar la sed · 固定搭配", cn:"解你的渴", why:"matar la sed = 解渴,字面是「殺死口渴」。也說 calmar la sed。"},
+    {t:"la torre yo soy", g:"倒裝 · 表語在前、主詞動詞在後", cn:"(城堡、)高塔就是我", why:"正常語序是 <b>Yo soy</b> el castillo, la torre。把名詞提到前面、yo soy 放最後,是強調,也為了押韻。yo 本來可以省,寫出來是在強調「就是我」。"},
+    {t:"guarda el caudal", g:"省略動詞 soy · guardar 現在式", cn:"守護財寶", why:"整句 La espada que guarda el caudal 前面省了 Soy,從這裡開始只列名詞。caudal 原意是「水流量」,也指財富,跟前面的 agua 呼應。"},
+    {t:"Tú el", g:"主格 tú · 省略 eres", cn:"你(是)", why:"<b>tú</b>(有重音)= 你;<b>tu</b>(沒重音)= 你的,像 tu piel。這裡省了動詞:Tú (eres) el aire。歌詞網站常漏掉這個重音。"},
+    {t:"que respiro yo", g:"關係子句 · 主詞後置", cn:"我呼吸的(空氣)", why:"que 在這裡是<b>受詞</b>(我呼吸空氣),跟第一句當主詞的 que 不同。yo 放到句尾,跟句首的 tú 對照:你是…,我呼吸的。"},
+    {t:"ansío mojar", g:"ansiar + 原形", cn:"渴望沾濕", why:"ansiar + 原形 = 渴望做某事。重音落在 í:ansío、ansías、ansía,跟 enviar → envío 同一型。que 指前面的 garganta:我渴望沾濕的喉嚨。"},
+    {t:"temo ahogar de amor", g:"temer + 原形 · de 表原因", cn:"怕(它)被愛淹沒", why:"又一個 que 子句接在同一個 garganta 後面,兩個 que 疊在一起。de amor 的 de 表原因,像 morir de amor(為愛而死)、llorar de alegría(喜極而泣)。"},
+    {t:"cuáles deseos", g:"疑問詞 cuáles + 名詞", cn:"哪些願望", why:"標準西語在名詞前多半用 <b>qué</b>:¿Qué deseos…? cuáles + 名詞在部分拉美口語聽得到;作者 Rodrigo Amarante 是巴西人,葡萄牙語正好說 quais desejos。疑問詞要有重音。"},
+    {t:"me vas a dar", g:"ir a + 原形 · 近未來", cn:"你要給我", why:"vas a dar = 你將要給。me 是間接受詞「給我」,放在變位動詞前;也可以接在原形後面:vas a <b>darme</b>。"},
+    {t:"Dices tú", g:"倒裝 · 引述動詞在主詞前", cn:"你說", why:"引述別人的話時,動詞常放在主詞前面:dice él、dijo María、dices tú。這是很固定的倒裝,不是詩才這樣寫。tú 要有重音。"},
+    {t:"tesoro basta con mirarlo", g:"bastar con + 原形 · 話題前置 + lo 回指", cn:"我的寶藏,看著就夠了", why:"bastar con + 原形 = 只要…就夠。Mi tesoro 先擺到句首當話題,後面再用 <b>lo</b> 指回它(mirarlo = 看它),口語很常見:Ese libro, ya lo leí。lo 接在原形動詞後面要寫在一起。"},
+    {t:"Tuyo será", g:"倒裝 · 表語前置 · ser 未來式", cn:"它會是你的", why:"正常語序是 Será tuyo。把 tuyo 提到前面是強調,像發誓。<b>será</b> = ser 的未來式(él),要有重音。tuyo 是「你的」的重讀形,單獨使用;配 tesoro 用陽性,陰性是 tuya。"}
+  ]}
+};
+function songKey(t){ return String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim(); }
+function packNotes(s){ const pk=SONGPACK[songKey(s&&s.title)]; if(!pk)return null;
+  const out=[]; pk.notes.forEach(n=>{ out.push(n); const a=n.t.normalize("NFD").replace(/[̀-ͯ]/g,""); if(a!==n.t) out.push(Object.assign({},n,{t:a,d:n.t})); });
+  return {by:pk.by,notes:out,n:pk.notes.length}; }
+
 /* 每首歌的「主要歌手」(用來分組);用 title 對照,不必動到歌曲物件 */
 const SONG_ARTIST={"Súbeme la Radio":"Enrique Iglesias","Por El Contrario":"Becky G","Mayores":"Becky G","Vivir Mi Vida":"Marc Anthony","La Llorona":"Ángela Aguilar","Si Antes Te Hubiera Conocido":"Karol G","Ojos Tristes":"Selena Gomez & Benny Blanco","Bailando":"Enrique Iglesias","Dime Cómo Quieres":"Christian Nodal & Ángela Aguilar","Coleccionando Heridas":"Karol G & Marco Antonio Solís","Despacito":"Luis Fonsi & Daddy Yankee","Duele el Corazón":"Enrique Iglesias","El Perdón":"Nicky Jam & Enrique Iglesias","Qué Agonía":"Ángela Aguilar & Yuridia","La Canción":"J Balvin & Bad Bunny"};
 /* 每首歌的曲風(分類用);用 title 對照,不必動到歌曲物件 */
@@ -4952,8 +4977,10 @@ function renderSong(){
   closeNotePop();
   const songs=allSongs(); if(sIdx>=songs.length)sIdx=0;
   const s=songs[sIdx]; const mine=sIdx>=DATA.songs.length;
-  const merged=(s.notes||[]).concat(GLOSS);  /* 歌曲自己的註解 + 全站初學者小字典 */
-  lyr.innerHTML=`<div class="song-title">${esc(s.title)}</div><div class="song-sub">${esc(s.sub||"")}${mine?' · <span class="del-song">'+svgIcon(ICON.trash,13)+' 刪除這首</span>':''}</div><a class="yt-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.title+(mine?"":" "+artistOf(s,sIdx)))}" target="_blank" rel="noopener">${svgIcon(ICON.play,13)} 在 YouTube 聽</a>`+
+  const pack=mine?packNotes(s):null;
+  const own=(s.notes||[]).concat(pack?pack.notes:[]);
+  const merged=own.concat(GLOSS);  /* 歌曲自己的註解(＋站上補寫的)＋全站初學者小字典 */
+  lyr.innerHTML=`<div class="song-title">${esc(s.title)}</div><div class="song-sub">${esc(s.sub||"")}${pack?" · "+esc(pack.by)+" · 站上補了 "+pack.n+" 條文法註":""}${mine?' · <span class="del-song">'+svgIcon(ICON.trash,13)+' 刪除這首</span>':''}</div><a class="yt-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.title+(mine?"":" "+artistOf(s,sIdx)))}" target="_blank" rel="noopener">${svgIcon(ICON.play,13)} 在 YouTube 聽</a>`+
     (h=>h+(s.excerpt?excerptHTML(s,h):""))(s.lines.map((ln,li)=>{
       const sp=`<button class="spk lyr-spk" data-li="${li}" aria-label="發音">${svgIcon(ICON.vol,12)}</button>`;
       if(ln && typeof ln==="object") return `<div class="lyric-line">${annotate(ln.es||"",merged)} ${sp}</div>`+(ln.cn?`<div class="lyric-cn">${esc(ln.cn)}</div>`:"")+((ln.en||EN[ln.es])?`<div class="lyric-en en-line">${esc(ln.en||EN[ln.es])}</div>`:"");
@@ -4962,7 +4989,7 @@ function renderSong(){
   noteBox.innerHTML=`<div class="ph">${svgIcon(ICON.arrowLeft,20)} 點歌詞中<br>有底線的字<br>看解析</div>`;
   /* 兩種底線:這首歌自己的文法註維持紅色;全站小字典(GLOSS)的常見字改成淡的,不然一句裡八成的字都是紅的 */
   /* 沒有自己註解的歌(使用者貼的)只有小字典一層,就不必分深淺,維持紅色 */
-  const ownN=(s.notes||[]).length;
+  const ownN=own.length;
   if(ownN) lyr.querySelectorAll(".w").forEach(span=>{ if(+span.dataset.k>=ownN) span.classList.add("g"); });
   lyr.querySelectorAll(".w").forEach(span=>span.onclick=()=>{
     const reClick=(span===selWord)&&document.body.classList.contains("np-open");
