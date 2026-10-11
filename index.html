@@ -399,6 +399,8 @@ body:not(.on-progreso) footer{margin-top:34px}
 /* 單字卡的 24 顆晶片收成一行「目前的選擇 · 更換」 */
 .vc-pick{display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:.92rem;flex-wrap:wrap;justify-content:center}
 .vc-pick-cur{font-weight:700}
+.song-pick{justify-content:flex-start;margin-bottom:12px}
+#canciones:not(.song-open) #song-tabs{display:none}
 #vocabulario:not(.vc-open) #vc-mode,#vocabulario:not(.vc-open) #vc-cats,#vocabulario:not(.vc-open) #vc-filters{display:none}
 .foot-credit{margin-top:22px}
 .foot-credit a{color:var(--terra-deep);text-underline-offset:2px}
@@ -3841,8 +3843,10 @@ function renderDlg(){
       <div class="gnote"></div>`;
     const rp=card.querySelector(".rp-hide");
     if(rp) rp.addEventListener("click",e=>{ if(rp.classList.contains("rp-hide")){ e.stopPropagation(); rp.classList.remove("rp-hide"); award(1); renderDaily(); } },true);
-    card.querySelector(".q").onclick=()=>{ const open=card.classList.toggle("open"); card.querySelector(".toggle").innerHTML=open?'收起<span class="es2">Ocultar</span>':'看答案<span class="es2">Ver</span>'; };
     const gnote=card.querySelector(".gnote");
+    card.querySelector(".q").onclick=()=>{ const open=card.classList.toggle("open"); card.querySelector(".toggle").innerHTML=open?'收起<span class="es2">Ocultar</span>':'看答案<span class="es2">Ver</span>';
+      if(!open){ gnote.classList.remove("show"); gnote.innerHTML=""; card.querySelectorAll(".w.sel").forEach(x=>x.classList.remove("sel"));
+        const a=card.querySelector(".a-es"); if(rolePlay&&a) a.classList.add("rp-hide"); } };
     card.querySelectorAll(".w").forEach(span=>span.onclick=e=>{
       e.stopPropagation();
       card.querySelectorAll(".w").forEach(s=>s.classList.remove("sel")); span.classList.add("sel");
@@ -4359,7 +4363,7 @@ function buildSongTabs(){
     const box=document.createElement("div"); box.className="song-group-chips";
     list.forEach(i=>{ const c=document.createElement("button");
       c.className="chip song-chip"+(i===sIdx?" active":""); c.textContent=songs[i].title;
-      c.onclick=()=>{ sIdx=i; buildSongTabs(); renderSong(); }; box.appendChild(c); });
+      c.onclick=()=>{ sIdx=i; buildSongTabs(); renderSong(); songPickRender(false); songPickEl.scrollIntoView({block:"start",behavior:"smooth"}); }; box.appendChild(c); });
     row.appendChild(box); songTabs.appendChild(row);
   });
   const addRow=document.createElement("div"); addRow.className="song-add-row";
@@ -4405,7 +4409,17 @@ function renderSong(){
   if(yt && s.lines && s.lines.length){ const cb=document.createElement("button"); cb.className="chip"; cb.style.marginLeft="10px"; cb.innerHTML=svgIcon(ICON.edit,13)+" 填空挑戰<span class=\"es2\">Reto</span>"; cb.onclick=()=>renderCloze(); yt.after(cb); }
   const del=lyr.querySelector(".del-song"); if(del) del.onclick=()=>{ if(confirm("確定刪除這首自己加的歌？")){ mySongs.splice(sIdx-DATA.songs.length,1); localStorage.setItem(MYKEY,JSON.stringify(mySongs)); sIdx=0; buildSongTabs(); renderSong(); } };
 }
+/* 歌單平常收起來:一行「正在看的歌 · 歌手 · 換一首」,點了才展開整張歌單(原本 15 首攤開佔滿一個手機畫面) */
+const songPickEl=document.createElement("div"); songPickEl.className="vc-pick song-pick"; songPickEl.id="song-pick";
+songTabs.before(songPickEl);
+function songPickRender(open){
+  $("#canciones").classList.toggle("song-open",!!open);
+  /* 歌名、歌手下面的歌詞卡已經寫了,這裡只放一顆鈕,不重複 */
+  const n=allSongs().length;
+  songPickEl.innerHTML=`<button class="tk-link" type="button" id="song-pick-btn" aria-expanded="${open?"true":"false"}">${open?"收起歌單":"換一首歌 · 共 "+n+" 首"}</button>`;
+  $("#song-pick-btn").onclick=()=>songPickRender(!open); }
 function showSongForm(){
+  songPickRender(false);
   lyr.innerHTML=`<div class="song-form">
     <div class="song-title">加一首自己的歌 · Añadir canción</div>
     <label>歌名 / Título</label>
@@ -4430,7 +4444,7 @@ function showSongForm(){
     buildSongTabs(); renderSong();
   };
 }
-buildSongTabs();
+buildSongTabs(); songPickRender(false);
 
 /* 5. Ejercicios（題庫 20 題，每輪隨機 5 題 + 練習紀錄）*/
 const POOL=DATA.ejercicios;
@@ -5275,7 +5289,11 @@ function renderHoy(){
 })();
 
 const _showBase=show;
-show=function(id){ _showBase(id); if(rtCrumbEl.dataset.sec&&rtCrumbEl.dataset.sec!==id) rtCrumbEl.remove(); document.body.classList.toggle("on-progreso",id==="progreso"); if(id==="progreso"){ renderProgreso(); wlRender(); } if(id==="hoy"){ rtBarHide(); renderHoy(); } };
+show=function(id){ _showBase(id); closeNotePop();
+  try{ if(id!=="dialogos"&&$("#dialogos").classList.contains("dlg-open")) dlgPickRender(false);
+       if(id!=="vocabulario"&&$("#vocabulario").classList.contains("vc-open")) vcPickRender(false);
+       if(id!=="canciones"&&$("#canciones").classList.contains("song-open")) songPickRender(false); }catch(_){}
+  if(rtCrumbEl.dataset.sec&&rtCrumbEl.dataset.sec!==id) rtCrumbEl.remove(); document.body.classList.toggle("on-progreso",id==="progreso"); if(id==="progreso"){ renderProgreso(); wlRender(); } if(id==="hoy"){ rtBarHide(); renderHoy(); } };
 
 /* 單字卡頂端 2 顆顯示＋14 顆主題＋4 顆狀態晶片,收成一行「目前的選擇 · 更換」。晶片沒拆,只是收起來 */
 const VC_MODE_LABEL={both:"中西對照",flip:"翻卡測驗"}, VC_FILTER_LABEL={all:"全部",due:"今日到期",review:"學習中",learned:"已學會"};
