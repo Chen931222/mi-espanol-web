@@ -687,6 +687,7 @@ body.rt-bar-on #toast-box{bottom:92px}
 .err-a{font-family:var(--font-display);font-weight:700;color:var(--terra-deep)}
 .err-m{color:var(--bad);font-size:.82rem;text-decoration:line-through}
 .err-drill{margin-top:14px;text-align:center;padding:16px;border:1.5px dashed var(--line-strong);border-radius:12px}
+.err-drill .ord-pool,.err-drill .ord-ans{justify-content:center}
 .rp-hide{filter:blur(7px);cursor:pointer;user-select:none;transition:filter .25s;position:relative}
 .rp-tip{font-size:.78rem;font-weight:800;color:var(--azul);margin-bottom:4px}
 .conj-ref{margin-top:18px;padding:16px 18px}
@@ -3645,6 +3646,10 @@ function talkCommit(said,cn,kind,pct){
   const it=DATA.dialogos[dScene].items[dTalkStep];
   dTalkLog.push({q:it.q,qcn:it.qcn,said:said,cn:cn,kind:kind,pct:(pct==null?null:pct)});
   if(kind==="fix" || (kind==="typed" && !(pct!=null && pct>=0.6))) rtNoteWeak(it);
+  /* 錯題本:「請對方重說」記成聽力題(重練時先聽對方那句);打字沒對上範例不算答錯(系統判斷不了),
+     但記一筆「對話範例」,重練時把範例句排回來 */
+  if(kind==="fix") recordMistake("對話聽力", it.qcn, it.q, "");
+  else if(kind==="typed" && !(pct!=null && pct>=0.6)) recordMistake("對話範例", "對方:「"+it.qcn+"」→ 你:「"+it.acn+"」", it.a, said);
   if(kind==="fix"){
     /* 請對方重說 → 不前進、不計分(不然按著它就能刷分),對方把同一句再說一次。
        這才是這句話在真實對話裡的作用,話題也不會被截斷。 */
@@ -4736,13 +4741,18 @@ function learnedCount(){ return CARDS.filter(w=>cardStatus(w.es)==="learned").le
     setTimeout(()=>showToast(svgIcon(ICON.shield,14)+" 自動用掉 "+missed.length+" 張保護卡,連勝 "+stats.streak+" 天保住了!",true),900); }
 })();
 
-/* 統一錯題本:各區答錯都收進來;單字類的錯還會自動排進今日複習 */
+/* 統一錯題本:各區答錯都收進來(口說除外,辨識結果不夠準,不能當成答錯);單字類的錯還會自動排進今日複習。
+   同一題再錯一次不新增一筆,而是 n+1 並移到最前面;滿 200 筆時先丟「只錯過一次、最舊」的,錯最多的留著。 */
 const ERRKEY="miEspanol.errores";
 let errores=lsGet(ERRKEY,[]);
 function saveErr(){ localStorage.setItem(ERRKEY,JSON.stringify(errores)); }
 function recordMistake(tipo,prompt,correct,mine,vocabEs){
-  errores.unshift({t:tipo,p:String(prompt||"").slice(0,90),a:String(correct||""),m:String(mine||"").slice(0,60),d:Date.now()});
-  if(errores.length>200)errores.length=200; saveErr();
+  const p=String(prompt||"").slice(0,90), a=String(correct||"");
+  const i=errores.findIndex(e=>e.t===tipo&&e.p===p&&e.a===a);
+  const old=i>=0?errores.splice(i,1)[0]:null;
+  errores.unshift({t:tipo,p:p,a:a,m:String(mine||"").slice(0,60),d:Date.now(),n:old?(old.n||1)+1:1});
+  while(errores.length>200){ let k=errores.length-1; for(let j=errores.length-1;j>=0;j--) if((errores[j].n||1)<(errores[k].n||1)) k=j; errores.splice(k,1); }
+  saveErr();
   if(vocabEs && CARDS.some(w=>w.es===vocabEs)){ schedule(vocabEs,0); save(); } }
 
 /* 成就 · Logros */
@@ -4840,6 +4850,7 @@ function vgStartMatch(){
         $("#vg-again").onclick=vgStartMatch; }
     } else {
       errs++; $("#vg-merr").textContent="失誤 "+errs;
+      { const w=pool[a.k]; recordMistake("配對", w.es, w.cn, b.txt, w.es); }  /* 記先點的那張字卡 */
       const x=sel, y=el; x.classList.remove("sel"); sel=null;
       x.classList.add("err"); y.classList.add("err");
       setTimeout(()=>{ x.classList.remove("err"); y.classList.remove("err"); },360);
@@ -4956,10 +4967,16 @@ function renderCloze(){
   $("#cz-exit").onclick=()=>renderSong();
   const czBtn=$("#cz-check");
   czBtn.onclick=()=>{
-    let ok=0,tot=0;
+    let ok=0,tot=0; const first=!czBtn.dataset.done;
     $$(".cloze-in",lyr).forEach(inp=>{ tot++;
       if(strip(inp.value)===strip(inp.dataset.a)){ inp.className="cloze-in ok"; if(inp.value!==inp.dataset.a)inp.value=inp.dataset.a; ok++; }
-      else { inp.className="cloze-in no"; inp.value=""; inp.placeholder=inp.dataset.a; } });
+      else {
+        if(first){ /* 錯題本的題目:這一句,挖掉這一格,其他格照答案顯示 */
+          const ln=inp.closest(".cloze-line"); let txt="";
+          ln.childNodes.forEach(n=>{ if(n===inp)txt+="___"; else if(n.nodeType===3)txt+=n.textContent; else if(n.classList&&n.classList.contains("cloze-in"))txt+=n.dataset.a; });
+          const cn=ln.nextElementSibling&&ln.nextElementSibling.classList.contains("cloze-cn")?ln.nextElementSibling.textContent:"";
+          recordMistake("歌詞填空", txt.trim()+(cn?"("+cn+")":""), inp.dataset.a, inp.value, inp.dataset.a); }
+        inp.className="cloze-in no"; inp.value=""; inp.placeholder=inp.dataset.a; } });
     $("#cz-score").textContent=ok+" / "+tot;
     if(tot&&!czBtn.dataset.done){ czBtn.dataset.done="1"; award(Math.max(1,ok)); cnt("cloze"); renderDaily(); if(ok===tot)showToast("全部填對!太神了!",true); } };
 }
@@ -5090,32 +5107,81 @@ function renderHeat(){
   const hs=document.querySelector(".heat-scroll"); if(hs)hs.scrollLeft=hs.scrollWidth; }
 function renderErr(){
   const box=$("#pg-err"), h=$("#pg-err-h"); if(!box)return;
-  h.innerHTML=svgIcon(ICON.edit,15)+' 錯題本 · Mis errores <span class="sub">'+errores.length+' 筆 · 各區答錯自動收進來</span>';
-  if(!errores.length){ box.innerHTML='<p class="game-tip" style="margin:0">目前沒有錯題,太強了!之後在任何一區答錯,題目都會自動收進這裡讓你重練。</p>'; return; }
-  const rows=errores.slice(0,12).map(e=>`<div class="err-row"><span class="err-tag">${esc(e.t)}</span><span class="err-p">${esc(e.p)}</span><span class="err-a">${esc(e.a)}</span>${e.m?`<span class="err-m">${esc(e.m)}</span>`:""}</div>`).join("");
+  h.innerHTML=svgIcon(ICON.edit,15)+' 錯題本 · Mis errores <span class="sub">'+errores.length+' 筆 · 練習答錯自動收進來(口說除外)</span>';
+  if(!errores.length){ box.innerHTML='<p class="game-tip" style="margin:0">目前沒有錯題,太強了!之後在練習裡答錯,題目都會自動收進這裡讓你重練。</p>'; return; }
+  const rows=errores.slice(0,12).map(e=>`<div class="err-row"><span class="err-tag">${esc(e.t)}${(e.n||1)>1?" ×"+e.n:""}</span><span class="err-p">${esc(e.p)}</span><span class="err-a">${esc(e.a)}</span>${e.m?`<span class="err-m">${esc(e.m)}</span>`:""}</div>`).join("");
   box.innerHTML=rows+(errores.length>12?`<p class="game-tip" style="margin:8px 0 0">…還有 ${errores.length-12} 筆</p>`:"")+
-    `<div class="vb-ctrls" style="justify-content:flex-start;margin-top:14px"><button class="btn" id="err-go">重練錯題(前 10 題)</button><button class="btn reset" id="err-clear">清空錯題本</button></div><div id="err-drill"></div>`;
+    `<div class="vb-ctrls" style="justify-content:flex-start;margin-top:14px"><button class="btn" id="err-go">重練錯最多的 10 題</button><button class="btn reset" id="err-clear">清空錯題本</button></div><div id="err-drill"></div>`;
   $("#err-clear").onclick=()=>{ if(confirm("確定清空錯題本?")){ errores=[]; saveErr(); renderErr(); } };
-  $("#err-go").onclick=()=>{ drill={list:errores.slice(0,10),i:0,ok:0}; renderDrill(); }; }
+  $("#err-go").onclick=()=>{ drill={list:errores.slice().sort((x,y)=>(y.n||1)-(x.n||1)||y.d-x.d).slice(0,10),i:0,ok:0}; renderDrill(); }; }
 let drill=null;
+/* 重練照原本的題型出:單字類四選一、聽的題先聽再打、句子類排磚塊,其他打字。
+   以前一律「看提示打正解」,選擇題的錯題得一字不差打出中文,聽寫的錯題變成看中文寫西文。 */
+function drillKind(e){
+  if(e.t==="選擇"||e.t==="配對"){ if(CARDS.some(w=>w.es===e.p)) return "e2c"; if(CARDS.some(w=>w.cn===e.p)) return "c2e"; }
+  if(e.t==="聽寫"||e.t==="對話聽力") return "listen";
+  if((e.t==="重組"||e.t==="對話範例") && e.a.split(/\s+/).length>1) return "order";
+  return "type"; }
 function renderDrill(){
   const dv=$("#err-drill"); if(!dv||!drill)return;
   if(drill.i>=drill.list.length){
     dv.innerHTML=`<div class="err-drill"><b>重練完成!答對 ${drill.ok} / ${drill.list.length}</b><div class="vg-sub" style="margin-top:4px">答對的已從錯題本移除</div></div>`;
     drill=null; setTimeout(renderProgreso,1800); return; }
-  const e=drill.list[drill.i]; let done=false;
-  dv.innerHTML=`<div class="err-drill"><div class="vg-sub">${esc(e.t)} · 重練 ${drill.i+1} / ${drill.list.length}</div>
-    <div class="vg-qcn" style="font-size:1.02rem;margin:6px 0">${esc(e.p)}</div>
-    <input class="lp-input" id="dr-in" placeholder="輸入正確答案…" autocomplete="off" spellcheck="false" autocapitalize="off">
+  const e=drill.list[drill.i], kind=drillKind(e); let done=false, opts=null, ord=null;
+  let body="";
+  if(kind==="e2c"||kind==="c2e"){
+    const w=CARDS.find(x=>kind==="e2c"?x.es===e.p:x.cn===e.p);
+    opts=shuffleA([w].concat(shuffleA(CARDS.filter(x=>x.es!==w.es&&x.cn!==w.cn).slice()).slice(0,3)));
+    body=(kind==="e2c"?`<div class="vg-q">${esc(w.es)} ${spkHTML(w.es)}</div><div class="vg-sub">選出中文意思</div>`:`<div class="vg-qcn">${esc(w.cn)}</div><div class="vg-sub">選出西班牙文</div>`)+
+      `<div class="dr-opts">`+opts.map((o,i)=>`<button class="vg-opt" data-i="${i}">${esc(kind==="e2c"?o.cn:o.es)}</button>`).join("")+`</div>`;
+  } else if(kind==="listen"){
+    body=`<div class="vg-sub" style="margin:6px 0 10px">先聽,把聽到的整句打出來</div>
+      <div><button class="lp-play" id="dr-play">${svgIcon(ICON.vol,16)} 播放</button> <button class="lp-play slow" id="dr-slow">${svgIcon(ICON.vol,13)} 慢速</button></div>
+      <input class="lp-input" id="dr-in" lang="es" placeholder="把聽到的打出來…" autocomplete="off" spellcheck="false" autocapitalize="off">
+      <div class="lp-diff" id="dr-diff"></div><div class="lp-cn" id="dr-cn"></div>`;
+  } else if(kind==="order"){
+    const toks=e.a.split(/\s+/); const order=shuffleA(toks.map((_,i)=>i)); let t=0; while(order.every((v,i)=>v===i)&&t++<10)shuffleA(order);
+    ord={toks:toks,order:order,ans:[]};
+    body=`<div class="vg-qcn" style="font-size:1.02rem;margin:6px 0">${esc(e.p)}</div><div class="vg-sub">把磚塊按順序點上去</div><div class="ord-ans" id="dr-ans"></div><div class="ord-pool" id="dr-pool"></div>`;
+  } else {
+    body=`<div class="vg-qcn" style="font-size:1.02rem;margin:6px 0">${esc(e.p)}</div>
+      <input class="lp-input" id="dr-in" lang="es" placeholder="輸入正確答案…" autocomplete="off" spellcheck="false" autocapitalize="off">`;
+  }
+  const isMC=!!opts;
+  dv.innerHTML=`<div class="err-drill"><div class="vg-sub">${esc(e.t)} · 重練 ${drill.i+1} / ${drill.list.length}${(e.n||1)>1?" · 錯過 "+e.n+" 次":""}</div>${body}
     <div class="vb-fb" id="dr-fb"></div>
-    <div class="vb-ctrls"><button class="btn" id="dr-check">檢查</button><button class="btn nav" id="dr-next">下一題 ›</button></div></div>`;
-  const inp=$("#dr-in"); inp.focus();
-  function go(){ if(done)return; done=true; const fb=$("#dr-fb");
-    if(strip(inp.value)===strip(e.a)){ drill.ok++; fb.className="vb-fb ok"; fb.innerHTML=svgIcon(ICON.check,15)+" 正確!已從錯題本移除 "+spkHTML(e.a); errores=errores.filter(x=>x!==e); saveErr(); award(2); }
+    <div class="vb-ctrls">${isMC?"":'<button class="btn" id="dr-check">檢查</button>'}<button class="btn nav" id="dr-next">下一題 ›</button></div></div>`;
+  function finish(right){ done=true; const fb=$("#dr-fb");
+    if(right){ drill.ok++; fb.className="vb-fb ok"; fb.innerHTML=svgIcon(ICON.check,15)+" 正確!已從錯題本移除 "+spkHTML(e.a); errores=errores.filter(x=>x!==e&&!(x.t===e.t&&x.p===e.p&&x.a===e.a)); saveErr(); award(2); }
     else { fb.className="vb-fb no"; fb.innerHTML="正確答案:"+esc(e.a)+" "+spkHTML(e.a); award(1); } }
-  $("#dr-check").onclick=go;
-  $("#dr-next").onclick=()=>{ drill.i++; renderDrill(); };
-  inp.addEventListener("keydown",ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); if(done)$("#dr-next").click(); else go(); } }); }
+  if(isMC){
+    $$(".vg-opt",dv).forEach((b,i)=>b.onclick=()=>{ if(done)return; const right=(kind==="e2c"?opts[i].cn:opts[i].es)===e.a;
+      b.classList.add(right?"ok":"no"); if(!right){ const ri=opts.findIndex(o=>(kind==="e2c"?o.cn:o.es)===e.a); if(ri>=0)$$(".vg-opt",dv)[ri].classList.add("ok"); }
+      finish(right); });
+  } else if(kind==="listen"){
+    $("#dr-play").onclick=()=>speak(e.a,null); $("#dr-slow").onclick=()=>speak(e.a,null,0.55);
+    setTimeout(()=>speak(e.a,null),250);
+    const go=()=>{ if(done)return; const inp=$("#dr-in"); if(!strip(inp.value)){ showToast("先聽一次,把聽到的打出來再檢查。"); return; }
+      const d=dictDiff(e.a,inp.value); $("#dr-diff").innerHTML=d.html; $("#dr-cn").textContent=e.p; finish(d.pct>=1); };
+    $("#dr-check").onclick=go;
+    $("#dr-in").addEventListener("keydown",ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); if(done)$("#dr-next").click(); else go(); } });
+  } else if(kind==="order"){
+    const drawOrd=()=>{ const A=$("#dr-ans"), P=$("#dr-pool");
+      A.innerHTML=ord.ans.length?ord.ans.map((ti,pos)=>`<button class="ord-w" data-pos="${pos}">${esc(ord.toks[ti])}</button>`).join(""):'<span style="color:var(--ink-soft);font-size:.85rem;font-weight:700;padding:4px 6px">點下面的字組成句子…</span>';
+      P.innerHTML=ord.order.map(ti=>`<button class="ord-w${ord.ans.indexOf(ti)>=0?" ghost":""}" data-ti="${ti}">${esc(ord.toks[ti])}</button>`).join("");
+      $$(".ord-w",P).forEach(b=>b.onclick=()=>{ if(done)return; ord.ans.push(+b.dataset.ti); drawOrd(); });
+      $$(".ord-w",A).forEach(b=>b.onclick=()=>{ if(done)return; ord.ans.splice(+b.dataset.pos,1); drawOrd(); }); };
+    drawOrd();
+    $("#dr-check").onclick=()=>{ if(done)return;
+      if(ord.ans.length!==ord.toks.length){ const fb=$("#dr-fb"); fb.className="vb-fb no"; fb.textContent="還沒把所有字放上去。"; return; }
+      const right=strip(ord.ans.map(ti=>ord.toks[ti]).join(" "))===strip(e.a); $("#dr-ans").classList.add(right?"ok":"no"); finish(right); };
+  } else {
+    const inp=$("#dr-in"); inp.focus();
+    const go=()=>{ if(done)return; finish(strip(inp.value)===strip(e.a)); };
+    $("#dr-check").onclick=go;
+    inp.addEventListener("keydown",ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); if(done)$("#dr-next").click(); else go(); } });
+  }
+  $("#dr-next").onclick=()=>{ drill.i++; renderDrill(); }; }
 function renderProgreso(){
   const g=$("#pg-goal"); if(!g)return;
   const today=xpToday(), goal=xp.goal||30, pct=Math.min(1,today/goal);
