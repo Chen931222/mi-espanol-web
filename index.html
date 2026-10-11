@@ -114,6 +114,8 @@ section.in .reveal{opacity:1;transform:none}
 .w{cursor:pointer;color:var(--terra-deep);font-weight:600;border-bottom:2px dotted var(--terra);transition:.15s;border-radius:3px;padding:0 1px}
 .w:hover{background:var(--ochre);color:#fff;border-color:transparent}
 .w.sel{background:var(--terra);color:#fff;border-color:transparent}
+.w.g{color:inherit;font-weight:inherit;border-bottom:1px dotted var(--ink-soft)}
+.w.g:hover,.w.g.sel{color:#fff;border-color:transparent}
 
 /* 1. Diálogos */
 .qa{padding:18px 20px;margin-bottom:12px}
@@ -262,7 +264,6 @@ body.hide-en .en-line{display:none}
 .chips-lbl{align-self:center;font-size:.8rem;font-weight:700;color:var(--ink-soft);margin-right:2px}
 .artist-chip:hover{border-color:var(--terra);color:var(--terra)}
 .artist-chip.active{background:var(--terra);color:#fff;border-color:var(--terra)}
-.chip-add{border-style:dashed}
 .song-genres{margin-bottom:9px}
 .genre-chip:hover{border-color:var(--wine);color:var(--wine)}
 .genre-chip.active{background:var(--wine);color:#fff;border-color:var(--wine)}
@@ -401,7 +402,9 @@ body:not(.on-progreso) footer{margin-top:34px}
 .vc-pick-cur{font-weight:700}
 .sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 /* 歌單:照衣櫃站的篩選樣式——印刷品目錄,不用圓框按鈕 */
-.song-pick{display:block;margin:0 0 4px;border-bottom:1px solid var(--line-strong)}
+.song-pick{display:flex;align-items:flex-end;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin:0 0 4px;border-bottom:1px solid var(--line-strong)}
+.song-paste{flex:none;margin-bottom:9px;display:inline-flex;align-items:center;gap:6px}
+@media(max-width:680px){.song-paste{order:-1;margin-bottom:0}.song-pick .sl-toggle{flex-basis:100%}}
 .sl-toggle{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:baseline;gap:12px;max-width:100%;padding-top:6px}
 .sl-toggle:focus-visible{outline:2px solid var(--azul);outline-offset:4px;border-radius:4px}
 .sl-cur{font-family:var(--font-display);font-weight:600;font-size:clamp(1.25rem,4.6vw,1.6rem);line-height:1.25;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:-1px}
@@ -438,11 +441,20 @@ body:not(.on-progreso) footer{margin-top:34px}
 .song-artist{flex:0 0 158px;font-family:var(--font-display);font-weight:900;font-size:.96rem;color:var(--terra-deep);line-height:1.3;padding-top:7px}
 .song-artist .n{display:block;font-family:var(--font-body);font-size:.6875rem;font-weight:700;color:var(--ink-soft);margin-top:1px}
 .song-group-chips{display:flex;flex-wrap:wrap;gap:7px;flex:1;min-width:0}
-.song-add-row{margin-top:13px}
 @media(max-width:680px){
   .song-group{flex-direction:column;gap:6px;padding:11px 2px}
   .song-artist{flex:none;padding-top:0;font-size:.88rem}
   .song-artist .n{display:inline;margin-left:5px}
+  /* 手機歌詞頁:一句 = 西語(可折行)+ 中文 + 喇叭。句內貼近、句與句拉開;
+     喇叭固定在右邊一欄,不再跟著文字折行掉到下一行。 */
+  .lyrics{padding:20px 16px}
+  #lyrics .lyric-line{position:relative;font-size:1.06rem;line-height:1.5;margin:18px 0 0;padding-right:44px}
+  #lyrics .lyric-sec{margin:30px 0 0}
+  #lyrics .lyric-sec + .lyric-line{margin-top:8px}
+  #lyrics .lyric-cn{margin:5px 44px 0 0}
+  #lyrics .lyric-en{margin:3px 44px 0 0}
+  #lyrics .lyr-spk{position:absolute;right:0;top:-1px;width:28px;height:28px;margin:0;opacity:.75}
+  #lyrics .lyr-spk::after{content:"";position:absolute;inset:-8px}  /* 看起來 28px,點擊範圍 44px */
 }
 
 /* ===== 「今天」首頁 / 說明摺疊 / 側欄分組 ===== */
@@ -805,7 +817,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="canciones">
     <div class="reveal sec-head"><div class="sec-num">3</div>
       <h2 class="sec-h"><span class="sec-title">歌詞分析</span> <span class="sec-es">Canciones</span></h2></div>
-    <p class="reveal sec-desc">用歌學單字。歌曲<b>依歌手分類</b>,點一首開始;點歌詞裡<b>有底線的字</b>看解析。也可以按 <b><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 5v14M5 12h14"/></svg> 自己加歌</b> 加自己的歌詞(存在你的瀏覽器)。</p>
+    <p class="reveal sec-desc">貼一首你正在聽的西語歌,<b>常見字會自動畫線</b>,點了看解析;歌詞只存在你的瀏覽器。下面的歌是示範:多數只節錄幾句,但附完整的文法註。</p>
     <div class="reveal chips song-genres" id="song-genres"></div>
     <div class="reveal chips song-artists" id="song-artists"></div>
     <div class="reveal chips" id="song-tabs"></div>
@@ -4379,9 +4391,6 @@ function buildSongTabs(){
       c.onclick=()=>{ sIdx=i; buildSongTabs(); renderSong(); songPickRender(false); songPickEl.scrollIntoView({block:"start",behavior:"smooth"}); }; box.appendChild(c); });
     row.appendChild(box); songTabs.appendChild(row);
   });
-  const addRow=document.createElement("div"); addRow.className="song-add-row";
-  const add=document.createElement("button"); add.className="chip chip-add"; add.innerHTML=svgIcon(ICON.plus,14)+' 自己加歌<span class="es2">Añadir</span>';
-  add.onclick=showSongForm; addRow.appendChild(add); songTabs.appendChild(addRow);
 }
 /* 節錄的歌(s.excerpt):站上只放幾句歌詞來講文法,不放整首。
    沒出現在這幾句裡的文法註照樣列出來——那些解說是自己寫的,不該跟著歌詞一起消失。
@@ -4409,6 +4418,10 @@ function renderSong(){
       return ln.charAt(0)==="〔" ? `<div class="lyric-sec">${esc(ln.replace(/[〔〕]/g,""))}</div>` : `<div class="lyric-line">${annotate(ln,merged)} ${sp}</div>`;
     }).join(""));
   noteBox.innerHTML=`<div class="ph">${svgIcon(ICON.arrowLeft,20)} 點歌詞中<br>有底線的字<br>看解析</div>`;
+  /* 兩種底線:這首歌自己的文法註維持紅色;全站小字典(GLOSS)的常見字改成淡的,不然一句裡八成的字都是紅的 */
+  /* 沒有自己註解的歌(使用者貼的)只有小字典一層,就不必分深淺,維持紅色 */
+  const ownN=(s.notes||[]).length;
+  if(ownN) lyr.querySelectorAll(".w").forEach(span=>{ if(+span.dataset.k>=ownN) span.classList.add("g"); });
   lyr.querySelectorAll(".w").forEach(span=>span.onclick=()=>{
     const reClick=(span===selWord)&&document.body.classList.contains("np-open");
     lyr.querySelectorAll(".w").forEach(x=>x.classList.remove("sel"));
@@ -4420,7 +4433,7 @@ function renderSong(){
   });
   const yt=lyr.querySelector(".yt-link");
   if(yt && s.lines && s.lines.length){ const cb=document.createElement("button"); cb.className="chip"; cb.style.marginLeft="10px"; cb.innerHTML=svgIcon(ICON.edit,13)+" 填空挑戰<span class=\"es2\">Reto</span>"; cb.onclick=()=>renderCloze(); yt.after(cb); }
-  const del=lyr.querySelector(".del-song"); if(del) del.onclick=()=>{ if(confirm("確定刪除這首自己加的歌？")){ mySongs.splice(sIdx-DATA.songs.length,1); localStorage.setItem(MYKEY,JSON.stringify(mySongs)); sIdx=0; buildSongTabs(); renderSong(); } };
+  const del=lyr.querySelector(".del-song"); if(del) del.onclick=()=>{ if(confirm("確定刪除這首自己加的歌？")){ mySongs.splice(sIdx-DATA.songs.length,1); localStorage.setItem(MYKEY,JSON.stringify(mySongs)); sIdx=0; buildSongTabs(); renderSong(); songPickRender(false); } };
 }
 /* 歌單平常收起來:一行「正在看的歌 · 歌手 · 換一首」,點了才展開整張歌單(原本 15 首攤開佔滿一個手機畫面) */
 const songPickEl=document.createElement("div"); songPickEl.className="vc-pick song-pick"; songPickEl.id="song-pick";
@@ -4433,11 +4446,13 @@ function songPickRender(open){
     <span class="sl-cur">${cur?esc(cur.title):"歌單"}</span><span class="sl-n">${songs.length} 首</span>
     <svg class="sl-chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
     <span class="sr-only">${open?"收起歌單":"展開歌單換一首"}</span></button>`;
+  const add=document.createElement("button"); add.type="button"; add.className="btn song-paste";
+  add.innerHTML=svgIcon(ICON.plus,14)+" 貼一首你在聽的歌"; add.onclick=showSongForm; songPickEl.appendChild(add);
   $("#song-pick-btn").onclick=()=>songPickRender(!open); }
 function showSongForm(){
   songPickRender(false);
   lyr.innerHTML=`<div class="song-form">
-    <div class="song-title">加一首自己的歌 · Añadir canción</div>
+    <div class="song-title">貼一首你在聽的歌 · Pega tu canción</div>
     <label>歌名 / Título</label>
     <input id="sf-title" class="sf-in" placeholder="例如：La Bamba">
     <label>歌詞 / Letra（一行一句）</label>
@@ -4445,7 +4460,7 @@ function showSongForm(){
     <label>註解（選填，一行一個，格式：詞 = 解釋）</label>
     <textarea id="sf-notes" class="sf-ta" rows="4" placeholder="quiero = 我想要&#10;bailar = 跳舞"></textarea>
     <div class="sf-btns"><button class="btn" id="sf-save">儲存 · Guardar</button><button class="btn" id="sf-cancel">取消 · Cancelar</button></div>
-    <p class="sf-hint">只存在你自己的瀏覽器(localStorage),不會上傳。內容由你自己輸入。</p>
+    <p class="sf-hint">只存在你自己的瀏覽器,不會上傳。站上 ${GLOSS.length} 個常見字會自動畫線;其他想查的字,在上面「註解」自己加。</p>
   </div>`;
   noteBox.innerHTML=`<div class="ph">填好左邊<br>按「儲存」</div>`;
   $("#sf-cancel").onclick=()=>{ buildSongTabs(); renderSong(); };
@@ -4457,7 +4472,7 @@ function showSongForm(){
     mySongs.push({title:title,sub:"自己加的 · personal",lines:lines,notes:notes});
     localStorage.setItem(MYKEY,JSON.stringify(mySongs));
     sIdx=DATA.songs.length+mySongs.length-1;
-    buildSongTabs(); renderSong();
+    buildSongTabs(); renderSong(); songPickRender(false);  /* 上面那行是唯一顯示歌名的地方,存完要換成新歌 */
   };
 }
 buildSongTabs(); songPickRender(false);
