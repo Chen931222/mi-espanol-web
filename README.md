@@ -41,7 +41,7 @@ PowerShell HttpListener，port 8181。（`file://` 開不起來，Service Worker
 
 ## 例句來源
 
-填空題裡標了 `src:"tatoeba:編號"` 的 50 題，句子取自 [Tatoeba](https://tatoeba.org)（2026-10-06 的每週匯出檔），授權 [CC BY 2.0 FR](https://creativecommons.org/licenses/by/2.0/fr/)。
+填空題裡標了 `src:"tatoeba:編號"` 的 131 題（第 1–50 題 2026-10-06 加入，第 51–131 題 2026-10-11 加入），句子取自 [Tatoeba](https://tatoeba.org)（2026-10-06 的每週匯出檔），授權 [CC BY 2.0 FR](https://creativecommons.org/licenses/by/2.0/fr/)。
 西班牙文沒有改字，只挖掉一個字做成填空；中文翻譯以 Tatoeba 的中文句為底，簡體轉繁體，並改成台灣用語或修正錯譯（下表「中譯」欄標「修改」的那些）。
 挑選標準是 Instituto Cervantes《Plan Curricular》文法清單的 A1 欄。
 
@@ -97,6 +97,92 @@ PowerShell HttpListener，port 8181。（`file://` 開不起來，Service Worker
 | 48 | No me gustan los perros. | [#1970668](https://tatoeba.org/sentences/show/1970668)（Shishir） | [#1959163](https://tatoeba.org/sentences/show/1959163)（egg0073） | 原文 |
 | 49 | No sabe nadar. | [#1089628](https://tatoeba.org/sentences/show/1089628)（Shishir） | [#5689031](https://tatoeba.org/sentences/show/5689031)（xjjAstrus） | 修改 |
 | 50 | Su libro es muy interesante. | [#2635959](https://tatoeba.org/sentences/show/2635959)（Shishir） | [#1441683](https://tatoeba.org/sentences/show/1441683)（egg0073） | 修改 |
+
+第 51–131 題的中譯是自己翻的（台灣用語），沒有用 Tatoeba 的中文句，所以「中文句」欄是「—」。
+
+| # | 西班牙文 | 西文句（作者） | 中文句（作者） | 中譯 |
+|---|---|---|---|---|
+| 51 | ¿Qué tiempo hace? | [#1922641](https://tatoeba.org/sentences/show/1922641)（Shishir） | — | 自譯 |
+| 52 | Hoy hace buen tiempo, ¿verdad? | [#858036](https://tatoeba.org/sentences/show/858036)（Shishir） | — | 自譯 |
+| 53 | Hoy hace menos frío que ayer. | [#1455694](https://tatoeba.org/sentences/show/1455694)（Shishir） | — | 自譯 |
+| 54 | Mi estación favorita es el otoño. | [#1751342](https://tatoeba.org/sentences/show/1751342)（Shishir） | — | 自譯 |
+| 55 | Últimamente llueve todo el tiempo. | [#357515](https://tatoeba.org/sentences/show/357515)（tatoerique） | — | 自譯 |
+| 56 | Hace bastante frío hoy. | [#453103](https://tatoeba.org/sentences/show/453103)（mamat） | — | 自譯 |
+| 57 | No nos gusta la lluvia. | [#1409837](https://tatoeba.org/sentences/show/1409837)（hayastan） | — | 自譯 |
+| 58 | Si llueve mañana, no vamos a ir allá. | [#739350](https://tatoeba.org/sentences/show/739350)（ventana） | — | 自譯 |
+| 59 | Si estás feliz, estoy feliz. | [#2055231](https://tatoeba.org/sentences/show/2055231)（hayastan） | — | 自譯 |
+| 60 | No tiene fiebre. | [#880442](https://tatoeba.org/sentences/show/880442)（Shishir） | — | 自譯 |
+| 61 | Me duele la espalda. | [#929944](https://tatoeba.org/sentences/show/929944)（Shishir） | — | 自譯 |
+| 62 | Estoy preocupado por ti. | [#540438](https://tatoeba.org/sentences/show/540438)（Shishir） | — | 自譯 |
+| 63 | No tengo miedo. | [#769352](https://tatoeba.org/sentences/show/769352)（Shishir） | — | 自譯 |
+| 64 | Estás enfermo, tienes que descansar. | [#776395](https://tatoeba.org/sentences/show/776395)（Shishir） | — | 自譯 |
+| 65 | Creo que está enferma. | [#5590431](https://tatoeba.org/sentences/show/5590431)（baudelaire） | — | 自譯 |
+| 66 | Estoy bien, ¿y tú? | [#560757](https://tatoeba.org/sentences/show/560757)（darinmex） | — | 自譯 |
+| 67 | Me siento muy feliz. | [#776635](https://tatoeba.org/sentences/show/776635)（chinopinyin） | — | 自譯 |
+| 68 | Vamos a jugar al béisbol. | [#1240360](https://tatoeba.org/sentences/show/1240360)（Shishir） | — | 自譯 |
+| 69 | Prefiero el fútbol al béisbol. | [#863980](https://tatoeba.org/sentences/show/863980)（felipeselles） | — | 自譯 |
+| 70 | Me encantan los libros. | [#5890646](https://tatoeba.org/sentences/show/5890646)（baudelaire） | — | 自譯 |
+| 71 | Sabe tocar el piano. | [#772019](https://tatoeba.org/sentences/show/772019)（Shishir） | — | 自譯 |
+| 72 | ¿Quieres ir a nadar? | [#1815290](https://tatoeba.org/sentences/show/1815290)（Shishir） | — | 自譯 |
+| 73 | Juego al tenis con mi hermano. | [#1282833](https://tatoeba.org/sentences/show/1282833)（Shishir） | — | 自譯 |
+| 74 | A ella le gusta escuchar música. | [#568122](https://tatoeba.org/sentences/show/568122)（Shishir） | — | 自譯 |
+| 75 | Le gusta viajar. A mí también. | [#1266469](https://tatoeba.org/sentences/show/1266469)（Shishir） | — | 自譯 |
+| 76 | Voy todas las semanas al cine. | [#5041423](https://tatoeba.org/sentences/show/5041423)（don_ramon） | — | 自譯 |
+| 77 | ¿Qué haces los domingos? | [#606140](https://tatoeba.org/sentences/show/606140)（Dejo） | — | 自譯 |
+| 78 | Me encanta la comida china. | [#673003](https://tatoeba.org/sentences/show/673003)（Shishir） | — | 自譯 |
+| 79 | Él no bebe café. | [#10157110](https://tatoeba.org/sentences/show/10157110)（Shishir） | — | 自譯 |
+| 80 | Me gustan el pan y la leche. | [#2120346](https://tatoeba.org/sentences/show/2120346)（Shishir） | — | 自譯 |
+| 81 | Este té está muy bueno. | [#1316011](https://tatoeba.org/sentences/show/1316011)（alexmarcelo） | — | 自譯 |
+| 82 | ¿Puedo tomar una taza de té? | [#2526682](https://tatoeba.org/sentences/show/2526682)（teskmon） | — | 自譯 |
+| 83 | Papá no come mucha fruta. | [#553356](https://tatoeba.org/sentences/show/553356)（Shishir） | — | 自譯 |
+| 84 | Ya no tenemos pan. | [#1705710](https://tatoeba.org/sentences/show/1705710)（alexmarcelo） | — | 自譯 |
+| 85 | Ella cocina sin sal. | [#2174589](https://tatoeba.org/sentences/show/2174589)（Amastan） | — | 自譯 |
+| 86 | ¿Qué vas a hacer mañana? | [#2676388](https://tatoeba.org/sentences/show/2676388)（Shishir） | — | 自譯 |
+| 87 | Empieza a las seis y media. | [#10665779](https://tatoeba.org/sentences/show/10665779)（Shishir） | — | 自譯 |
+| 88 | ¿A qué hora es la cena? | [#687421](https://tatoeba.org/sentences/show/687421)（lukaszpp） | — | 自譯 |
+| 89 | Nos vemos el lunes. | [#2711404](https://tatoeba.org/sentences/show/2711404)（Shishir） | — | 自譯 |
+| 90 | Es tres de octubre. | [#1329243](https://tatoeba.org/sentences/show/1329243)（marcelostockle） | — | 自譯 |
+| 91 | Son las ocho de la mañana. | [#728893](https://tatoeba.org/sentences/show/728893)（Shishir） | — | 自譯 |
+| 92 | ¿Por la tarde estás libre? | [#1815302](https://tatoeba.org/sentences/show/1815302)（Shishir） | — | 自譯 |
+| 93 | Un año tiene doce meses. | [#552511](https://tatoeba.org/sentences/show/552511)（Leono） | — | 自譯 |
+| 94 | Mi abuelo suele desayunar a las seis. | [#1758194](https://tatoeba.org/sentences/show/1758194)（Shishir） | — | 自譯 |
+| 95 | ¿Cuál es tu nombre? | [#1213833](https://tatoeba.org/sentences/show/1213833)（marcelostockle） | — | 自譯 |
+| 96 | Soy de Inglaterra. | [#669983](https://tatoeba.org/sentences/show/669983)（darinmex） | — | 自譯 |
+| 97 | Yo estudio español. | [#436966](https://tatoeba.org/sentences/show/436966)（lukaszpp） | — | 自譯 |
+| 98 | Todos hablamos español. | [#6003088](https://tatoeba.org/sentences/show/6003088)（Adelpa） | — | 自譯 |
+| 99 | No es estadounidense, sino inglés. | [#712049](https://tatoeba.org/sentences/show/712049)（Shishir） | — | 自譯 |
+| 100 | No sé hablar japonés. | [#1915760](https://tatoeba.org/sentences/show/1915760)（Shishir） | — | 自譯 |
+| 101 | ¿De dónde vienes? | [#2831](https://tatoeba.org/sentences/show/2831)（Espi） | — | 自譯 |
+| 102 | Vivo en el campo. | [#610600](https://tatoeba.org/sentences/show/610600)（qdii） | — | 自譯 |
+| 103 | Mi padre tiene cincuenta años. | [#543369](https://tatoeba.org/sentences/show/543369)（Shishir） | — | 自譯 |
+| 104 | ¿Cómo se llama tu papá? | [#2975119](https://tatoeba.org/sentences/show/2975119)（hayastan） | — | 自譯 |
+| 105 | Mis padres están en Australia. | [#5755728](https://tatoeba.org/sentences/show/5755728)（arh） | — | 自譯 |
+| 106 | A mis hijos les encantan los animales. | [#476992](https://tatoeba.org/sentences/show/476992)（darinmex） | — | 自譯 |
+| 107 | Debo ayudar a mi madre. | [#594591](https://tatoeba.org/sentences/show/594591)（Shishir） | — | 自譯 |
+| 108 | Quiero a mi padre. | [#7695969](https://tatoeba.org/sentences/show/7695969)（Shishir） | — | 自譯 |
+| 109 | Mi hermano mayor es profesor. | [#593415](https://tatoeba.org/sentences/show/593415)（Shishir） | — | 自譯 |
+| 110 | Conozco a tu padre. | [#539382](https://tatoeba.org/sentences/show/539382)（Shishir） | — | 自譯 |
+| 111 | Tu padre es alto. | [#445794](https://tatoeba.org/sentences/show/445794)（Shishir） | — | 自譯 |
+| 112 | El aeropuerto está cerca. | [#999668](https://tatoeba.org/sentences/show/999668)（ssc73） | — | 自譯 |
+| 113 | La biblioteca está a la derecha. | [#462767](https://tatoeba.org/sentences/show/462767)（lukaszpp） | — | 自譯 |
+| 114 | Voy a la escuela. | [#473450](https://tatoeba.org/sentences/show/473450)（Shishir） | — | 自譯 |
+| 115 | ¿Hay algún supermercado cerca? | [#9663256](https://tatoeba.org/sentences/show/9663256)（baudelaire） | — | 自譯 |
+| 116 | Hay un vaso sobre la mesa. | [#1421501](https://tatoeba.org/sentences/show/1421501)（nancy） | — | 自譯 |
+| 117 | Vivimos cerca de la escuela. | [#1002623](https://tatoeba.org/sentences/show/1002623)（hayastan） | — | 自譯 |
+| 118 | ¿Dónde estás? Estoy en el jardín. | [#5827962](https://tatoeba.org/sentences/show/5827962)（baudelaire） | — | 自譯 |
+| 119 | ¿Qué hay encima de la mesa? | [#9008552](https://tatoeba.org/sentences/show/9008552)（Shishir） | — | 自譯 |
+| 120 | Vamos a la escuela en autobús. | [#721382](https://tatoeba.org/sentences/show/721382)（Shishir） | — | 自譯 |
+| 121 | ¿Cuánto azúcar necesitamos? | [#12706729](https://tatoeba.org/sentences/show/12706729)（Shishir） | — | 自譯 |
+| 122 | Ir en tren es más barato. | [#5470911](https://tatoeba.org/sentences/show/5470911)（Seael） | — | 自譯 |
+| 123 | ¿Cuántas manzanas quieres? | [#500057](https://tatoeba.org/sentences/show/500057)（darinmex） | — | 自譯 |
+| 124 | ¿Cuánto cuesta este reloj? | [#330686](https://tatoeba.org/sentences/show/330686)（Raimondi） | — | 自譯 |
+| 125 | Tengo que ir a comprar. | [#523567](https://tatoeba.org/sentences/show/523567)（Shishir） | — | 自譯 |
+| 126 | Un siglo tiene cien años. | [#1059967](https://tatoeba.org/sentences/show/1059967)（hayastan） | — | 自譯 |
+| 127 | Este vestido es muy barato. | [#785118](https://tatoeba.org/sentences/show/785118)（chinopinyin） | — | 自譯 |
+| 128 | Ella va al mercado cada día. | [#611105](https://tatoeba.org/sentences/show/611105)（clerval） | — | 自譯 |
+| 129 | Hoy me quedo en casa. | [#819695](https://tatoeba.org/sentences/show/819695)（BraveSentry） | — | 自譯 |
+| 130 | ¿La conoces? | [#1268423](https://tatoeba.org/sentences/show/1268423)（Shishir） | — | 自譯 |
+| 131 | Me ayuda a llevar la bolsa. | [#10665641](https://tatoeba.org/sentences/show/10665641)（Shishir） | — | 自譯 |
 
 ### 單字卡基本字的例句
 
