@@ -836,7 +836,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="canciones">
     <div class="reveal sec-head"><div class="sec-num">3</div>
       <h2 class="sec-h"><span class="sec-title">歌詞分析</span> <span class="sec-es">Canciones</span></h2></div>
-    <p class="reveal sec-desc">貼一首你正在聽的西語歌,<b>常見字會自動畫線</b>,點了看解析;歌詞只存在你的瀏覽器。下面的歌是示範:多數只節錄幾句,但附完整的文法註。</p>
+    <p class="reveal sec-desc">貼一首你正在聽的西語歌,<b>常見字會自動畫線</b>,點了看解析;歌詞存在你的瀏覽器(開了同步碼才會跟進度一起同步)。下面的歌是示範:多數只節錄幾句,但附完整的文法註。</p>
     <div class="reveal chips song-genres" id="song-genres"></div>
     <div class="reveal chips song-artists" id="song-artists"></div>
     <div class="reveal chips" id="song-tabs"></div>
@@ -4863,6 +4863,28 @@ const _rvEnd=$("#rv-end"); if(_rvEnd)_rvEnd.onclick=endReview;
 const lyr=$("#lyrics"), noteBox=$("#note"), songTabs=$("#song-tabs"), songArtists=$("#song-artists"), songGenres=$("#song-genres");
 const MYKEY="miEspanol.mySongs";
 let mySongs=lsGet(MYKEY,[]);
+/* 貼上的歌詞常是「西文／英文／中文」交錯。逐行判斷語言:中文、英文掛到上一句西文底下,
+   不然每行都會被當成西文歌詞(有喇叭、會被畫線,英文的 sea 還會被當成 ser 的變化)。
+   [Coro]、(Chorus) 這種段落標籤轉成〔…〕。 */
+const EN_W=new Set("the and of to i you my your is are am was were be been it its in on that this with for what when where why how love heart don't can't i'm you're it's i'll we they he she his her our their just like all so but not never ever want need know feel hold tight come go see say tell look touch close stay keep body dance forever everything nothing something someone girl boy man woman crazy lonely day sun rain sky dream smile cry tears alone together goodbye hello right wrong cause 'cause tonight night only one more again got get let make take give would could should will won't there here from into out up down over away back now still time way life world eyes hands kiss burn fire water sea moon light air breathe thirst skin sword castle tower throat drown fear long wet treasure guards kills".split(" "));
+const ES_W=new Set("el la los las que de y en un una unos unas mi mis tu tus su sus yo tú él ella nosotros ellos se te lo le les por para con sin es son está están soy eres estoy como más pero muy ya cuando donde porque quiero amor corazón vida noche siempre nunca nada todo esta este eso esto hay del al ni sé qué cómo".split(" "));
+function lineLang(s){
+  if(/[\u3400-\u9fff\uf900-\ufaff]/.test(s)) return "cn";
+  if(/[ñáéíóúü¿¡]/i.test(s)) return "es";
+  const w=s.toLowerCase().replace(/[^a-z' ]/g," ").split(/\s+/).filter(Boolean);
+  let en=0,es=0; w.forEach(x=>{ const a=EN_W.has(x), b=ES_W.has(x); if(a&&!b)en++; else if(b&&!a)es++; });
+  return en>es?"en":"es"; }
+function parseLyrics(raw){
+  const out=[]; let last=null, pend={};
+  raw.forEach(t=>{ t=String(t).trim(); if(!t)return;
+    if(/^[\[(〔【].{1,30}[\])〕】]$/.test(t)){ out.push("〔"+t.slice(1,-1).trim()+"〕"); last=null; return; }
+    const L=lineLang(t);
+    if(L==="es"){ last={es:t}; if(pend.cn)last.cn=pend.cn; if(pend.en)last.en=pend.en; pend={}; out.push(last); return; }
+    if(last){ last[L]=last[L]?last[L]+" "+t:t; } else { pend[L]=pend[L]?pend[L]+" "+t:t; } });
+  return out; }
+/* 舊版存的歌每行都是字串,載入時重新分一次 */
+(function(){ let ch=false; mySongs.forEach(s=>{ if((s.lines||[]).some(l=>typeof l==="string"&&l.charAt(0)!=="〔")){ s.lines=parseLyrics(s.lines.map(l=>typeof l==="string"?l:(l.es||""))); ch=true; } });
+  if(ch) try{ localStorage.setItem(MYKEY,JSON.stringify(mySongs)); }catch(_){} })();
 let sIdx=0, selArtist=null, selGenre=null;
 /* 手機:點生字 → 底部彈出解析視窗(歌詞維持顯示);電腦版維持側欄 */
 const notePop=document.createElement("div"); notePop.className="note-pop";
@@ -4934,7 +4956,7 @@ function renderSong(){
   lyr.innerHTML=`<div class="song-title">${esc(s.title)}</div><div class="song-sub">${esc(s.sub||"")}${mine?' · <span class="del-song">'+svgIcon(ICON.trash,13)+' 刪除這首</span>':''}</div><a class="yt-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.title+(mine?"":" "+artistOf(s,sIdx)))}" target="_blank" rel="noopener">${svgIcon(ICON.play,13)} 在 YouTube 聽</a>`+
     (h=>h+(s.excerpt?excerptHTML(s,h):""))(s.lines.map((ln,li)=>{
       const sp=`<button class="spk lyr-spk" data-li="${li}" aria-label="發音">${svgIcon(ICON.vol,12)}</button>`;
-      if(ln && typeof ln==="object") return `<div class="lyric-line">${annotate(ln.es||"",merged)} ${sp}</div>`+(ln.cn?`<div class="lyric-cn">${esc(ln.cn)}</div>`:"")+(EN[ln.es]?`<div class="lyric-en en-line">${esc(EN[ln.es])}</div>`:"");
+      if(ln && typeof ln==="object") return `<div class="lyric-line">${annotate(ln.es||"",merged)} ${sp}</div>`+(ln.cn?`<div class="lyric-cn">${esc(ln.cn)}</div>`:"")+((ln.en||EN[ln.es])?`<div class="lyric-en en-line">${esc(ln.en||EN[ln.es])}</div>`:"");
       return ln.charAt(0)==="〔" ? `<div class="lyric-sec">${esc(ln.replace(/[〔〕]/g,""))}</div>` : `<div class="lyric-line">${annotate(ln,merged)} ${sp}</div>`;
     }).join(""));
   noteBox.innerHTML=`<div class="ph">${svgIcon(ICON.arrowLeft,20)} 點歌詞中<br>有底線的字<br>看解析</div>`;
@@ -4975,24 +4997,26 @@ function showSongForm(){
     <div class="song-title">貼一首你在聽的歌 · Pega tu canción</div>
     <label>歌名 / Título</label>
     <input id="sf-title" class="sf-in" placeholder="例如：La Bamba">
-    <label>歌詞 / Letra（一行一句）</label>
-    <textarea id="sf-lyrics" class="sf-ta" rows="8" placeholder="每一行打一句歌詞…"></textarea>
+    <label>歌詞 / Letra（一行一句；英文、中文翻譯夾在西文下面也可以，會自動對齊）</label>
+    <textarea id="sf-lyrics" class="sf-ta" rows="8" placeholder="Soy el fuego que arde tu piel&#10;我是燃燒你肌膚的火焰&#10;Soy el agua que mata tu sed&#10;…"></textarea>
     <label>註解（選填，一行一個，格式：詞 = 解釋）</label>
     <textarea id="sf-notes" class="sf-ta" rows="4" placeholder="quiero = 我想要&#10;bailar = 跳舞"></textarea>
     <div class="sf-btns"><button class="btn" id="sf-save">儲存 · Guardar</button><button class="btn" id="sf-cancel">取消 · Cancelar</button></div>
-    <p class="sf-hint">只存在你自己的瀏覽器,不會上傳。站上 ${GLOSS.length} 個常見字會自動畫線;其他想查的字,在上面「註解」自己加。</p>
+    <p class="sf-hint">存在這個瀏覽器;有開同步碼的話,會跟學習進度一起同步到雲端。站上 ${GLOSS.length} 個常見字會自動畫線;其他想查的字,在上面「註解」自己加。</p>
   </div>`;
   noteBox.innerHTML=`<div class="ph">填好左邊<br>按「儲存」</div>`;
   $("#sf-cancel").onclick=()=>{ buildSongTabs(); renderSong(); };
   $("#sf-save").onclick=()=>{
     const title=$("#sf-title").value.trim()||"我的歌";
-    const lines=$("#sf-lyrics").value.split("\n").map(x=>x.trim()).filter(Boolean);
-    if(!lines.length){ alert("請至少輸入一行歌詞。"); return; }
+    const lines=parseLyrics($("#sf-lyrics").value.split("\n"));
+    if(!lines.some(l=>typeof l==="object")){ alert("沒有找到西班牙文的句子。請至少貼一行西文歌詞。"); return; }
     const notes=$("#sf-notes").value.split("\n").map(x=>x.trim()).filter(Boolean).map(x=>{ const p=x.indexOf("="); if(p<0)return null; const t=x.slice(0,p).trim(); const cn=x.slice(p+1).trim(); return t?{t:t,g:"自訂註解",cn:cn,why:""}:null; }).filter(Boolean);
     mySongs.push({title:title,sub:"自己加的 · personal",lines:lines,notes:notes});
     localStorage.setItem(MYKEY,JSON.stringify(mySongs));
     sIdx=DATA.songs.length+mySongs.length-1;
     buildSongTabs(); renderSong(); songPickRender(false);  /* 上面那行是唯一顯示歌名的地方,存完要換成新歌 */
+    const nes=lines.filter(l=>typeof l==="object").length, ncn=lines.filter(l=>l.cn).length, nen=lines.filter(l=>l.en).length;
+    showToast("存好了:"+nes+" 句西文"+(ncn?",其中 "+ncn+" 句有中文":"")+(nen?","+nen+" 句有英文"+(document.body.classList.contains("hide-en")?"(英文對照在「學習進度 · 設定」打開)":""):""));
   };
 }
 buildSongTabs(); songPickRender(false);
