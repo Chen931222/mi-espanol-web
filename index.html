@@ -408,18 +408,7 @@ body:not(.on-progreso) footer{margin-top:34px}
 .sl-n{font-family:var(--font-display);font-size:.95rem;color:var(--ink-soft);white-space:nowrap}
 .sl-chev{align-self:center;color:var(--ink-soft);transform:rotate(180deg);transition:transform .2s;flex:none}
 #canciones.song-open .sl-chev{transform:none}
-#song-tabs{display:block;margin:0 0 18px}
-.sl-row{display:grid;grid-template-columns:4.6em 1fr;column-gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line-strong)}
-.sl-lbl{font-size:.8rem;letter-spacing:.14em;color:var(--ink-soft);line-height:1.5}
-.sl-items{display:flex;flex-wrap:wrap;gap:2px 24px}
-.sl-item{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:baseline;gap:7px;min-height:36px;padding:6px 0;font-family:var(--font-display);font-size:1.08rem;color:var(--ink)}
-.sl-item:hover .sl-t{color:var(--terra)}
-.sl-item:focus-visible{outline:2px solid var(--azul);outline-offset:2px;border-radius:4px}
-.sl-item.on .sl-t{color:var(--terra-deep);border-bottom:2px solid var(--terra);padding-bottom:1px}
-.sl-by{font-family:var(--font-body);font-size:.78rem;color:var(--ink-soft)}
-.sl-add .sl-t{font-family:var(--font-body);font-size:.92rem;color:var(--azul)}
-/* 手機上歌手名會讓每首歌各佔一行;拿掉,讓歌名一行排好幾首(歌手在下面的歌詞卡裡) */
-@media(max-width:600px){.sl-by{display:none} .sl-items{gap:0 20px} .sl-row{grid-template-columns:4.2em 1fr}}
+#song-tabs{margin:14px 0 6px}
 @media(prefers-reduced-motion:reduce){.sl-chev{transition:none}}
 #canciones:not(.song-open) #song-tabs{display:none}
 /* 歌名已經是上面那行「目前這首」,歌詞卡不再重複一次;卡片從歌手、年份那行開始 */
@@ -4366,26 +4355,33 @@ function genresPresent(){ const songs=allSongs(); const set=new Set(); songs.for
 function artistGroups(){ const songs=allSongs(); const m=new Map(); songs.forEach((s,i)=>{ if(genreOf(s,i)!==selGenre)return; const a=artistOf(s,i); if(!m.has(a))m.set(a,[]); m.get(a).push(i); }); return m; }
 function chipsLbl(t){ const s=document.createElement("span"); s.className="chips-lbl"; s.textContent=t; return s; }
 function buildSongTabs(){
-  /* 依曲風分列(雷鬼動 / 墨西哥地方 / 流行 / 熱帶 / 我加的):左邊小字分類,右邊純文字歌名,後面淡色小字是歌手;列與列細線分隔 */
+  /* 依歌手分組:一位歌手一列,歌全部攤開——有分類,但不必逐層點進去 */
   songGenres.innerHTML=""; songArtists.innerHTML=""; songTabs.innerHTML="";
-  const songs=allSongs(), byG=new Map();
-  songs.forEach((s,i)=>{ const g=genreOf(s,i); if(!byG.has(g)) byG.set(g,[]); byG.get(g).push(i); });
-  const order=GENRES.map(g=>g.k).filter(k=>byG.has(k)).concat(Array.from(byG.keys()).filter(k=>!GENRES.some(g=>g.k===k)));
-  const shortBy=a=>String(a||"").split(/ & | ft\. | feat\. /)[0];
-  order.forEach(k=>{
-    const row=document.createElement("div"); row.className="sl-row";
-    const lbl=document.createElement("div"); lbl.className="sl-lbl"; lbl.textContent=({reggaeton:"雷鬼動",regional:"墨西哥",pop:"流行",tropical:"熱帶",mine:"我加的",otros:"其他"})[k]||genreInfo(k).cn; lbl.title=genreInfo(k).cn+(genreInfo(k).es?" · "+genreInfo(k).es:""); row.appendChild(lbl);
-    const items=document.createElement("div"); items.className="sl-items";
-    byG.get(k).forEach(i=>{ const b=document.createElement("button"); b.type="button"; b.className="sl-item"+(i===sIdx?" on":"");
-      if(i===sIdx) b.setAttribute("aria-current","true");
-      b.innerHTML=`<span class="sl-t">${esc(songs[i].title)}</span><span class="sl-by">${esc(shortBy(artistOf(songs[i],i)))}</span>`;
-      b.onclick=()=>{ sIdx=i; buildSongTabs(); renderSong(); songPickRender(false); songPickEl.scrollIntoView({block:"start",behavior:"smooth"}); };
-      items.appendChild(b); });
-    row.appendChild(items); songTabs.appendChild(row);
+  const songs=allSongs();
+  const groups=new Map();
+  songs.forEach((s,i)=>{ const a=artistOf(s,i); if(!groups.has(a))groups.set(a,[]); groups.get(a).push(i); });
+  /* 排序:歌多的歌手在前,同數量照收錄順序;自己加的歌永遠殿後 */
+  const MINE="我自己加的歌";
+  const names=Array.from(groups.keys()).sort((a,b)=>{
+    if(a===MINE)return 1; if(b===MINE)return -1;
+    const d=groups.get(b).length-groups.get(a).length; if(d)return d;
+    return groups.get(a)[0]-groups.get(b)[0];
   });
-  const addRow=document.createElement("div"); addRow.className="sl-row sl-add";
-  addRow.innerHTML='<div class="sl-lbl"></div><div class="sl-items"><button type="button" class="sl-item"><span class="sl-t">＋ 自己加一首</span></button></div>';
-  addRow.querySelector("button").onclick=showSongForm; songTabs.appendChild(addRow);
+  names.forEach(a=>{
+    const list=groups.get(a);
+    const row=document.createElement("div"); row.className="song-group";
+    const lbl=document.createElement("div"); lbl.className="song-artist";
+    lbl.innerHTML=esc(a)+(list.length>1?' <span class="n">'+list.length+' 首</span>':'');
+    row.appendChild(lbl);
+    const box=document.createElement("div"); box.className="song-group-chips";
+    list.forEach(i=>{ const c=document.createElement("button");
+      c.className="chip song-chip"+(i===sIdx?" active":""); c.textContent=songs[i].title;
+      c.onclick=()=>{ sIdx=i; buildSongTabs(); renderSong(); songPickRender(false); songPickEl.scrollIntoView({block:"start",behavior:"smooth"}); }; box.appendChild(c); });
+    row.appendChild(box); songTabs.appendChild(row);
+  });
+  const addRow=document.createElement("div"); addRow.className="song-add-row";
+  const add=document.createElement("button"); add.className="chip chip-add"; add.innerHTML=svgIcon(ICON.plus,14)+' 自己加歌<span class="es2">Añadir</span>';
+  add.onclick=showSongForm; addRow.appendChild(add); songTabs.appendChild(addRow);
 }
 /* 節錄的歌(s.excerpt):站上只放幾句歌詞來講文法,不放整首。
    沒出現在這幾句裡的文法註照樣列出來——那些解說是自己寫的,不該跟著歌詞一起消失。
