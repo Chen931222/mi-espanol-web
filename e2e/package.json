@@ -1,0 +1,11 @@
+{
+  "name": "mi-espanol-e2e",
+  "private": true,
+  "description": "Playwright 冒煙測試（只在本機與 CI 跑，不參與部署）",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
+}
