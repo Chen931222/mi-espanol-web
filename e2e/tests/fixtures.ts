@@ -11,6 +11,7 @@ type Fixtures = {
  * 每個測試都：
  * - 把 /api/feedback mock 成 200 並記下送出的內容；/api/sync 回 503（沒有設定同步碼時本來就不會呼叫）
  * - 擋掉 Google Fonts，測試不依賴外部網路
+ * - 關掉「沒有西班牙語語音」提示，避免它在沒有西語語音的機器上蓋住按鈕
  * - 收集頁面上未捕捉的 JS 錯誤，測試結束時必須是 0 個
  */
 export const test = base.extend<Fixtures>({
@@ -26,6 +27,12 @@ export const test = base.extend<Fixtures>({
     await context.route("**/api/sync**", (route) =>
       route.fulfill({ status: 503, contentType: "application/json", body: '{"error":"not_configured"}' }));
     await context.route(/fonts\.(googleapis|gstatic)\.com/, (route) => route.abort());
+    // 測試機常常有語音但沒有西語語音（例如中文 Windows），網站會跳出「沒有西班牙語語音」提示，
+    // 它固定在畫面底部，會蓋住「下一步」按鈕。測試一開始就把它關掉，結果才不會因機器而異。
+    // 提示擋住按鈕本身是網站的 bug，另外處理，見 PR 說明。
+    await context.addInitScript(() => {
+      try { localStorage.setItem("miEsp_vozAviso", "off"); } catch {}
+    });
     await use(calls);
   }, { auto: true }],
   page: async ({ page }, use) => {
