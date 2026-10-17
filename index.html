@@ -3918,7 +3918,7 @@ DATA.dialogos.forEach((d,i)=>{ const c=document.createElement("button"); c.class
 
 /* 逐句對話 Conversar:一次只出一句,你回一句,談過的累積成謄寫稿。
    用的是現有 dialogos 資料(直線一問一答),沒有虛構任何內容。 */
-let dTalkScene=-1, dTalkStep=0, dTalkLog=[], dTalkFix=0;
+let dTalkScene=-1, dTalkStep=0, dTalkLog=[], dTalkFix=0, dTalkDay="";   // dTalkDay:這一輪是哪天開始的,過了午夜就不存進新的一天
 
 /* ═══ 本機語言檢查層 ═══
    這一層全部是規則判定:去重音比對、查表、詞形比對。沒有猜測、沒有呼叫任何服務,
@@ -4134,7 +4134,12 @@ const TALKFIX=[
   {es:"Perdón, ¿puedes repetirlo?", cn:"抱歉,可以再說一次嗎?"},
   {es:"¿Puedes hablar más despacio?", cn:"可以說慢一點嗎?"}
 ];
-function talkReset(){ dTalkScene=dScene; dTalkStep=0; dTalkLog=[]; dTalkFix=0; tkShown=""; tkSpoken=""; }
+function talkReset(){ dTalkScene=dScene; dTalkStep=0; dTalkLog=[]; dTalkFix=0; dTalkDay=dayStr(); tkShown=""; tkSpoken=""; }
+/* 「今天的五分鐘」那個場景談到一半也記著(存在今天的紀錄 talkP):重新整理、手機切去別的 App 回來被重載,都從原本那一句接著談 */
+function rtTalkSave(){ const r=rtToday(); if(r.talk||dScene!==r.scene||r.d!==dTalkDay) return; r.talkP={n:dTalkStep,f:dTalkFix,log:dTalkLog}; rtSave(); }
+function rtTalkLoad(){ const r=rtToday(), p=r.talkP; if(r.talk||!p||dScene!==r.scene) return;
+  if(!(p.n>=0 && p.n<DATA.dialogos[dScene].items.length)) return;
+  dTalkStep=p.n; dTalkFix=+p.f||0; dTalkLog=Array.isArray(p.log)?p.log:[]; }
 /* 先聽再看字:開了以後,對方每一句先自動播一次、字先藏起來,聽完自己按「顯示」。設定記在這台裝置 */
 const LFKEY="miEspanol.listenFirst"; let listenFirst=!!lsGet(LFKEY,false), tkShown="", tkSpoken="";
 /* kind: "model" 範例句 / "util" 萬用回應 / "typed" 打字。
@@ -4151,12 +4156,12 @@ function talkCommit(said,cn,kind,pct){
   if(kind==="fix"){
     /* 請對方重說 → 不前進、不計分(不然按著它就能刷分),對方把同一句再說一次。
        這才是這句話在真實對話裡的作用,話題也不會被截斷。 */
-    dTalkFix++;
+    dTalkFix++; rtTalkSave();
     renderTalk();
     setTimeout(()=>speak(it.q,null,0.55),260);
     return;
   }
-  dTalkStep++; dTalkFix=0; secLog("talk", kind!=="typed" || (pct!=null && pct>=0.6));
+  dTalkStep++; dTalkFix=0; rtTalkSave(); secLog("talk", kind!=="typed" || (pct!=null && pct>=0.6));
   if(kind!=="typed" || (pct!=null && pct>=0.6)){ award(1); cnt("dialog"); }
   if(dTalkStep>=DATA.dialogos[dScene].items.length) rtDone("talk",{said:dTalkLog.filter(t=>t.kind!=="fix").length});
   renderDaily(); renderTalk();
@@ -4169,7 +4174,7 @@ function talkBadge(t){
   return "";
 }
 function renderTalk(){
-  if(dTalkScene!==dScene) talkReset();
+  if(dTalkScene!==dScene){ talkReset(); rtTalkLoad(); }
   const sc=DATA.dialogos[dScene], items=sc.items, N=items.length;
   dlgList.innerHTML="";
   const wrap=document.createElement("div"); wrap.className="card tk-card reveal";
@@ -4835,7 +4840,7 @@ function rate(grade){
     if(!rvQueue.length){ endReview(); return; }
     const w=rvQueue[0]; schedule(w.es,grade); award(grade===0?1:2); save();
     if(grade===0){ rvQueue.push(rvQueue.shift()); } else { rvQueue.shift(); }
-    renderDaily();
+    rtCardsSave(true); renderDaily();
     if(!rvQueue.length) endReview(); else renderReview();
     return;
   }
@@ -5084,11 +5089,13 @@ function conjOf(inf){ if(/過去|完成|虛擬|進行|未來|命令|條件/.test
   let f=CONJ_IRR[k]; if(f) f=f.split(f.indexOf("|")>=0?"|":" ");
   else { const m=/^(.+)(ar|er|ir)$/.exec(k); if(!m) return null; const st=m[1], e={ar:["o","as","a","amos","an"],er:["o","es","e","emos","en"],ir:["o","es","e","imos","en"]}[m[2]]; f=e.map(x=>st+x); }
   return CONJ_PRON.map((p,i)=>`${p} <b lang="es">${f[i]}</b>`).join(" · "); }
-let roundA1=false;
+let roundA1=false, exTyped=[], exDay="";   // exTyped[pos]:檢查時打的字,存起來給重新整理後擺回去;exDay:今天那組是哪天出的
 function newRound(a,only){
   const a1=(a===true);   // 按鈕事件呼叫時 a 是 event,不算
-  const sc=a1&&DATA.dialogos[rtToday().scene];
-  round=Array.isArray(only)?only:pick5(a1, sc?SCENE_TOPICS[sc.scene]:null); roundA1=a1; res=[]; roundLogged=false;
+  const r=a1&&rtToday(), sc=r&&DATA.dialogos[r.scene];
+  /* 「今天的五分鐘」那組填到一半(重新整理過):出同一組題目,答過的照原樣擺回去,不重算分 */
+  const dp=r&&r.drillP, p=(r&&!r.drill&&dp&&Array.isArray(dp.q)&&dp.q.length&&dp.q.every(i=>POOL[i]))?dp:null;
+  round=Array.isArray(only)?only:p?p.q.slice():pick5(a1, sc?SCENE_TOPICS[sc.scene]:null); roundA1=a1; res=[]; exTyped=[]; exDay=r?r.d:""; roundLogged=false;
   exList.innerHTML=round.map((qi,pos)=>{ const e=POOL[qi];
     return `<div class="card ex"><div class="ex-sent">${e.before}<input class="blank" data-i="${pos}" autocomplete="off" spellcheck="false" lang="es" aria-label="第 ${pos+1} 題填空">${e.after}</div>`+
       `<div class="ex-hint">提示 · Pista:${e.inf} ｜ ${e.cn}${EN[e.before+e.answer+e.after]?` ｜ <span class="ex-en en-line">${esc(EN[e.before+e.answer+e.after])}</span>`:""} ${conjOf(e.inf)?` <button class="ex-conj-btn" type="button" data-conj="${pos}">變化表</button>`:""} <button class="ex-show" data-show="${pos}">看答案<span class="es2">Ver</span></button></div>${conjOf(e.inf)?`<div class="ex-conj" data-conjbox="${pos}" hidden>${conjOf(e.inf)}</div>`:""}<div class="ex-fb" data-fb="${pos}"></div></div>`;
@@ -5099,8 +5106,23 @@ function newRound(a,only){
   $$(".blank",exList).forEach(inp=>inp.addEventListener("keydown",ev=>{ if(ev.key!=="Enter")return; ev.preventDefault();
     const pos=+inp.dataset.i; if(checkOne(pos)||res[pos]) exFocusNext(pos); }));
   $$(".ex-show",exList).forEach(btn=>btn.onclick=()=>{ const pos=+btn.dataset.show, e=POOL[round[pos]]; const inp=$(`.blank[data-i="${pos}"]`,exList), fb=$(`.ex-fb[data-fb="${pos}"]`,exList);
-    if(btn.classList.toggle("on")){ if(!res[pos]){ res[pos]="seen"; const wc=exCard(e); if(wc) rtNoteMiss(wc.es); exScore(); } inp.value=e.answer; inp.className="blank"; fb.className="ex-fb show"; fb.textContent="答案 · Respuesta:"+e.answer; btn.innerHTML='隱藏答案<span class="es2">Ocultar</span>'; }
+    if(btn.classList.toggle("on")){ if(!res[pos]){ res[pos]="seen"; const wc=exCard(e); if(wc) rtNoteMiss(wc.es); rtDrillSave(); exScore(); } inp.value=e.answer; inp.className="blank"; fb.className="ex-fb show"; fb.textContent="答案 · Respuesta:"+e.answer; btn.innerHTML='隱藏答案<span class="es2">Ocultar</span>'; }
     else{ inp.value=""; inp.className="blank"; fb.className="ex-fb"; fb.textContent=""; btn.innerHTML='看答案<span class="es2">Ver</span>'; } });
+  if(p){ (p.res||[]).forEach((st,pos)=>{ if(!st||pos>=round.length) return; res[pos]=st; exTyped[pos]=(p.v||[])[pos]||"";
+      if(st==="seen") $(`.ex-show[data-show="${pos}"]`,exList).click(); else exPaint(pos,exTyped[pos]); });
+    exScore(); }
+  else rtDrillSave();
+}
+/* 今天的五分鐘那組填空做到哪(題目、每題結果、打的字),存在今天的紀錄 drillP;只存今天那組 A1,自己按「換一組」的不存 */
+function rtDrillSave(){ if(!roundA1) return; const r=rtToday(); if(r.drill||r.d!==exDay) return; r.drillP={q:round.slice(),res:res.slice(),v:exTyped.slice()}; rtSave(); }
+/* 一題檢查完的樣子。檢查時畫一次;重新整理後擺回做到一半的那組也用它,只畫、不重算分 */
+function exPaint(pos,typed){
+  const e=POOL[round[pos]]; const inp=$(`.blank[data-i="${pos}"]`,exList), fb=$(`.ex-fb[data-fb="${pos}"]`,exList);
+  /* 答對也把正確的重音形寫出來(打 estan 要看得到 están);有 why 就附一句為什麼 */
+  const why=e.why?" — "+e.why:"";
+  if(res[pos]==="ok"){ inp.className="blank ok"; fb.className="ex-fb ok"; fb.textContent="✓ 正確！"+(String(typed).trim()!==e.answer?"("+e.answer+")":"")+why; inp.value=e.answer; return; }
+  inp.value=typed; inp.className="blank no"; fb.className="ex-fb no"; fb.textContent="✗ 正確答案:"+e.answer+why;
+  if(e.g){ const gb=document.createElement("button"); gb.type="button"; gb.className="tk-link ex-gram"; gb.textContent="看文法:"+e.g.replace("|"," · "); gb.onclick=()=>openGram(e.g); fb.appendChild(gb); }
 }
 /* 檢查一題。沒填的只提示「還沒填」,不掀答案;檢查過或看過答案的不重算。回傳這次有沒有真的檢查 */
 function checkOne(pos){
@@ -5108,12 +5130,11 @@ function checkOne(pos){
   if(res[pos]){ if(res[pos]==="seen"&&!fb.textContent){ fb.className="ex-fb show"; fb.textContent="答案 · Respuesta:"+e.answer+"(看過答案,這題不計分)"; } return false; }
   const val=strip(inp.value);
   if(!val){ inp.className="blank"; fb.className="ex-fb"; fb.textContent="還沒填。不會的話按「看答案」"; return false; }
-  /* 答對也把正確的重音形寫出來(打 estan 要看得到 están);有 why 就附一句為什麼 */
-  const why=e.why?" — "+e.why:"";
-  if(val===strip(e.answer)){ res[pos]="ok"; inp.className="blank ok"; fb.className="ex-fb ok"; fb.textContent="✓ 正確！"+(inp.value.trim()!==e.answer?"("+e.answer+")":"")+why; if(inp.value.trim()!==e.answer)inp.value=e.answer; award(2); secLog("fill",true); }
-  else { res[pos]="no"; inp.className="blank no"; fb.className="ex-fb no"; fb.textContent="✗ 正確答案:"+e.answer+why; award(1); secLog("fill",false);
-    if(e.g){ const gb=document.createElement("button"); gb.type="button"; gb.className="tk-link ex-gram"; gb.textContent="看文法:"+e.g.replace("|"," · "); gb.onclick=()=>openGram(e.g); fb.appendChild(gb); }
-    const wc=exCard(e); recordMistake("填空", e.before+" ___ "+e.after+"("+e.cn+")", e.answer, inp.value, wc&&wc.es); if(wc) rtNoteMiss(wc.es); }
+  const typed=inp.value; exTyped[pos]=typed;
+  if(val===strip(e.answer)){ res[pos]="ok"; exPaint(pos,typed); award(2); secLog("fill",true); }
+  else { res[pos]="no"; exPaint(pos,typed); award(1); secLog("fill",false);
+    const wc=exCard(e); recordMistake("填空", e.before+" ___ "+e.after+"("+e.cn+")", e.answer, typed, wc&&wc.es); if(wc) rtNoteMiss(wc.es); }
+  rtDrillSave();
   cnt("exq",1); exScore(); return true;
 }
 /* 從文法筆記按「練這條」:這一輪只出標了這條的題(最多 5 題) */
@@ -5865,6 +5886,10 @@ function rtNoteMiss(es){ const r=rtToday(); r.miss=r.miss||[]; if(r.miss.indexOf
 const RT_MAX=10, RT_MIN=5;
 function rtQueue(){
   const r=rtToday(), out=[], why={};
+  /* 這輪單字卡評到一半(重新整理過、或中途按了結束複習):照原本那一輪剩下的卡,不重排 */
+  if(!r.cards && r.cardsP && Array.isArray(r.cardsP.q) && r.cardsP.q.length){
+    r.cardsP.q.forEach(([es,k])=>{ const w=CARD_BY[rtNorm(es)]; if(w && !why[w.es]){ why[w.es]=k; out.push(w); } });
+    if(out.length){ rtWhy=why; return out; } }
   const push=(w,k)=>{ if(w && !why[w.es] && out.length<RT_MAX){ why[w.es]=k; out.push(w); } };
   (r.weak||[]).forEach(es=>push(CARD_BY[rtNorm(es)],"talk"));
   (r.miss||[]).forEach(es=>push(CARD_BY[rtNorm(es)],"miss"));
@@ -5882,11 +5907,18 @@ function rtQueue(){
 function rtQueueDesc(q){ const c={}; q.forEach(w=>{ const k=rtWhy[w.es]; c[k]=(c[k]||0)+1; });
   const parts=[["talk","對話卡住"],["miss","填空錯的"],["scene","對話裡的字"],["due","到期"],["fresh","新字"]].filter(([k])=>c[k]).map(([k,t])=>`${t} ${c[k]}`);
   return q.length?`${q.length} 張:${parts.join("、")}`:"今天沒有要複習的卡"; }
-let rt=lsGet(RTKEY,{}), rtCards=0;
+let rt=lsGet(RTKEY,{}), rtCards=0, rtCardsDay="", rtCardsK=0;   // rtCardsK:這輪已經評了幾張(按「忘了」張數不會少,要另外記)
 function rtSave(){ try{ localStorage.setItem(RTKEY,JSON.stringify(rt)); }catch(_){} }
 function rtToday(){ const t=dayStr();
   if(rt.d!==t){ const n=rt.nTalk||0; rt={d:t,nTalk:n,scene:RT_SCENES[n%RT_SCENES.length]||0}; rtSave(); }
+  if(rtClean(rt)) rtSave();
   return rt; }
+/* 做到一半的紀錄形狀不對(手改過、或同步帶來的)就丟掉那一欄,不要讓首頁或對話頁整片壞掉 */
+function rtClean(r){ const A=Array.isArray, bad=[];
+  const tp=r.talkP; if(tp&&!(Number.isInteger(tp.n)&&tp.n>=0&&A(tp.log)&&tp.log.every(t=>t&&typeof t==="object"))) bad.push("talkP");
+  const dp=r.drillP; if(dp&&!(A(dp.q)&&A(dp.res)&&(dp.v==null||A(dp.v)))) bad.push("drillP");
+  const cp=r.cardsP; if(cp&&!(A(cp.q)&&cp.q.every(x=>A(x)&&typeof x[0]==="string"))) bad.push("cardsP");
+  bad.forEach(k=>delete r[k]); return bad.length; }
 function rtCatRank(w){ const i=RT_CATS.indexOf(catOf(w)); return i<0?RT_CATS.length:i; }
 const RT_SEC={talk:"dialogos",drill:"ejercicios",cards:"vocabulario"};
 const rtCrumbEl=document.createElement("div"); rtCrumbEl.className="rt-crumb"; rtCrumbEl.id="rt-crumb";
@@ -5904,10 +5936,16 @@ function rtGoTalk(){ const r=rtToday(); show("dialogos");
   if(dScene!==r.scene&&c) c.click(); else renderDlg();
   rtScrollTo(dlgList); }
 function rtGoCards(){ show("vocabulario");
-  const q=rtQueue();
+  const r=rtToday(), q=rtQueue(), p=!r.cards&&r.cardsP;
   if(!q.length){ rtDone("cards",{cardsN:0}); return; }
-  rtCards=q.length; startReview(q);   // startReview 自己會把卡片捲到畫面中間
+  const resume=p&&p.n>=q.length; rtCards=resume?p.n:q.length; rtCardsK=resume?(+p.k||0):0; rtCardsDay=r.d;
+  startReview(q); rtCardsSave();   // startReview 自己會把卡片捲到畫面中間
   const lbl=$("#rv-bar span"); if(lbl) lbl.innerHTML=`今天的單字 · 剩 <b id="rv-left">${q.length}</b> 張`; }
+/* 今天那輪單字卡還剩哪幾張(含各自出現的理由),存在今天的紀錄 cardsP;每評一張就更新 */
+function rtCardsSave(rated){ if(!rtCards||!rvActive) return; if(rated) rtCardsK++; const r=rtToday(); if(r.cards||r.d!==rtCardsDay) return;
+  r.cardsP={n:rtCards,k:rtCardsK,q:rvQueue.map(w=>[w.es,rtWhy[w.es]||"due"])}; rtSave(); }
+/* 某一步做到一半(重新整理後還記著的那種),首頁按鈕寫「繼續」不寫「開始」 */
+function rtStarted(r){ return !!((r.talkP&&(r.talkP.n||r.talkP.f)) || (r.drillP&&(r.drillP.res||[]).some(Boolean)) || (r.cardsP&&r.cardsP.k>0)); }
 function rtGoDrill(){ show("ejercicios");
   if($("#ex-fill").style.display==="none"){ const m=$("#ex-mode .chip"); if(m) m.click(); }
   if(roundLogged||!roundA1) newRound(true);
@@ -5915,7 +5953,7 @@ function rtGoDrill(){ show("ejercicios");
   if(matchMedia("(pointer:fine)").matches){ const p=Math.max(0,round.findIndex((_,i)=>!res[i])); const inp=$(`.blank[data-i="${p}"]`,exList); if(inp) inp.focus({preventScroll:true}); } }
 /* 記下今天完成了哪一步;還有下一步就在下面浮一條「下一步」,三步都做完就請你回首頁看收尾 */
 function rtDone(k,info){ const r=rtToday(); if(r[k])return;
-  r[k]=1; if(k==="talk") r.nTalk=(r.nTalk||0)+1; Object.assign(r,info||{}); rtSave(); rtCrumbEl.remove();
+  r[k]=1; delete r[k+"P"]; if(k==="talk") r.nTalk=(r.nTalk||0)+1; Object.assign(r,info||{}); rtSave(); rtCrumbEl.remove();
   const left=RT_STEPS.filter(s=>!r[s.k]);
   if(!left.length){ addXP(10); rtBar("今天的五分鐘做完了,+10 XP。","回今天看看",()=>show("hoy")); }
   else rtBar(`第 ${RT_STEPS.findIndex(s=>s.k===k)+1} 步完成。`,"下一步:"+left[0].t,()=>rtGo(left[0].k));
@@ -5967,7 +6005,7 @@ function renderHoy(){
   let head, foot;
   if(next){
     head=`<h2 class="hoy-hi">¡Hola!<span>${doneN?`今天的五分鐘,做完 ${doneN} 步了`:"今天的五分鐘"}</span></h2>`;
-    foot=`<div class="hoy-cta"><button class="btn rt-go" id="rt-start">${doneN?"繼續:"+next.t:"開始今天的五分鐘"} ›</button><span class="rt-meta">${ss?`連續 ${ss} 天`:"三步,大約五分鐘"}</span></div>`;
+    foot=`<div class="hoy-cta"><button class="btn rt-go" id="rt-start">${(doneN||rtStarted(r))?"繼續:"+next.t:"開始今天的五分鐘"} ›</button><span class="rt-meta">${ss?`連續 ${ss} 天`:"三步,大約五分鐘"}</span></div>`;
   } else {
     const tomorrow=DATA.dialogos[RT_SCENES[(r.nTalk||0)%RT_SCENES.length]]||sc;
     const sum=[r.said!=null?`回了 ${r.said} 句`:"", r.cardsN?`單字 ${r.cardsN} 張`:"", r.drillN?`填空 ${r.drillOk} / ${r.drillN}`:""].filter(Boolean).join(" · ");
