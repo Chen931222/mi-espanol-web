@@ -6054,25 +6054,43 @@ function renderHoy(){
 /* ===== 今日影片:YouTube「每日一段」(2026-10-19) =====
    videos.json 列出排好的影片;publishAt 是 YouTube 排程上線的時間(台北時間)。
    只顯示「已經過了上線時間」的最新一支:上線日是今天就標「今日影片」,不是今天就照實寫日期;一支都還沒上線,整塊不出現。
-   網址只接受 youtube.com / youtu.be,其他的當作打錯、不顯示。 */
-let hvData=null;
+   寫錯的那筆跳過,在主控台留警告(驗收:原本寫錯格式完全沒提示,沒寫時區會照訪客當地時間算,晚 15 小時):
+   - publishAt 要像 2026-10-21T19:00:00+08:00;沒寫時區當台北時間;只寫日期或其他寫法都不收
+   - 網址只收 youtube.com / m.youtube.com / youtu.be
+   頁面開著跨過台北午夜、或到了下一支的上線時間,會重新讀 videos.json 再畫一次。 */
+let hvData=null, hvTimer=0;
 function hvLoad(){
   if(hvData) return Promise.resolve(hvData);
   return fetch("videos.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null)
     .then(j=>(hvData=j&&Array.isArray(j.videos)?j:{videos:[]})).catch(()=>({videos:[]}));
 }
 const tpeDate=ms=>new Date(ms+8*3600e3).toISOString().slice(0,10);   /* 台北的日期 YYYY-MM-DD */
+const HV_URL=/^https:\/\/((www|m)\.)?(youtube\.com|youtu\.be)\//;
+const HV_AT=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:\d{2})?$/;
+function hvAt(v){   /* 上線時間(毫秒);寫錯回 NaN */
+  const s=String(v&&v.publishAt||"").trim();
+  if(!HV_AT.test(s)) return NaN;
+  return Date.parse(/(Z|[+-]\d{2}:\d{2})$/.test(s)?s:s+"+08:00");
+}
 function renderHoyVideo(){
   const box=$("#hoy-video"); if(!box) return;
   hvLoad().then(d=>{
-    const now=Date.now();
-    const ok=v=>v&&/^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(v.url||"")&&Date.parse(v.publishAt)<=now;
-    const v=(d.videos||[]).filter(ok).sort((a,b)=>Date.parse(b.publishAt)-Date.parse(a.publishAt))[0];
-    if(!v){ box.hidden=true; box.innerHTML=""; return; }
-    const day=tpeDate(Date.parse(v.publishAt)), [,mo,dd]=day.split("-");
+    const now=Date.now(), list=[];
+    (d.videos||[]).forEach((v,i)=>{
+      const at=hvAt(v);
+      if(!v||!HV_URL.test(v.url||"")||isNaN(at)){ console.warn(`videos.json 第 ${i+1} 筆寫錯,略過(publishAt 要像 2026-10-21T19:00:00+08:00,網址要是 YouTube 的)`,v); return; }
+      list.push({v,at});
+    });
+    /* 下一次重畫:下一支上線的時間,或台北的下一個午夜,取早的 */
+    const nextAt=Math.min(...list.filter(x=>x.at>now).map(x=>x.at), Date.parse(tpeDate(now)+"T00:00:00+08:00")+864e5);
+    clearTimeout(hvTimer); hvTimer=setTimeout(()=>{ hvData=null; renderHoyVideo(); }, Math.min(nextAt-now+1000, 864e5));
+    const live=list.filter(x=>x.at<=now).sort((a,b)=>b.at-a.at);
+    if(!live.length){ box.hidden=true; box.innerHTML=""; return; }
+    const {v,at}=live[0], day=tpeDate(at), [,mo,dd]=day.split("-");
+    const sec=Number(v.seconds), meta=[v.scene?esc(v.scene):"", sec>0?`${Math.round(sec)} 秒`:"", "YouTube"].filter(Boolean).join(" · ");
     box.innerHTML=`<div class="hv"><div class="hv-body"><span class="hv-tag">${day===tpeDate(now)?"今日影片":`${+mo}/${+dd} 的影片`}</span>`+
-      `<p class="hv-t">${esc(v.title)}</p><p class="hv-m">${esc(v.scene)} · ${Math.round(v.seconds||0)} 秒 · YouTube</p></div>`+
-      `<a class="btn hv-go" href="${esc(v.url)}" target="_blank" rel="noopener">看影片 ›</a></div>`;
+      `<p class="hv-t">${esc(v.title)}</p><p class="hv-m">${meta}</p></div>`+
+      `<a class="btn hv-go" href="${esc(v.url)}" target="_blank" rel="noopener" aria-label="看影片:${esc(v.title)}(YouTube,另開分頁)">看影片 ›</a></div>`;
     box.hidden=false;
   });
 }
