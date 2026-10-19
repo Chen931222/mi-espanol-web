@@ -521,6 +521,16 @@ body.rt-bar-on #toast-box{bottom:92px}
 .hoy-card:hover{transform:translateY(-2px);border-color:var(--terra)}
 .hoy-card b{display:block;margin-top:7px;font-size:.95rem;color:var(--ink)}
 .hoy-card span{font-size:.74rem;color:var(--ink-soft);font-weight:700}
+/* 今日影片(2026-10-19):YouTube 每天一支的「每日一段」,清單在 videos.json。只放連結,不嵌播放器(不載入 YouTube 的程式、不設 cookie) */
+#hoy-video{margin-top:22px}
+#hoy-video[hidden]{display:none}
+.hv{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap;border:1.5px solid var(--line);border-radius:14px;background:var(--card);padding:14px 16px}
+.hv-body{flex:1 1 220px;min-width:0}
+.hv-tag{font-size:.72rem;font-weight:700;color:#fff;background:var(--terra-deep);border-radius:999px;padding:2px 9px}
+.hv-t{margin:6px 0 0;font-family:var(--font-display);font-weight:600;font-size:1.05rem;line-height:1.35;color:var(--ink)}
+.hv-m{margin:2px 0 0;font-size:.85rem;font-weight:700;color:var(--ink-soft)}
+.hv-go{flex:0 0 auto;text-decoration:none;display:inline-block}
+@media(max-width:480px){ .hv-go{width:100%;text-align:center} }
 .help-btn{cursor:pointer;flex:0 0 auto;margin-left:auto;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line-strong);background:var(--paper-2);color:var(--ink-soft);font-weight:900;font-size:.85rem;line-height:1;transition:.2s;align-self:center}
 .help-btn:hover{border-color:var(--terra);color:var(--terra)}
 .sec-desc.hid{display:none}
@@ -758,6 +768,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <!-- 0 今天 -->
   <section id="hoy">
     <div class="reveal hoy-hero" id="hoy-hero"></div>
+    <div class="reveal" id="hoy-video" hidden></div>
     <div class="reveal" id="hoy-quick"></div>
   </section>
 
@@ -6036,7 +6047,34 @@ function renderHoy(){
     <button class="hoy-card" data-go="canciones">${svgIcon(ICON.music,22)}<b>聽歌學歌詞</b><span>放鬆學</span></button>
   </div>`;
   $$("#hoy-quick .hoy-card").forEach(b=>b.onclick=()=>show(b.dataset.go));
+  renderHoyVideo();
   reflow("hoy");
+}
+
+/* ===== 今日影片:YouTube「每日一段」(2026-10-19) =====
+   videos.json 列出排好的影片;publishAt 是 YouTube 排程上線的時間(台北時間)。
+   只顯示「已經過了上線時間」的最新一支:上線日是今天就標「今日影片」,不是今天就照實寫日期;一支都還沒上線,整塊不出現。
+   網址只接受 youtube.com / youtu.be,其他的當作打錯、不顯示。 */
+let hvData=null;
+function hvLoad(){
+  if(hvData) return Promise.resolve(hvData);
+  return fetch("videos.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null)
+    .then(j=>(hvData=j&&Array.isArray(j.videos)?j:{videos:[]})).catch(()=>({videos:[]}));
+}
+const tpeDate=ms=>new Date(ms+8*3600e3).toISOString().slice(0,10);   /* 台北的日期 YYYY-MM-DD */
+function renderHoyVideo(){
+  const box=$("#hoy-video"); if(!box) return;
+  hvLoad().then(d=>{
+    const now=Date.now();
+    const ok=v=>v&&/^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(v.url||"")&&Date.parse(v.publishAt)<=now;
+    const v=(d.videos||[]).filter(ok).sort((a,b)=>Date.parse(b.publishAt)-Date.parse(a.publishAt))[0];
+    if(!v){ box.hidden=true; box.innerHTML=""; return; }
+    const day=tpeDate(Date.parse(v.publishAt)), [,mo,dd]=day.split("-");
+    box.innerHTML=`<div class="hv"><div class="hv-body"><span class="hv-tag">${day===tpeDate(now)?"今日影片":`${+mo}/${+dd} 的影片`}</span>`+
+      `<p class="hv-t">${esc(v.title)}</p><p class="hv-m">${esc(v.scene)} · ${Math.round(v.seconds||0)} 秒 · YouTube</p></div>`+
+      `<a class="btn hv-go" href="${esc(v.url)}" target="_blank" rel="noopener">看影片 ›</a></div>`;
+    box.hidden=false;
+  });
 }
 
 /* ===== 各區說明文字:收進「?」按鈕(第一次進站自動展開一次) ===== */
