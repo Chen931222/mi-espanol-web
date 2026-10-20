@@ -1,0 +1,15 @@
+{
+  "name": "Mi Español · 每天五分鐘的西班牙文",
+  "short_name": "Mi Español",
+  "description": "每天五分鐘學拉美西班牙文:對話、填空、間隔重複單字卡,還有文法、歌詞、動詞與聽說練習。",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F2E6CE",
+  "theme_color": "#C24A32",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
