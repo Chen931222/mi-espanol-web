@@ -1,4 +1,61 @@
 {
   "_說明": "「今天」頁的「今日影片」讀這個檔。每支一筆：ep 集數；scene 站上的場景名；title 站上要顯示的短標題（不用加「Mi Español」）；seconds 片長（秒）；publishAt YouTube 排程上線的時間，寫成 2026-10-21T19:00:00+08:00（沒寫時區當台北時間，只寫日期不收）；url 影片網址（youtube.com、m.youtube.com 或 youtu.be）。排程好但還沒上線的可以先寫進來，時間到才會出現；寫錯的那筆會被略過，瀏覽器主控台會有警告。",
-  "videos": []
+  "videos": [
+    {
+      "ep": "ep01",
+      "scene": "市場買水果",
+      "title": "在拉美的市場買水果，你只要開口三次",
+      "seconds": 27,
+      "publishAt": "2026-10-23T20:00:00+08:00",
+      "url": "https://www.youtube.com/shorts/ubPAt2ts7HE"
+    },
+    {
+      "ep": "ep02",
+      "scene": "搭計程車",
+      "title": "在拉美搭計程車，你只要開口三次",
+      "seconds": 29,
+      "publishAt": "2026-10-24T20:00:00+08:00",
+      "url": "https://www.youtube.com/shorts/pPkNANxNFdM"
+    },
+    {
+      "ep": "ep03",
+      "scene": "問路",
+      "title": "在拉美問路，你只要開口三次",
+      "seconds": 30,
+      "publishAt": "2026-10-25T20:00:00+08:00",
+      "url": "https://www.youtube.com/shorts/xxecmbkg0S0"
+    },
+    {
+      "ep": "ep04",
+      "scene": "咖啡廳點餐",
+      "title": "在拉美的咖啡廳點餐，你只要開口三次",
+      "seconds": 31,
+      "publishAt": "2026-10-26T20:00:00+08:00",
+      "url": "https://www.youtube.com/shorts/LWY7GwTtxf4"
+    },
+    {
+      "ep": "ep05",
+      "scene": "買衣服",
+      "title": "在拉美買衣服，你只要開口三次",
+      "seconds": 28,
+      "publishAt": "2026-10-27T20:00:00+08:00",
+      "url": "https://www.youtube.com/shorts/viwq0Am5N5A"
+    },
+    {
+      "ep": "ep06",
+      "scene": "看醫生",
+      "title": "在拉美看醫生，你只要開口三次",
+      "seconds": 32,
+      "publishAt": "2026-10-28T20:00:00+08:00",
+      "url": "https://www.youtube.com/shorts/jjbduBBPUZg"
+    },
+    {
+      "ep": "ep07",
+      "scene": "約朋友",
+      "title": "跟拉美朋友約見面，你只要開口三次",
+      "seconds": 31,
+      "publishAt": "2026-10-29T20:00:00+08:00",
+      "url": "https://www.youtube.com/shorts/Dz_ln_JqwF0"
+    }
+  ]
 }
