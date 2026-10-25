@@ -429,6 +429,7 @@ body:not(.on-progreso) footer{margin-top:34px}
 #vocabulario:not(.vc-open) #vc-mode,#vocabulario:not(.vc-open) #vc-cats,#vocabulario:not(.vc-open) #vc-filters{display:none}
 .foot-credit{margin-top:22px}
 .foot-credit a{color:var(--terra-deep);text-underline-offset:2px}
+.foot-ev{text-wrap:balance}   /* 匿名計數的說明:手機折三行時最後一行不要只剩一兩個字 */
 .sync{max-width:580px;margin:0 auto 18px;padding:20px 22px;background:linear-gradient(180deg,var(--paper-2),var(--paper));border:1.5px solid var(--terra);border-radius:16px;text-align:left}
 .sync-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
 .sync-h{font-family:var(--font-display);font-weight:900;font-size:1.05rem;color:var(--ink)}
@@ -962,6 +963,7 @@ body.np-open .note-pop{transform:translateY(0)}
     </div>
     <!-- Tatoeba 的句子是 CC BY 2.0 FR,放上網站要署名並註明有修改 -->
     <p class="foot-note foot-credit">部分例句與填空題取自 <a href="https://tatoeba.org" target="_blank" rel="noopener">Tatoeba</a>,授權 CC BY 2.0 FR,中文翻譯經過修改 · <a href="https://github.com/Chen931222/mi-espanol-web#例句來源" target="_blank" rel="noopener">逐句出處</a></p>
+    <p class="foot-note foot-ev">使用統計只記每天的匿名次數(幾個瀏覽器來過、開始、做完、點了影片),不設 cookie;IP 只用來防濫用,最多留一小時;開了「不追蹤」就不送。</p>
   </footer>
 
     </div>
@@ -969,6 +971,8 @@ body.np-open .note-pop{transform:translateY(0)}
 </div>
 
 <script>
+/* 匿名計數(2026-10-25)要知道這個瀏覽器是不是第一次來,得在任何程式寫 localStorage 之前看,所以放在最前面;用法見「匿名計數」那段 */
+const EV_NEW=(()=>{ try{ return !Object.keys(localStorage).some(k=>k.startsWith("miEsp")); }catch(_){ return false; } })();
 /* ============================================================
    ★ 你的學習內容全部在這個 DATA 區 ★
    對話/歌詞：句子裡想標的字寫進該句的 notes（會自動加底線可點）
@@ -5979,7 +5983,7 @@ function rtGoDrill(){ show("ejercicios");
 function rtDone(k,info){ const r=rtToday(); if(r[k])return;
   r[k]=1; delete r[k+"P"]; if(k==="talk") r.nTalk=(r.nTalk||0)+1; Object.assign(r,info||{}); rtSave(); rtCrumbEl.remove();
   const left=RT_STEPS.filter(s=>!r[s.k]);
-  if(!left.length){ addXP(10); rtBar("今天的五分鐘做完了,+10 XP。","回今天看看",()=>show("hoy")); }
+  if(!left.length){ addXP(10); evAct("done"); rtBar("今天的五分鐘做完了,+10 XP。","回今天看看",()=>show("hoy")); }
   else rtBar(`第 ${RT_STEPS.findIndex(s=>s.k===k)+1} 步完成。`,"下一步:"+left[0].t,()=>rtGo(left[0].k));
 }
 const rtBarEl=document.createElement("div"); rtBarEl.id="rt-bar"; rtBarEl.setAttribute("role","status"); rtBarEl.hidden=true; document.body.appendChild(rtBarEl);
@@ -5994,6 +5998,36 @@ function rtBarHide(){ rtBarEl.hidden=true; document.body.classList.remove("rt-ba
 const WTPKEY="miEspanol.wtpAsked";
 const WTP_OPTS=[["none","不會付"],["m30","每月 NT$30"],["m60","每月 NT$60"],["m120","每月 NT$120"]];
 function fbSend(body){ try{ return fetch("/api/feedback",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}).catch(()=>{}); }catch(_){ return Promise.resolve(); } }
+
+/* ===== 匿名計數(2026-10-25):推估 YouTube 有沒有帶人來。不帶來源(手打網址本來就沒有),只能看上片時間前後的變化。
+   送 /api/feedback {type:"ev"},日期由伺服器記(台北時間) =====
+   new 新的瀏覽器(進站時沒有任何 miEsp 開頭的紀錄,見最前面的 EV_NEW)/ back 來過的瀏覽器今天第一次來 /
+   start 按「開始今天的五分鐘」/ done 三步做完(不一定經過 start,從分頁直接做完也算)/ video 點今日影片。
+   每個瀏覽器每個台北日每種最多送一次(記在 miEsp_ev);斷線沒送出去就不算送過,下次再補。不帶任何 id、不設 cookie。
+   key 用 miEsp_ 開頭:同步碼、匯出、重設只認 miEspanol. 開頭,這兩個是「這個瀏覽器」的事,不跟著走(同步後也不會多算)。
+   不送:網址加過 ?notrack(站主自己的瀏覽器,記在 miEsp_notrack;?notrack=off 取消)、開了「不追蹤」(DNT／GPC)、
+   自動化或爬蟲(navigator.webdriver,或 UA 帶 bot／crawl／spider／headless 等字)。 */
+const EVKEY="miEsp_ev", NOTRACK="miEsp_notrack";
+const evDay=()=>new Date(Date.now()+8*3600e3).toISOString().slice(0,10);   /* 台北的日期,跟伺服器記的是同一天 */
+const EV_DAY0=evDay();
+try{ const q=new URLSearchParams(location.search).get("notrack"); if(q==="off") localStorage.removeItem(NOTRACK); else if(q!==null) localStorage.setItem(NOTRACK,"1"); }catch(_){}
+function evSend(ev,also){ try{
+  if(localStorage.getItem(NOTRACK)==="1"||navigator.doNotTrack==="1"||window.doNotTrack==="1"||navigator.globalPrivacyControl===true) return;
+  if(navigator.webdriver||/bot|crawl|spider|slurp|headless|lighthouse|facebookexternalhit/i.test(navigator.userAgent||"")) return;
+  const d=evDay(), s=lsGet(EVKEY,{});
+  if(s.d!==d||!Array.isArray(s.sent)){ s.d=d; s.sent=[]; }
+  if(s.sent.includes(ev)) return;
+  const mark=[ev,...(also||[])];
+  s.sent.push(...mark); localStorage.setItem(EVKEY,JSON.stringify(s));
+  fbSend({type:"ev",ev}).then(r=>{ if(r) return;   /* 斷線沒送出去:把剛記的拿掉,下次再補 */
+    try{ const t=lsGet(EVKEY,{}); if(t.d===d&&Array.isArray(t.sent)){ t.sent=t.sent.filter(x=>!mark.includes(x)); localStorage.setItem(EVKEY,JSON.stringify(t)); } }catch(_){} });
+}catch(_){} }
+/* 來訪:第一次載入的那一天算 new,之後(包括分頁開著跨過午夜)算 back。動作之前先補來訪,分頁切回前景也補 */
+function evVisit(){ evSend(EV_NEW&&evDay()===EV_DAY0?"new":"back",["new","back"]); }
+function evAct(ev){ evVisit(); evSend(ev); }
+evVisit();
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") evVisit(); });
+{ const b=$("#hoy-video"); if(b) b.addEventListener("click",e=>{ if(e.target.closest&&e.target.closest(".hv-go")) evAct("video"); }); }
 function wtpHTML(){ let asked=null; try{ asked=localStorage.getItem(WTPKEY); }catch(_){}
   if(asked) return "";
   return `<div class="wtp" id="wtp"><p class="wtp-q">問一件事:如果這五分鐘要付費,你最多願意付多少?</p>
@@ -6038,7 +6072,7 @@ function renderHoy(){
   }
   box.innerHTML=head+list+foot+
     (ln?`<div class="daily-line"><span class="daily-tag">今日一句</span><span class="daily-es">${esc(ln.es)}</span> ${spkHTML(ln.es)}<div class="daily-cn">${esc(ln.cn)}</div></div>`:"");
-  const st=$("#rt-start"); if(st) st.onclick=()=>rtGo(next.k);
+  const st=$("#rt-start"); if(st) st.onclick=()=>{ evAct("start"); rtGo(next.k); };
   $$("#wtp [data-wtp]").forEach(b=>b.onclick=()=>wtpAnswer(b.dataset.wtp));
   $("#hoy-quick").innerHTML=`<div class="hoy-quick-h">${svgIcon(ICON.game,17)} 還想多練 · Más</div><div class="hoy-grid">
     <button class="hoy-card" data-go="vocabulario">${svgIcon(ICON.game,22)}<b>配對小遊戲</b><span>三分鐘熱身</span></button>
