@@ -3,7 +3,7 @@
 一個人也能養成的西班牙文學習法：對話、單字卡 SRS、歌詞、聽力口說、
 遊戲化進度，全部收在一頁裡。
 
-線上版：https://mi-espanol-web.vercel.app
+線上版：https://miespanol.app（舊網址 mi-espanol-web.vercel.app 會轉過來；`/api/` 不轉，網址加 `?stay` 也不轉，留給要把舊網址上的進度匯出的人）
 
 ## 結構
 

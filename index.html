@@ -11,7 +11,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Mi Español · 每天五分鐘的西班牙文">
 <meta property="og:description" content="14 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
-<meta property="og:url" content="https://mi-espanol-web.vercel.app/">
+<meta property="og:url" content="https://miespanol.app/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
@@ -5241,7 +5241,7 @@ $("#reset-all").onclick=()=>{ if(confirm("確定要清除『全部』進度嗎?(
     }catch(e){ setState("離線,稍後重試",false); } }
   Storage.prototype.setItem=function(k,v){ _protoSet.call(this,k,v);
     if(this===localStorage&&code&&typeof k==="string"&&k.indexOf("miEspanol.")===0&&k!==CODEKEY&&k!==ATKEY) schedulePush(); };
-  if(location.protocol==="file:"){ unlinkedEl.innerHTML='<p class="sync-note" style="margin:0">同步功能請用網路版:<b>mi-espanol-web.vercel.app</b>(本機開啟的檔案無法連雲端)。</p>'; setState("僅網路版",false); return; }
+  if(location.protocol==="file:"){ unlinkedEl.innerHTML='<p class="sync-note" style="margin:0">同步功能請用網路版:<b>miespanol.app</b>(本機開啟的檔案無法連雲端)。</p>'; setState("僅網路版",false); return; }
   $("#sync-create").onclick=async()=>{ code=genCode(); _set(CODEKEY,code); paint(); await push(); };
   $("#sync-link").onclick=async()=>{ const v=($("#sync-input").value||"").toUpperCase().replace(/[^A-Z0-9]/g,""); if(v.length<4){ alert("請輸入有效的同步碼。"); return; } code=v; _set(CODEKEY,code); paint(); setState("連結中…",false); await pull({adopt:true,seedIfEmpty:true}); };
   $("#sync-copy").onclick=()=>{ if(navigator.clipboard) navigator.clipboard.writeText(code); const b=$("#sync-copy"),t=b.textContent; b.textContent="已複製!"; setTimeout(()=>b.textContent=t,1200); };

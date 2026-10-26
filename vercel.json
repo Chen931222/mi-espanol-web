@@ -1,0 +1,11 @@
+{
+  "redirects": [
+    {
+      "source": "/:path((?!api/).*)",
+      "has": [{ "type": "host", "value": "mi-espanol-web.vercel.app" }],
+      "missing": [{ "type": "query", "key": "stay" }],
+      "destination": "https://miespanol.app/:path",
+      "permanent": true
+    }
+  ]
+}
