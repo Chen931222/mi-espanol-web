@@ -237,6 +237,13 @@ body.hide-en .en-line{display:none}
 /* ≤860px 側邊欄變成底部分頁列(約 66px 高):提示改成左右貼邊、浮在分頁列上方,不要蓋住它 */
 @media(max-width:860px){#voz-aviso{left:16px;right:16px;transform:none;width:auto;max-width:none;bottom:calc(80px + env(safe-area-inset-bottom))}}
 @media(max-width:520px){#voz-aviso{flex-direction:column;gap:10px} #voz-aviso button{align-self:flex-end}}
+/* 讓位:一步做完的提示列(#rt-bar)出現時,語音提示疊在它上面(--rtbar-h 是 rtBar() 量的提示列實際高度,窄螢幕或字多時會折成兩行);
+   打開手機「更多」清單或生字小視窗時先收起來,關掉再出現。z-index 9998 比提示列(55)、清單(59)、小視窗(201)都高,
+   不讓開就會壓住「下一步」、清單最下面幾格、小視窗的關閉鈕和喇叭(2026-10-26 實測)。
+   收起來的規則只在清單/小視窗會出現的寬度生效:平板開著清單轉成橫向,清單不顯示了,body 上的狀態卻還在 */
+body.rt-bar-on #voz-aviso{bottom:calc(34px + var(--rtbar-h,56px) + env(safe-area-inset-bottom))}
+@media(max-width:860px){body.rt-bar-on #voz-aviso{bottom:calc(80px + var(--rtbar-h,61px) + env(safe-area-inset-bottom))} body.ms-open #voz-aviso{display:none}}
+@media(max-width:680px){body.np-open #voz-aviso{display:none}}
 .note{padding:22px;align-self:start;position:sticky;top:96px}
 .note .ph{color:var(--ink-soft);font-size:.95rem;text-align:center;padding:30px 6px}
 .note-forms{margin-top:15px;padding-top:13px;border-top:1px dashed var(--line-strong)}
@@ -5989,10 +5996,13 @@ function rtDone(k,info){ const r=rtToday(); if(r[k])return;
 const rtBarEl=document.createElement("div"); rtBarEl.id="rt-bar"; rtBarEl.setAttribute("role","status"); rtBarEl.hidden=true; document.body.appendChild(rtBarEl);
 function rtBar(msg,label,fn){
   rtBarEl.innerHTML=`<span class="rt-bar-msg">${msg}</span><button class="btn rt-go">${label} ›</button><button class="rt-bar-x" aria-label="關閉">✕</button>`;
-  rtBarEl.hidden=false; document.body.classList.add("rt-bar-on");
+  rtBarEl.hidden=false; document.body.classList.add("rt-bar-on"); rtBarH();
   rtBarEl.querySelector(".rt-go").onclick=()=>{ rtBarHide(); fn(); };
   rtBarEl.querySelector(".rt-bar-x").onclick=rtBarHide; }
 function rtBarHide(){ rtBarEl.hidden=true; document.body.classList.remove("rt-bar-on"); }
+/* 提示列實際多高交給 CSS(--rtbar-h),語音提示才疊得剛好;轉螢幕時寬度變了,折行也會變 */
+function rtBarH(){ if(!rtBarEl.hidden) document.body.style.setProperty("--rtbar-h",rtBarEl.offsetHeight+"px"); }
+addEventListener("resize",rtBarH);
 
 /* ===== 付費意願與錯誤回報:匿名計數,送到 /api/feedback(只收固定選項,不收文字) ===== */
 const WTPKEY="miEspanol.wtpAsked";
