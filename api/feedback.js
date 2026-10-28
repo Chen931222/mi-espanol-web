@@ -5,10 +5,12 @@
 //   POST { type:"wtp",    choice }                → espfb:wtp      欄位 choice +1
 //   POST { type:"report", item:"7-2", field, reason } → espfb:report 欄位 "7-2|a|es" +1
 //   POST { type:"waitlist", email, remove? }      → espfb:waitlist 集合加入／移除這個 email(付費版上線時通知用)
-//   POST { type:"ev", ev }                         → espfb:ev:<ev> 欄位「台北日期」+1(new 新裝置/back 回訪/start 按開始/done 做完三步/video 點今日影片)
+//   POST { type:"ev", ev }                         → espfb:ev:<ev> 欄位「台北日期」+1(new 新裝置/back 回訪/start 按開始/done 做完三步/video 點今日影片/try 今天練過)
+//   POST { type:"ev", ev:"pick", ep:"ep01" }       → espfb:ev:pick 欄位「台北日期|ep」+1(在「從影片來的?」點了哪一支;ep 要是「ep＋2–3 位數字」的字串)
 //   GET                                            → 兩張表的目前計數＋候補名單人數＋ev 每天的次數(只有數字,可以公開;email 本身不回傳)
 // ev 是 2026-10-25 加的,推估 YouTube 有沒有帶人來(不帶來源):前端每個瀏覽器每個台北日每種最多送一次,不帶任何 id、不設 cookie。
-// ev 的限流另外算(espfb:rlev:,每個 IP 每小時 200 次):同一個網路(教室、公司)很多台一起來時,不能把候補名單的 30 次吃光。
+// pick、try 是 2026-10-28 加的:pick 的 ep 是訪客自己點的那一集,不是追蹤來源;try 是今天拿到任何 XP(從哪個分頁練都算)。
+// ev 的限流另外算(espfb:rlev:,每個 IP 每小時 400 次):同一個網路(教室、公司)很多台一起來時,不能把候補名單的 30 次吃光。
 // 預覽部署與本機(VERCEL_ENV 不是 production)寫到 espfb:evp:,測試不會混進正式數字。
 // 候補名單的 email 只能在 Upstash 主控台(Vercel → Storage → 這個 KV → Data Browser,key espfb:waitlist)看到。
 
@@ -18,8 +20,8 @@ const WTP = ["none", "m30", "m60", "m120"];          // 不會付 / 每月 NT$30
 const FIELDS = ["q", "a", "alt"];                     // 對方那句 / 範例句 / 另一種說法
 const REASONS = ["es", "cn", "odd"];                  // 西文有錯 / 中文有錯 / 不自然
 const RATE_MAX = 30;                                  // 每個 IP 每小時最多 30 次
-const EV_RATE_MAX = 200;                              // ev 另外一桶,每個 IP 每小時最多 200 次
-const EVS = ["new", "back", "start", "done", "video"]; // 新的瀏覽器 / 回訪 / 按開始 / 做完三步 / 點今日影片
+const EV_RATE_MAX = 400;                              // ev 另外一桶,每個 IP 每小時最多 400 次(2026-10-28 從 200 提高:每台瀏覽器一天最多送的種類變多了)
+const EVS = ["new", "back", "start", "done", "video", "pick", "try"]; // 新的瀏覽器 / 回訪 / 按開始 / 做完三步 / 點今日影片 / 從影片來點了哪一支 / 今天練過
 const EV_NS = process.env.VERCEL_ENV === "production" ? "espfb:ev:" : "espfb:evp:";
 const tpeDay = () => new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);   // 台北的日期 YYYY-MM-DD
 
@@ -61,8 +63,8 @@ export default async function handler(req, res) {
       key = "espfb:wtp"; field = body.choice;
     } else if (body.type === "report" && /^\d{1,2}-\d{1,2}$/.test(String(body.item || "")) && FIELDS.includes(body.field) && REASONS.includes(body.reason)) {
       key = "espfb:report"; field = `${body.item}|${body.field}|${body.reason}`;
-    } else if (body.type === "ev" && EVS.includes(body.ev)) {
-      key = EV_NS + body.ev; field = tpeDay(); isEv = true;
+    } else if (body.type === "ev" && EVS.includes(body.ev) && (body.ev !== "pick" || (typeof body.ep === "string" && /^ep\d{2,3}$/.test(body.ep)))) {
+      key = EV_NS + body.ev; field = body.ev === "pick" ? `${tpeDay()}|${body.ep}` : tpeDay(); isEv = true;
     } else if (body.type === "selftest") {
       key = "espfb:selftest"; field = "ok";   // 部署後自我檢查用,不混進正式計數
     } else {

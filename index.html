@@ -532,6 +532,17 @@ body.rt-bar-on #toast-box{bottom:92px}
 /* 今日影片(2026-10-19):YouTube 每天一支的「每日一段」,清單在 videos.json。只放連結,不嵌播放器(不載入 YouTube 的程式、不設 cookie) */
 #hoy-video{margin-top:22px}
 #hoy-video[hidden]{display:none}
+/* 從影片來的?(2026-10-28):還沒練過的人才看到,在今天頁最上面。不套卡片(下面已經疊了兩張),直接放在紙上 */
+#hoy-from{margin-bottom:22px}
+#hoy-from[hidden]{display:none}
+.hf-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.hf-h{margin:0;font-family:var(--font-display);font-weight:700;font-size:1.3rem;line-height:1.3;color:var(--ink)}
+.hf-sub{margin:4px 0 12px;font-size:.95rem;color:var(--ink-soft)}
+.hf-list{display:flex;flex-wrap:wrap;gap:8px}
+.hf-list:empty{min-height:82px}   /* 影片清單還沒讀到時先留兩列的高,讀到之後主按鈕不會往下跳 */
+@media (min-width:640px){ .hf-list:empty{min-height:37px} }
+.hf-more{margin-top:6px}
+#hoy-from .chip:focus-visible,#hoy-from .tk-link:focus-visible{outline:2px solid var(--azul);outline-offset:3px}
 .hv{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap;border:1.5px solid var(--line);border-radius:14px;background:var(--card);padding:14px 16px}
 .hv-body{flex:1 1 220px;min-width:0}
 .hv-tag{font-size:.72rem;font-weight:700;color:#fff;background:var(--terra-deep);border-radius:999px;padding:2px 9px}
@@ -775,6 +786,7 @@ body.np-open .note-pop{transform:translateY(0)}
 
   <!-- 0 今天 -->
   <section id="hoy">
+    <div class="reveal" id="hoy-from" hidden></div>
     <div class="reveal hoy-hero" id="hoy-hero"></div>
     <div class="reveal" id="hoy-video" hidden></div>
     <div class="reveal" id="hoy-quick"></div>
@@ -970,7 +982,7 @@ body.np-open .note-pop{transform:translateY(0)}
     </div>
     <!-- Tatoeba 的句子是 CC BY 2.0 FR,放上網站要署名並註明有修改 -->
     <p class="foot-note foot-credit">部分例句與填空題取自 <a href="https://tatoeba.org" target="_blank" rel="noopener">Tatoeba</a>,授權 CC BY 2.0 FR,中文翻譯經過修改 · <a href="https://github.com/Chen931222/mi-espanol-web#例句來源" target="_blank" rel="noopener">逐句出處</a></p>
-    <p class="foot-note foot-ev">使用統計只記每天的匿名次數(幾個瀏覽器來過、開始、做完、點了影片),不設 cookie;IP 只用來防濫用,最多留一小時;開了「不追蹤」就不送。</p>
+    <p class="foot-note foot-ev">使用統計只記每天的匿名次數(幾個瀏覽器來過、選了哪支影片、開始、有沒有練、做完、點了影片),不設 cookie;IP 只用來防濫用,最多留一小時;開了「不追蹤」就不送。</p>
   </footer>
 
     </div>
@@ -5374,7 +5386,7 @@ function addXP(n){ const t=dayStr(); const before=xp.days[t]||0; xp.days[t]=befo
   const tb=xp.total||0; xp.total=tb+n;
   if(Math.floor(xp.total/100)>Math.floor(tb/100) && (xp.freezes||0)<3){ xp.freezes=(xp.freezes||0)+1; showToast(svgIcon(ICON.shield,14)+" 滿 100 XP,獲得 1 張連勝保護卡!",true); }
   if(before<xp.goal && xp.days[t]>=xp.goal) showToast(svgIcon(ICON.target,14)+" 今日目標達成!",true);
-  saveXP(); }
+  saveXP(); try{ evAct("try"); }catch(_){} }   /* 匿名計數:今天練過了(拿到任何 XP 都算),見「匿名計數」那段 */
 function cntv(k){ return (stats.cnt&&stats.cnt[k])||0; }
 function cnt(k,n){ stats.cnt=stats.cnt||{}; stats.cnt[k]=(stats.cnt[k]||0)+(n||1); saveStats(); }
 /* 分區紀錄(進度頁「各區練習」用):練過幾題、答對幾題。cnt 只記答對、只拿來解成就,這裡連答錯也記 */
@@ -5964,7 +5976,9 @@ function rtCrumb(k){ const sec=document.getElementById(RT_SEC[k]); const head=se
 function rtGo(k){ rtBarHide(); ({talk:rtGoTalk,cards:rtGoCards,drill:rtGoDrill})[k](); if(!rtToday()[k]) rtCrumb(k); }
 /* 換到那一步的分頁後,練習區如果在畫面下半部,直接捲到它 */
 function rtScrollTo(el){ if(!el)return; const top=el.getBoundingClientRect().top;
-  if(top>innerHeight*0.45){ try{ window.scrollTo({top:top+scrollY-14,behavior:"instant"}); }catch(_){ window.scrollTo(0,top+scrollY-14); } } }
+  /* 手機的頂列是 sticky,要扣掉它的高度,不然會蓋住第一行(2026-10-28 驗收:360×640 上「第 1 / 5 句 · 場景」被蓋住) */
+  const bar=$(".topbar"), off=14+(bar&&getComputedStyle(bar).display!=="none"?bar.offsetHeight:0);
+  if(top>innerHeight*0.45){ try{ window.scrollTo({top:top+scrollY-off,behavior:"instant"}); }catch(_){ window.scrollTo(0,top+scrollY-off); } } }
 function rtGoTalk(){ const r=rtToday(); show("dialogos");
   if(dlgMode!=="talk"){ const m=$("#dlg-mode .chip"); if(m) m.click(); }
   const c=$$(".chip",chipBox)[r.scene];
@@ -6012,7 +6026,9 @@ function fbSend(body){ try{ return fetch("/api/feedback",{method:"POST",headers:
 /* ===== 匿名計數(2026-10-25):推估 YouTube 有沒有帶人來。不帶來源(手打網址本來就沒有),只能看上片時間前後的變化。
    送 /api/feedback {type:"ev"},日期由伺服器記(台北時間) =====
    new 新的瀏覽器(進站時沒有任何 miEsp 開頭的紀錄,見最前面的 EV_NEW)/ back 來過的瀏覽器今天第一次來 /
-   start 按「開始今天的五分鐘」/ done 三步做完(不一定經過 start,從分頁直接做完也算)/ video 點今日影片。
+   start 按「開始今天的五分鐘」/ done 三步做完(不一定經過 start,從分頁直接做完也算)/ video 點今日影片 /
+   pick 在「從影片來的?」點了哪一支(2026-10-28,多帶 ep,例如 ep01;伺服器記成「日期|ep」;每一支各記一次)/
+   try 今天練過了(2026-10-28,拿到任何 XP 都算,從哪個分頁練的都一樣;start 只量得到「今天」那顆按鈕)。
    每個瀏覽器每個台北日每種最多送一次(記在 miEsp_ev);斷線沒送出去就不算送過,下次再補。不帶任何 id、不設 cookie。
    key 用 miEsp_ 開頭:同步碼、匯出、重設只認 miEspanol. 開頭,這兩個是「這個瀏覽器」的事,不跟著走(同步後也不會多算)。
    不送:網址加過 ?notrack(站主自己的瀏覽器,記在 miEsp_notrack;?notrack=off 取消)、開了「不追蹤」(DNT／GPC)、
@@ -6021,20 +6037,21 @@ const EVKEY="miEsp_ev", NOTRACK="miEsp_notrack";
 const evDay=()=>new Date(Date.now()+8*3600e3).toISOString().slice(0,10);   /* 台北的日期,跟伺服器記的是同一天 */
 const EV_DAY0=evDay();
 try{ const q=new URLSearchParams(location.search).get("notrack"); if(q==="off") localStorage.removeItem(NOTRACK); else if(q!==null) localStorage.setItem(NOTRACK,"1"); }catch(_){}
-function evSend(ev,also){ try{
+function evSend(ev,also,extra){ try{
   if(localStorage.getItem(NOTRACK)==="1"||navigator.doNotTrack==="1"||window.doNotTrack==="1"||navigator.globalPrivacyControl===true) return;
   if(navigator.webdriver||/bot|crawl|spider|slurp|headless|lighthouse|facebookexternalhit/i.test(navigator.userAgent||"")) return;
   const d=evDay(), s=lsGet(EVKEY,{});
   if(s.d!==d||!Array.isArray(s.sent)){ s.d=d; s.sent=[]; }
-  if(s.sent.includes(ev)) return;
-  const mark=[ev,...(also||[])];
+  const k=extra&&extra.ep?ev+":"+extra.ep:ev;   /* pick 每一支各記一次(2026-10-28 驗收:原本只記當天第一次點的那支) */
+  if(s.sent.includes(k)) return;
+  const mark=[k,...(also||[])];
   s.sent.push(...mark); localStorage.setItem(EVKEY,JSON.stringify(s));
-  fbSend({type:"ev",ev}).then(r=>{ if(r) return;   /* 斷線沒送出去:把剛記的拿掉,下次再補 */
+  fbSend(Object.assign({type:"ev",ev},extra)).then(r=>{ if(r) return;   /* 斷線沒送出去:把剛記的拿掉,下次再補 */
     try{ const t=lsGet(EVKEY,{}); if(t.d===d&&Array.isArray(t.sent)){ t.sent=t.sent.filter(x=>!mark.includes(x)); localStorage.setItem(EVKEY,JSON.stringify(t)); } }catch(_){} });
 }catch(_){} }
 /* 來訪:第一次載入的那一天算 new,之後(包括分頁開著跨過午夜)算 back。動作之前先補來訪,分頁切回前景也補 */
 function evVisit(){ evSend(EV_NEW&&evDay()===EV_DAY0?"new":"back",["new","back"]); }
-function evAct(ev){ evVisit(); evSend(ev); }
+function evAct(ev,extra){ evVisit(); evSend(ev,null,extra); }
 evVisit();
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") evVisit(); });
 { const b=$("#hoy-video"); if(b) b.addEventListener("click",e=>{ if(e.target.closest&&e.target.closest(".hv-go")) evAct("video"); }); }
@@ -6091,7 +6108,7 @@ function renderHoy(){
     <button class="hoy-card" data-go="canciones">${svgIcon(ICON.music,22)}<b>聽歌學歌詞</b><span>放鬆學</span></button>
   </div>`;
   $$("#hoy-quick .hoy-card").forEach(b=>b.onclick=()=>show(b.dataset.go));
-  renderHoyVideo();
+  try{ renderHoyFrom(hfLive); }catch(e){ console.warn(e); } renderHoyVideo();
   reflow("hoy");
 }
 
@@ -6106,7 +6123,7 @@ let hvData=null, hvTimer=0;
 function hvLoad(){
   if(hvData) return Promise.resolve(hvData);
   return fetch("videos.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null)
-    .then(j=>(hvData=j&&Array.isArray(j.videos)?j:{videos:[]})).catch(()=>({videos:[]}));
+    .then(j=>j&&Array.isArray(j.videos)?(hvData=j):{videos:[]}).catch(()=>({videos:[]}));   /* 只記住讀成功的:404／5xx 下次回今天頁再讀(2026-10-28 驗收,原本會記成空清單到半夜) */
 }
 const tpeDate=ms=>new Date(ms+8*3600e3).toISOString().slice(0,10);   /* 台北的日期 YYYY-MM-DD */
 const HV_URL=/^https:\/\/((www|m)\.)?(youtube\.com|youtu\.be)\//;
@@ -6129,6 +6146,7 @@ function renderHoyVideo(){
     const nextAt=Math.min(...list.filter(x=>x.at>now).map(x=>x.at), Date.parse(tpeDate(now)+"T00:00:00+08:00")+864e5);
     clearTimeout(hvTimer); hvTimer=setTimeout(()=>{ hvData=null; renderHoyVideo(); }, Math.min(nextAt-now+1000, 864e5));
     const live=list.filter(x=>x.at<=now).sort((a,b)=>b.at-a.at);
+    hfLive=live; try{ renderHoyFrom(live); }catch(e){ console.warn(e); }   /* 出錯不要拖累下面的今日影片卡 */
     if(!live.length){ box.hidden=true; box.innerHTML=""; return; }
     const {v,at}=live[0], day=tpeDate(at), [,mo,dd]=day.split("-");
     const sec=Number(v.seconds), meta=[v.scene?esc(v.scene):"", sec>0?`${Math.round(sec)} 秒`:"", "YouTube"].filter(Boolean).join(" · ");
@@ -6138,6 +6156,45 @@ function renderHoyVideo(){
     box.hidden=false;
   });
 }
+
+/* ===== 從影片來的?(2026-10-28) =====
+   10/25–28 進站 76 個瀏覽器,按「開始」0 個:看完影片手打網址進來的人,第一眼是今天輪到的場景,不是剛看的那一段。
+   所以還沒練過的瀏覽器(xp.total 是 0),今天頁最上面列出已上線的影片,點了直接進那一場對話
+   (跟「今天的五分鐘」一樣用 .click() 切場景,今天輪到的場景不變;但逐句對話做完任何一場都會算今天的「聊一段」,這是原本的規則)。
+   新的排前面,超過 HF_MAX 支收進「其他 N 支」。
+   按「略過」就不再出現(miEsp_hfOff,只記在這個瀏覽器,不跟同步走);拿到任何 XP 之後也不再出現。 */
+const HF_MAX=6, HFOFF="miEsp_hfOff", HF_EP=/^ep\d{2,3}$/;
+let hfLive=null, hfAll=false;   // hfLive:renderHoyVideo 讀到的已上線影片(新的在前);還沒讀到是 null,先畫標題佔位
+function hfOn(){ try{ return !(xp.total>0)&&localStorage.getItem(HFOFF)!=="1"; }catch(_){ return false; } }
+function renderHoyFrom(live){
+  const box=$("#hoy-from"); if(!box) return;
+  const off=()=>{ box.hidden=true; box.innerHTML=""; };
+  if(!hfOn()) return off();
+  const items=[];
+  (live||[]).forEach(({v})=>{ const i=DATA.dialogos.findIndex(d=>d.scene===v.scene);
+    if(i<0) console.warn(`videos.json 的場景「${v.scene}」在對話裡找不到,「從影片來的?」先不列它`,v); else items.push({v,i}); });
+  if(live&&!items.length) return off();
+  const shown=hfAll?items:items.slice(0,HF_MAX), more=items.length-shown.length;
+  const tog=more>0?`<button class="tk-link hf-more" type="button" aria-expanded="false" aria-controls="hf-list">其他 ${more} 支</button>`
+    :hfAll&&items.length>HF_MAX?`<button class="tk-link hf-more" type="button" aria-expanded="true" aria-controls="hf-list">收起</button>`:"";
+  /* 整塊重畫(上線時間到、午夜、展開收起)之前記住焦點在哪一顆,畫完還給它 */
+  const a=document.activeElement, fk=a&&box.contains(a)?(a.dataset.hf!=null?`[data-hf="${a.dataset.hf}"]`:a.classList.contains("hf-more")?".hf-more":a.classList.contains("hf-off")?".hf-off":null):null;
+  box.innerHTML=`<div class="hf-top"><h2 class="hf-h" id="hf-h">從影片來的?</h2><button class="tk-link hf-off" type="button" aria-label="略過「從影片來的?」">略過</button></div>`+
+    `<p class="hf-sub">點你剛看的那一支,直接練那段對話。</p>`+
+    `<div class="hf-list" id="hf-list" role="group" aria-labelledby="hf-h">${shown.map(({v,i})=>`<button class="chip" type="button" data-hf="${i}" data-ep="${esc(v.ep||"")}" aria-label="練「${esc(v.scene)}」這段對話">${esc(v.scene)}</button>`).join("")}</div>`+tog;
+  box.hidden=false;
+  if(fk){ const n=box.querySelector(fk); if(n) n.focus(); }
+  $$("#hoy-from [data-hf]").forEach(b=>b.onclick=()=>{ if(HF_EP.test(b.dataset.ep)) evAct("pick",{ep:b.dataset.ep}); hfGo(+b.dataset.hf); });
+  const t=$("#hoy-from .hf-more"); if(t) t.onclick=()=>{ hfAll=!hfAll; renderHoyFrom(hfLive); };
+  $("#hoy-from .hf-off").onclick=()=>{ try{ localStorage.setItem(HFOFF,"1"); }catch(_){} off(); const s=$("#rt-start"); if(s) s.focus(); };
+}
+/* 跟 rtGoTalk 同一套切法;捲到「逐句對話 · 場景」那一列,焦點也放在那裡,讀屏會唸出進了哪一場 */
+function hfGo(i){ show("dialogos");
+  if(dlgMode!=="talk"){ const m=$("#dlg-mode .chip"); if(m) m.click(); }
+  const c=$$(".chip",chipBox)[i];
+  if(dScene!==i&&c) c.click(); else renderDlg();
+  rtScrollTo($("#dlg-pick")||dlgList);
+  const cur=$("#dlg-pick .dlg-pick-cur"); if(cur){ cur.tabIndex=-1; cur.focus({preventScroll:true}); } }
 
 /* ===== 各區說明文字:收進「?」按鈕(第一次進站自動展開一次) ===== */
 (function(){
