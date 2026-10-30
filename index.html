@@ -508,6 +508,15 @@ body:not(.on-progreso) footer{margin-top:34px}
   .rt-d{grid-column:2}
   .hoy-cta .rt-go{width:100%}
 }
+/* 有底部分頁列的寬度(≤860px),開始鈕排到三步清單上面(2026-10-30)。原本在清單下面:第一次來的人上面還有「從影片來的?」,
+   375×667 時按鈕頂在 630px、底部分頁列從 607px 起,整顆被蓋住;iPhone Safari 網址列展開時大約就是這個高度。
+   只換畫面順序,HTML 順序不動(清單裡沒有可以按的東西,Tab 順序不受影響);「三步,大約五分鐘」跟著按鈕,正好接上下面的三步。
+   橫放的手機(高 375–390)還是會被蓋住:「從影片來的?」一塊就快佔滿,要捲一下 */
+@media(max-width:860px){
+  .hoy-hero{display:flex;flex-direction:column}
+  .hoy-hi{order:-2}
+  .hoy-cta{order:-1;margin-top:14px}
+}
 /* 一步做完時浮在下面的提示:帶你去下一步。會浮起來,所以用陰影不用框 */
 #rt-bar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:55;display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;
   width:max-content;max-width:calc(100vw - 32px);background:var(--card);border-radius:14px;padding:10px 8px 10px 18px;box-shadow:var(--shadow)}
@@ -542,6 +551,7 @@ body.rt-bar-on #toast-box{bottom:92px}
 .hf-list:empty{min-height:82px}   /* 影片清單還沒讀到時先留兩列的高,讀到之後主按鈕不會往下跳 */
 @media (min-width:640px){ .hf-list:empty{min-height:37px} }
 .hf-more{margin-top:6px}
+.hf-ph{display:inline-block;visibility:hidden}
 #hoy-from .chip:focus-visible,#hoy-from .tk-link:focus-visible{outline:2px solid var(--azul);outline-offset:3px}
 .hv{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap;border:1.5px solid var(--line);border-radius:14px;background:var(--card);padding:14px 16px}
 .hv-body{flex:1 1 220px;min-width:0}
@@ -598,6 +608,11 @@ body.rt-bar-on #toast-box{bottom:92px}
 .lp-input{font-family:var(--font-body);font-size:1.06rem;padding:11px 14px;border:1.5px solid var(--line-strong);border-radius:12px;background:#fff;color:var(--ink);outline:none;width:100%;max-width:520px;margin-top:16px;text-align:center}
 .lp-input:focus{border-color:var(--azul)}
 .lp-diff{margin:14px auto 2px;max-width:560px;line-height:2;font-size:1.08rem}
+.n-tip{font-weight:800}
+.lp-diff .n-tip{display:block;margin-top:6px}
+/* 回饋列是 flex:提醒自己一行、排在最後,不跟「正確!」擠成好幾欄 */
+.vb-fb:has(.n-tip){flex-wrap:wrap}
+.vb-fb .n-tip{flex-basis:100%;text-align:center}
 .lp-diff .dok{color:var(--good);font-weight:700}
 .lp-diff .dno{color:#fff;background:var(--bad);border-radius:6px;padding:1px 6px;font-weight:700}
 .lp-diff .dmiss{color:var(--bad);text-decoration:line-through;opacity:.7;font-weight:700}
@@ -1178,7 +1193,7 @@ const DATA = {
         {t:"Cómo te llamas", g:"反身動詞 llamarse", cn:"你叫什麼名字", why:"字面「你怎麼稱呼自己」。<b>llamarse</b> = 名叫(反身):me llamo / te llamas / se llama。"},
         {t:"Me llamo", g:"llamarse 現在式 yo", cn:"我叫…", why:"<b>me llamo</b> + 名字 = 我叫…。"},
         {t:"Y tú", g:"反問", cn:"那你呢?", why:"<b>¿Y tú?</b> = 把問題丟回去:「你呢?」"} ]},
-      { q:"¿De dónde eres?", qcn:"你是哪裡人?", a:"Soy de Taiwán y vivo en Taipéi.", acn:"我是台灣人,住在台北。", notes:[
+      { q:"Me llamo Ana. ¿De dónde eres?", qcn:"我叫 Ana。你是哪裡人?", a:"Soy de Taiwán y vivo en Taipéi.", acn:"我是台灣人,住在台北。", notes:[
         {t:"De dónde eres", g:"ser 表出身", cn:"你來自哪裡", why:"問國籍/出身用 <b>ser</b>:¿De dónde eres? = 你是哪裡人?"},
         {t:"Soy de", g:"ser de + 地方", cn:"我來自…", why:"<b>ser de</b> + 地名 = 來自…。Soy de Taiwán = 我是台灣人。"},
         {t:"vivo", g:"vivir 現在式 yo", cn:"我住", why:"<b>vivir</b> = 住、生活;vivo en + 地點 = 我住在…。"} ]},
@@ -2755,6 +2770,16 @@ const DATA = {
 const $  = (s,el=document)=>el.querySelector(s);
 const $$ = (s,el=document)=>[...el.querySelectorAll(s)];
 const strip = s => s.toLowerCase().trim().normalize("NFD").replace(/[̀-ͯ]/g,"");
+/* strip 會把 ñ 也當重音拿掉,所以打 ano 算 año 對。判定照樣放寬(不是每台裝置都打得出 ñ),
+   但 ñ 是另一個字母、不是重音(año 年 ≠ ano),所以要講出來。
+   逐字比:答案裡有 ñ 的字,你打了、只差在 ñ 寫成 n 才算;整個字沒打(聽寫漏字)不算。先轉 NFC,拆開的 n+◌̃ 也認得 */
+function nWords(typed,ans){
+  const tw=wordsOf(String(typed).normalize("NFC")), have=new Set(tw.map(w=>w.toLowerCase()));
+  return wordsOf(String(ans)).filter(w=>/ñ/i.test(w)&&!have.has(w.toLowerCase())&&tw.some(u=>strip(u)===strip(w)));
+}
+const nMiss=(typed,ans)=>nWords(typed,ans).length>0;
+const nTip=ws=>`注意:${ws.join("、")} 是 ñ,不是 n。`;
+const nTipHTML=(typed,ans)=>{ const ws=nWords(typed,ans); return ws.length?` <span class="n-tip">${esc(nTip(ws))}</span>`:""; };
 /* 引號一定要一起跳脫:很多地方把 esc() 的結果放進 HTML 屬性(data-t="…"),
    少跳脫引號就能被匯入/同步進來的惡意內容突破屬性、注入事件處理器。 */
 const esc = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
@@ -3329,7 +3354,7 @@ const EN = {
   "Antes de las doce del mediodía.": "Before twelve noon.",
   "¡Hola! ¿Cómo te llamas?": "Hi! What's your name?",
   "Me llamo Chen. ¿Y tú?": "My name is Chen. And you?",
-  "¿De dónde eres?": "Where are you from?",
+  "Me llamo Ana. ¿De dónde eres?": "My name is Ana. Where are you from?",
   "Soy de Taiwán y vivo en Taipéi.": "I'm from Taiwan and I live in Taipei.",
   "¿A qué te dedicas?": "What do you do for a living?",
   "Soy estudiante y trabajo a tiempo parcial.": "I'm a student and I work part-time.",
@@ -4382,6 +4407,21 @@ function renderTalk(){
       $("#tk-redo").onclick=()=>{ vd.hidden=true; $("#tk-input").focus(); };
       return;
     }
+    /* 對上了,但有字把 ñ 打成 n(2026-10-30):照樣算對,先講清楚再記。對上率用 strip 算,看不出 ñ */
+    const nw=answering&&rep.pct>=0.6?nWords(v,it.a):[];
+    if(nw.length){
+      const tv=wordsOf(v.normalize("NFC"));
+      vd.hidden=false; vd.className="tk-verdict good";
+      vd.innerHTML=`<div class="tk-v-h">用字對了,但有字把 ñ 打成 n</div>
+        <div class="tk-v-pair">${nw.map(w=>`<b lang="es">${esc(tv.find(u=>strip(u)===strip(w))||w)}</b> → <b lang="es">${esc(w)}</b>`).join("、")}</div>
+        <p class="tk-v-note">ñ 是另一個字母,不是重音(año 是「年」,ano 是別的字)。打不出 ñ 沒關係,這句照樣算對。</p>
+        ${blocks.join("")}
+        <div class="tk-acts"><button class="btn" id="tk-keep">記下來(算對)</button>
+          <button class="tk-link" id="tk-redo">我補上 ñ</button></div>`;
+      $("#tk-keep").onclick=()=>talkCommit(v,"","typed",rep.pct);
+      $("#tk-redo").onclick=()=>{ vd.hidden=true; $("#tk-input").focus(); };
+      return;
+    }
     if(answering && rep.pct>=0.6){ vd.hidden=true; talkCommit(v,"","typed",rep.pct); return; }
 
     /* 到這裡就是本機判不到的區域:要嘛你在說別的話,要嘛跟範例句差太多。
@@ -5168,7 +5208,7 @@ function exPaint(pos,typed){
   const e=POOL[round[pos]]; const inp=$(`.blank[data-i="${pos}"]`,exList), fb=$(`.ex-fb[data-fb="${pos}"]`,exList);
   /* 答對也把正確的重音形寫出來(打 estan 要看得到 están);有 why 就附一句為什麼 */
   const why=e.why?" — "+e.why:"";
-  if(res[pos]==="ok"){ inp.className="blank ok"; fb.className="ex-fb ok"; fb.textContent="✓ 正確！"+(String(typed).trim()!==e.answer?"("+e.answer+")":"")+why; inp.value=e.answer; return; }
+  if(res[pos]==="ok"){ inp.className="blank ok"; fb.className="ex-fb ok"; fb.textContent="✓ 正確！"+(String(typed).trim()!==e.answer?"("+e.answer+")":"")+(nMiss(typed,e.answer)?" "+nTip(nWords(typed,e.answer)):"")+why; inp.value=e.answer; return; }
   inp.value=typed; inp.className="blank no"; fb.className="ex-fb no"; fb.textContent="✗ 正確答案:"+e.answer+why;
   if(e.g){ const gb=document.createElement("button"); gb.type="button"; gb.className="tk-link ex-gram"; gb.textContent="看文法:"+e.g.replace("|"," · "); gb.onclick=()=>openGram(e.g); fb.appendChild(gb); }
 }
@@ -5236,6 +5276,9 @@ $("#reset-all").onclick=()=>{ if(confirm("確定要清除『全部』進度嗎?(
   const CODEKEY="miEspanol.syncCode", ATKEY="miEspanol.syncAt";
   const stateEl=$("#sync-state"), linkedEl=$("#sync-linked"), unlinkedEl=$("#sync-unlinked"), codeEl=$("#sync-code");
   let code=localStorage.getItem(CODEKEY)||"", pushTimer=null;
+  /* 這一頁還沒成功拉過雲端之前不上傳(2026-10-30)。原本拉失敗(離線、被限流 429)時,下一次存檔照樣上傳,
+     剛在新裝置輸入同步碼的人會用幾乎空白的進度蓋掉雲端那份。上傳前先補拉一次,拉不到就不傳 */
+  let pulled=false, blocked=false, reloading=false;   // blocked:有存檔因為還沒拉成功而沒傳;reloading:剛採用雲端、頁面要重新載入
   /* 存檔時順便排一次上傳。攔截掛在 Storage.prototype 上:直接改 localStorage.setItem 在 Chrome 會生效,
      但照規格,有些瀏覽器會把它當成「存一筆叫 setItem 的資料」,攔截就沒了(手機進度不會自動上傳) */
   const _protoSet=Storage.prototype.setItem;
@@ -5245,24 +5288,31 @@ $("#reset-all").onclick=()=>{ if(confirm("確定要清除『全部』進度嗎?(
   function setState(t,on){ stateEl.textContent=t; stateEl.classList.toggle("on",!!on); }
   function paint(){ if(code){ linkedEl.hidden=false; unlinkedEl.hidden=true; codeEl.textContent=code; } else { linkedEl.hidden=true; unlinkedEl.hidden=false; setState("未連結",false); } }
   function genCode(){ const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s=""; for(let i=0;i<8;i++) s+=A[Math.floor(Math.random()*A.length)]; return s; }
-  async function push(){ if(!code) return; setState("同步中…",false);
-    try{ const r=await fetch("/api/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:code,data:progressData()})}); if(!r.ok) throw 0; const j=await r.json(); _set(ATKEY,String(j.updatedAt||Date.now())); setState("已同步 ✓",true); }catch(e){ setState("離線,稍後重試",false); } }
+  const failState=e=>setState(e===429?"同步太頻繁,過一陣子再試":"離線,稍後重試",false);
+  async function push(){ if(!code||reloading) return;
+    if(!pulled){ blocked=false; await pull({adopt:false}); if(reloading) return; if(!pulled){ blocked=true; return; } }   // 先清掉 blocked,拉成功時就不會在 pull 裡再傳一次
+    blocked=false; const my=code; setState("同步中…",false);
+    try{ const r=await fetch("/api/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:my,data:progressData()})}); if(!r.ok) throw r.status; const j=await r.json();
+      if(code!==my) return;   // 等回應時換了同步碼,這個時間戳不是新碼的
+      _set(ATKEY,String(j.updatedAt||Date.now())); setState("已同步 ✓",true); }catch(e){ if(code===my) failState(e); } }
   function schedulePush(){ if(!code) return; clearTimeout(pushTimer); pushTimer=setTimeout(push,1500); }
-  async function pull(opts){ opts=opts||{}; if(!code) return;
-    try{ const r=await fetch("/api/sync?code="+encodeURIComponent(code)+"&_="+Date.now()); if(!r.ok) throw 0; const j=await r.json();
-      if(!j.found){ if(opts.seedIfEmpty) await push(); return; }
+  async function pull(opts){ opts=opts||{}; if(!code) return; const my=code;
+    try{ const r=await fetch("/api/sync?code="+encodeURIComponent(my)+"&_="+Date.now()); if(!r.ok) throw r.status; const j=await r.json();
+      if(code!==my) return;   // 等回應時換了同步碼:這是舊碼的資料,丟掉
+      pulled=true;
+      if(!j.found){ if(opts.seedIfEmpty||blocked) await push(); return; }
       const localAt=Number(localStorage.getItem(ATKEY)||0), cloudAt=Number((j.payload&&j.payload.updatedAt)||0);
       if(opts.adopt || cloudAt>localAt){ const d=(j.payload&&j.payload.data)||{};
         Object.keys(progressData()).forEach(k=>localStorage.removeItem(k));
         Object.keys(d).forEach(k=>{ if(k.indexOf("miEspanol.")===0) _set(k,d[k]); });
-        _set(ATKEY,String(cloudAt||Date.now())); _set(CODEKEY,code); setState("已更新 ✓",true); location.reload();
-      } else { setState("已同步 ✓",true); }
-    }catch(e){ setState("離線,稍後重試",false); } }
+        _set(ATKEY,String(cloudAt||Date.now())); _set(CODEKEY,code); setState("已更新 ✓",true); reloading=true; location.reload();
+      } else { setState("已同步 ✓",true); if(blocked) schedulePush(); }   // 拉不到的那段時間有存檔沒傳,現在補
+    }catch(e){ if(code===my) failState(e); } }
   Storage.prototype.setItem=function(k,v){ _protoSet.call(this,k,v);
     if(this===localStorage&&code&&typeof k==="string"&&k.indexOf("miEspanol.")===0&&k!==CODEKEY&&k!==ATKEY) schedulePush(); };
   if(location.protocol==="file:"){ unlinkedEl.innerHTML='<p class="sync-note" style="margin:0">同步功能請用網路版:<b>miespanol.app</b>(本機開啟的檔案無法連雲端)。</p>'; setState("僅網路版",false); return; }
-  $("#sync-create").onclick=async()=>{ code=genCode(); _set(CODEKEY,code); paint(); await push(); };
-  $("#sync-link").onclick=async()=>{ const v=($("#sync-input").value||"").toUpperCase().replace(/[^A-Z0-9]/g,""); if(v.length<4){ alert("請輸入有效的同步碼。"); return; } code=v; _set(CODEKEY,code); paint(); setState("連結中…",false); await pull({adopt:true,seedIfEmpty:true}); };
+  $("#sync-create").onclick=async()=>{ code=genCode(); pulled=true; _set(CODEKEY,code); paint(); await push(); };   // 新碼雲端是空的,不用先拉
+  $("#sync-link").onclick=async()=>{ const v=($("#sync-input").value||"").toUpperCase().replace(/[^A-Z0-9]/g,""); if(v.length<4){ alert("請輸入有效的同步碼。"); return; } code=v; pulled=false; _set(CODEKEY,code); paint(); setState("連結中…",false); await pull({adopt:true,seedIfEmpty:true}); };
   $("#sync-copy").onclick=()=>{ if(navigator.clipboard) navigator.clipboard.writeText(code); const b=$("#sync-copy"),t=b.textContent; b.textContent="已複製!"; setTimeout(()=>b.textContent=t,1200); };
   $("#sync-now").onclick=()=>push();
   $("#sync-unlink").onclick=()=>{ if(confirm("解除後這台就不再自動同步(進度仍留在本機)。確定?")){ localStorage.removeItem(CODEKEY); localStorage.removeItem(ATKEY); code=""; paint(); } };
@@ -5563,7 +5613,7 @@ function vgRenderSpell(){
   const inp=$("#vgs-in"); inp.focus();
   $("#vgs-hint").onclick=()=>{ inp.placeholder=w.es.slice(0,2)+"…(共 "+w.es.length+" 個字母)"; };
   function go(){ if(st.done)return; st.done=true; const fb=$("#vgs-fb"); secLog("spell",strip(inp.value)===strip(w.es));
-    if(strip(inp.value)===strip(w.es)){ st.ok++; inp.classList.add("ok"); fb.className="vb-fb ok"; fb.innerHTML=svgIcon(ICON.check,15)+" 正確!"+(inp.value.trim()!==w.es?" ("+esc(w.es)+")":"")+" "+spkHTML(w.es); award(3); cnt("spell"); speak(w.es); }
+    if(strip(inp.value)===strip(w.es)){ st.ok++; inp.classList.add("ok"); fb.className="vb-fb ok"; fb.innerHTML=svgIcon(ICON.check,15)+" 正確!"+(inp.value.trim()!==w.es?" ("+esc(w.es)+")":"")+" "+spkHTML(w.es)+nTipHTML(inp.value,w.es); award(3); cnt("spell"); speak(w.es); }
     else { inp.classList.add("no"); fb.className="vb-fb no"; fb.innerHTML="正確答案:"+esc(w.es)+" "+spkHTML(w.es); award(1); recordMistake("拼寫", w.cn+"("+(w.pos||"")+")", w.es, inp.value, w.es); } }
   $("#vgs-check").onclick=go;
   $("#vgs-next").onclick=()=>{ st.i++; vgRenderSpell(); };
@@ -5634,9 +5684,12 @@ function renderCloze(){
   $("#cz-exit").onclick=()=>renderSong();
   const czBtn=$("#cz-check");
   czBtn.onclick=()=>{
-    let ok=0,tot=0; const first=!czBtn.dataset.done;
+    let ok=0,tot=0; const nm=[]; const first=!czBtn.dataset.done;
     $$(".cloze-in",lyr).forEach(inp=>{ tot++;
-      if(strip(inp.value)===strip(inp.dataset.a)){ inp.className="cloze-in ok"; if(inp.value!==inp.dataset.a)inp.value=inp.dataset.a; ok++; }
+      if(strip(inp.value)===strip(inp.dataset.a)){ inp.className="cloze-in ok";
+        /* 格子會被改成正確寫法,所以把「打成 n」記在格子上,再按一次檢查提醒還在 */
+        if(nMiss(inp.value,inp.dataset.a)) inp.dataset.nm=nWords(inp.value,inp.dataset.a).join("、"); if(inp.dataset.nm) nm.push(inp.dataset.nm);
+        if(inp.value!==inp.dataset.a)inp.value=inp.dataset.a; ok++; }
       else {
         if(first){ /* 錯題本的題目:這一句,挖掉這一格,其他格照答案顯示 */
           const ln=inp.closest(".cloze-line"); let txt="";
@@ -5644,7 +5697,7 @@ function renderCloze(){
           const cn=ln.nextElementSibling&&ln.nextElementSibling.classList.contains("cloze-cn")?ln.nextElementSibling.textContent:"";
           recordMistake("歌詞填空", txt.trim()+(cn?"("+cn+")":""), inp.dataset.a, inp.value, inp.dataset.a); }
         inp.className="cloze-in no"; inp.value=""; inp.placeholder=inp.dataset.a; } });
-    $("#cz-score").textContent=ok+" / "+tot;
+    $("#cz-score").textContent=ok+" / "+tot+(nm.length?" · "+nTip(nm):"");
     if(first) secLog("cloze",ok,tot);
     if(tot&&!czBtn.dataset.done){ czBtn.dataset.done="1"; award(Math.max(1,ok)); cnt("cloze"); renderDaily(); if(ok===tot)showToast("全部填對!太神了!",true); } };
 }
@@ -5725,7 +5778,7 @@ function dictCheck(){
   if(!strip(inp.value)){ showToast("先聽一次,把聽到的打出來再檢查。"); return; }
   const d=dictDiff(dictQ.es,inp.value);
   inp.dataset.done="1"; dictScore.total++; cnt("dict"); secLog("dict",d.pct>=1); dictDone(dictQ.es);
-  $("#dc-diff").innerHTML=d.html;
+  $("#dc-diff").innerHTML=d.html+nTipHTML(inp.value,dictQ.es);
   $("#dc-cn").textContent=dictQ.cn;
   if(d.pct>=1){ dictScore.ok++; award(3); showToast(svgIcon(ICON.check,13)+" 整句全對!+3 XP"); }
   else { award(1); recordMistake("聽寫", dictQ.cn, dictQ.es, inp.value); }
@@ -5824,8 +5877,9 @@ function renderDrill(){
   dv.innerHTML=`<div class="err-drill"><div class="vg-sub">${esc(e.t)} · 重練 ${drill.i+1} / ${drill.list.length}${(e.n||1)>1?" · 錯過 "+e.n+" 次":""}</div>${body}
     <div class="vb-fb" id="dr-fb"></div>
     <div class="vb-ctrls">${isMC?"":'<button class="btn" id="dr-check">檢查</button>'}<button class="btn nav" id="dr-next">下一題 ›</button></div></div>`;
-  function finish(right){ done=true; const fb=$("#dr-fb");
-    if(right){ drill.ok++; fb.className="vb-fb ok"; fb.innerHTML=svgIcon(ICON.check,15)+" 正確!已從錯題本移除 "+spkHTML(e.a); errores=errores.filter(x=>x!==e&&!(x.t===e.t&&x.p===e.p&&x.a===e.a)); saveErr(); award(2); }
+  /* typed:打字的題型才傳,答對時跟動詞、拼寫一樣寫出正確形,答案有 ñ 你打成 n 就提醒 */
+  function finish(right,typed){ done=true; const fb=$("#dr-fb");
+    if(right){ drill.ok++; fb.className="vb-fb ok"; fb.innerHTML=svgIcon(ICON.check,15)+" 正確!"+(typed!=null&&String(typed).trim()!==e.a?" ("+esc(e.a)+") ":"")+"已從錯題本移除 "+spkHTML(e.a)+(typed!=null?nTipHTML(typed,e.a):""); errores=errores.filter(x=>x!==e&&!(x.t===e.t&&x.p===e.p&&x.a===e.a)); saveErr(); award(2); }
     else { fb.className="vb-fb no"; fb.innerHTML="正確答案:"+esc(e.a)+" "+spkHTML(e.a); award(1); } }
   if(isMC){
     $$(".vg-opt",dv).forEach((b,i)=>b.onclick=()=>{ if(done)return; const right=(kind==="e2c"?opts[i].cn:opts[i].es)===e.a;
@@ -5835,7 +5889,7 @@ function renderDrill(){
     $("#dr-play").onclick=()=>speak(e.a,null); $("#dr-slow").onclick=()=>speak(e.a,null,0.55);
     setTimeout(()=>speak(e.a,null),250);
     const go=()=>{ if(done)return; const inp=$("#dr-in"); if(!strip(inp.value)){ showToast("先聽一次,把聽到的打出來再檢查。"); return; }
-      const d=dictDiff(e.a,inp.value); $("#dr-diff").innerHTML=d.html; $("#dr-cn").textContent=e.p; finish(d.pct>=1); };
+      const d=dictDiff(e.a,inp.value); $("#dr-diff").innerHTML=d.html+nTipHTML(inp.value,e.a); $("#dr-cn").textContent=e.p; finish(d.pct>=1); };
     $("#dr-check").onclick=go;
     $("#dr-in").addEventListener("keydown",ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); if(done)$("#dr-next").click(); else go(); } });
   } else if(kind==="order"){
@@ -5850,7 +5904,7 @@ function renderDrill(){
       const right=strip(ord.ans.map(ti=>ord.toks[ti]).join(" "))===strip(e.a); $("#dr-ans").classList.add(right?"ok":"no"); finish(right); };
   } else {
     const inp=$("#dr-in"); inp.focus();
-    const go=()=>{ if(done)return; finish(strip(inp.value)===strip(e.a)); };
+    const go=()=>{ if(done)return; finish(strip(inp.value)===strip(e.a),inp.value); };
     $("#dr-check").onclick=go;
     inp.addEventListener("keydown",ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); if(done)$("#dr-next").click(); else go(); } });
   }
@@ -6175,7 +6229,9 @@ function renderHoyFrom(live){
     if(i<0) console.warn(`videos.json 的場景「${v.scene}」在對話裡找不到,「從影片來的?」先不列它`,v); else items.push({v,i}); });
   if(live&&!items.length) return off();
   const shown=hfAll?items:items.slice(0,HF_MAX), more=items.length-shown.length;
-  const tog=more>0?`<button class="tk-link hf-more" type="button" aria-expanded="false" aria-controls="hf-list">其他 ${more} 支</button>`
+  /* 影片清單還沒讀到時,「其他 N 支」那一行先放隱形的佔位:讀到之後開始鈕不會往下跳(2026-10-30 量到跳 50px) */
+  const tog=!live?`<span class="tk-link hf-more hf-ph" aria-hidden="true">其他</span>`
+    :more>0?`<button class="tk-link hf-more" type="button" aria-expanded="false" aria-controls="hf-list">其他 ${more} 支</button>`
     :hfAll&&items.length>HF_MAX?`<button class="tk-link hf-more" type="button" aria-expanded="true" aria-controls="hf-list">收起</button>`:"";
   /* 整塊重畫(上線時間到、午夜、展開收起)之前記住焦點在哪一顆,畫完還給它 */
   const a=document.activeElement, fk=a&&box.contains(a)?(a.dataset.hf!=null?`[data-hf="${a.dataset.hf}"]`:a.classList.contains("hf-more")?".hf-more":a.classList.contains("hf-off")?".hf-off":null):null;
