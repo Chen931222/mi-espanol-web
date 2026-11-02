@@ -568,14 +568,27 @@ body.rt-bar-on #toast-box{bottom:92px}
 .game-wrap{margin-top:26px;padding-top:22px;border-top:1.5px dashed var(--line-strong)}
 .game-head{font-family:var(--font-display);font-weight:900;font-size:1.12rem;color:var(--terra-deep);display:flex;align-items:center;gap:7px}
 .game-tip{color:var(--ink-soft);font-size:.85rem;margin:4px 0 12px}
-.vg-board{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:6px}
-@media(max-width:560px){.vg-board{grid-template-columns:repeat(3,1fr)}}
-.vg-tile{cursor:pointer;border:1.5px solid var(--line-strong);background:var(--card);border-radius:12px;padding:13px 7px;font-weight:700;font-size:.92rem;text-align:center;transition:.16s;min-height:56px;display:flex;align-items:center;justify-content:center;line-height:1.25}
+/* 配對:左欄西文、右欄中文;配對成功的留在原位變淡,盤面不開洞 */
+.vg-match{max-width:560px;margin:2px auto 0}
+.vg-mhead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 14px;margin:6px 2px 12px}
+.vg-mhow{margin:0;color:var(--ink);font-weight:700;font-size:.92rem}
+.vg-mcount{color:var(--ink-soft);font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.vg-board{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
+.vg-col{display:grid;gap:8px;align-content:start}
+@supports (grid-template-rows:subgrid){
+  .vg-board{grid-template-rows:repeat(var(--vg-n,6),auto)}
+  .vg-col{grid-row:1/-1;grid-template-rows:subgrid}
+}
+.vg-tile{cursor:pointer;width:100%;border:1.5px solid var(--line-strong);background:var(--card);color:var(--ink);border-radius:12px;padding:11px 10px;font-weight:700;font-size:.92rem;text-align:center;transition:.16s;min-height:52px;display:flex;align-items:center;justify-content:center;line-height:1.25;text-wrap:balance;touch-action:manipulation}
 .vg-tile.es{font-family:var(--font-display);color:var(--terra-deep)}
-.vg-tile:hover{border-color:var(--terra)}
+@media(hover:hover){.vg-tile:not(:disabled):not(.err):hover{border-color:var(--terra)}}
+.vg-tile:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
 .vg-tile.sel{background:#FBEBE2;border-color:var(--terra);box-shadow:0 0 0 2px rgba(194,74,50,.25)}
-.vg-tile.done{opacity:0;pointer-events:none;transform:scale(.8)}
+.vg-tile.done{background:transparent;border-style:dashed;border-color:var(--line);color:var(--ink-soft);opacity:.7;cursor:default}
 .vg-tile.err{animation:vgshake .3s;border-color:var(--bad)}
+.vg-redo{display:block;margin:10px auto 0;min-height:44px;padding:0 12px;background:none;border:0;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700;color:var(--ink-soft);text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:4px}
+.vg-redo:hover{color:var(--terra-deep)}
+.vg-redo:focus-visible{outline:2px solid var(--azul);outline-offset:2px;border-radius:6px}
 @keyframes vgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .vg-info{display:flex;gap:14px;align-items:center;margin:10px 2px;color:var(--ink-soft);font-weight:700;font-size:.9rem;flex-wrap:wrap}
 .vg-opt{display:block;width:100%;text-align:left;cursor:pointer;border:1.5px solid var(--line-strong);background:var(--card);border-radius:12px;padding:12px 15px;font-weight:700;font-size:.98rem;margin-top:9px;transition:.15s}
@@ -5543,32 +5556,46 @@ function vgPool(){ let p=CARDS.filter(w=>vCat==="all"||catOf(w)===vCat); if(p.le
 function vgStart(){ if(vgMode==="match")vgStartMatch(); else if(vgMode==="mc")vgStartMC(); else vgStartSpell(); }
 buildChips($("#vg-mode"),[["match","配對消除 Parejas"],["mc","選擇題 Elegir"],["spell","拼寫測驗 Escribir"]],"match",k=>{ vgMode=k; vgStart(); });
 
+/* 配對卡上的中文:拿掉括號註解(裡面常寫著西文答案)和夾著西文的片段,分號、斜線統一成頓號 */
+const vgCn=s=>{ const parts=s.replace(/\s*[（(][^）)]*[）)]/g,"").split(/\s*[;；/／、]\s*/).filter(p=>p&&!/[A-Za-zÀ-ÿ]/.test(p));
+  return parts.length?parts.join("、"):s; };
 function vgStartMatch(){
-  const pool=shuffleA(vgPool().slice()).slice(0,6);
-  const tiles=shuffleA(pool.flatMap((w,k)=>[{k:k,txt:w.es,es:true},{k:k,txt:w.cn,es:false}]));
-  let sel=null, errs=0, left=pool.length, t0=null;
+  /* 6 對;西文不重複,中文每個意思也不重複(hay「有」跟 tener「有、…歲」不同局),免得配對有兩個對的答案 */
+  const pool=[], seen=new Set();
+  for(const w of shuffleA(vgPool().slice())){ const cs=vgCn(w.cn).split("、").map(c=>"cn:"+c);
+    if(seen.has(w.es)||cs.some(c=>seen.has(c)))continue; seen.add(w.es); cs.forEach(c=>seen.add(c)); pool.push(w); if(pool.length===6)break; }
+  const n=pool.length, side=es=>shuffleA(pool.map((w,k)=>({k:k,es:es,txt:es?w.es:vgCn(w.cn)})));
+  const tiles=side(true).concat(side(false));
+  let sel=null, errs=0, left=n, t0=null;
   const stage=$("#vg-stage");
-  stage.innerHTML=`<div class="vg-info"><span id="vg-mleft">剩 ${left} 對</span><span id="vg-merr">失誤 0</span><button class="chip" id="vg-mre">換一批</button></div><div class="vg-board">`+
-    tiles.map((t,i)=>`<button class="vg-tile${t.es?" es":""}" data-i="${i}">${esc(t.txt)}</button>`).join("")+`</div>`;
+  const tile=(t,i)=>`<button class="vg-tile${t.es?" es":""}" data-i="${i}" aria-pressed="false"${t.es?' lang="es"':""}>${esc(t.txt)}</button>`;
+  stage.innerHTML=`<div class="vg-match"><div class="vg-mhead"><p class="vg-mhow">左邊西文、右邊中文,各點一張配成一對。</p><span class="vg-mcount" aria-live="polite"><span id="vg-mleft">剩 ${left} 對</span> · <span id="vg-merr">失誤 0</span></span></div>`+
+    `<div class="vg-board" style="--vg-n:${n}"><div class="vg-col" role="group" aria-label="西班牙文">${tiles.slice(0,n).map((t,i)=>tile(t,i)).join("")}</div>`+
+    `<div class="vg-col" role="group" aria-label="中文">${tiles.slice(n).map((t,i)=>tile(t,n+i)).join("")}</div></div>`+
+    `<button class="vg-redo" id="vg-mre">換一批</button></div>`;
   $("#vg-mre").onclick=vgStartMatch;
+  const pick=el=>{ if(sel){ sel.classList.remove("sel"); sel.setAttribute("aria-pressed","false"); }
+    sel=el; if(el){ el.classList.add("sel"); el.setAttribute("aria-pressed","true"); } };
   $$(".vg-tile",stage).forEach(el=>el.onclick=()=>{
-    if(el.classList.contains("done"))return;
+    if(el.disabled)return;
     if(!t0)t0=Date.now();
-    if(sel===el){ el.classList.remove("sel"); sel=null; return; }
-    if(!sel){ sel=el; el.classList.add("sel"); return; }
-    const a=tiles[+sel.dataset.i], b=tiles[+el.dataset.i];
-    if(a.k===b.k && a.es!==b.es){
-      el.classList.add("done"); sel.classList.add("done"); sel.classList.remove("sel"); sel=null;
+    if(sel===el){ pick(null); return; }
+    const b=tiles[+el.dataset.i];
+    if(!sel||tiles[+sel.dataset.i].es===b.es){ pick(el); return; }  /* 同一欄再點＝換一張,不算失誤 */
+    const x=sel, a=tiles[+x.dataset.i]; pick(null);
+    if(a.k===b.k){
+      const focused=document.activeElement===x||document.activeElement===el;
+      [x,el].forEach(t=>{ t.classList.add("done"); t.disabled=true; });
+      if(focused){ const nx=stage.querySelector(".vg-tile:not(:disabled)"); if(nx)nx.focus({preventScroll:true}); }  /* 鍵盤操作時焦點別掉到頁首 */
       speak(pool[b.k].es); left--; $("#vg-mleft").textContent="剩 "+left+" 對";
       if(!left){ const sec=Math.max(1,Math.round((Date.now()-t0)/1000)); cnt("match"); secLog("match",errs===0); award(10); renderDaily();
         stage.innerHTML=`<div class="vg-end"><div class="big">完成!${sec} 秒</div><div class="vg-sub">失誤 ${errs} 次 · +10 XP</div><div class="vb-ctrls" style="justify-content:center;margin-top:14px"><button class="btn" id="vg-again">再來一局</button></div></div>`;
-        $("#vg-again").onclick=vgStartMatch; }
+        $("#vg-again").onclick=vgStartMatch; if(focused)$("#vg-again").focus({preventScroll:true}); }
     } else {
       errs++; $("#vg-merr").textContent="失誤 "+errs;
       { const w=pool[a.k]; recordMistake("配對", w.es, w.cn, b.txt, w.es); }  /* 記先點的那張字卡 */
-      const x=sel, y=el; x.classList.remove("sel"); sel=null;
-      x.classList.add("err"); y.classList.add("err");
-      setTimeout(()=>{ x.classList.remove("err"); y.classList.remove("err"); },360);
+      [x,el].forEach(t=>{ t.classList.remove("err"); void t.offsetWidth; t.classList.add("err");  /* 搖到一半又答錯也重搖 */
+        t.addEventListener("animationend",()=>t.classList.remove("err"),{once:true}); });
     }
   });
 }
