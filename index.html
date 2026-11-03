@@ -1010,7 +1010,7 @@ body.np-open .note-pop{transform:translateY(0)}
     </div>
     <!-- Tatoeba 的句子是 CC BY 2.0 FR,放上網站要署名並註明有修改 -->
     <p class="foot-note foot-credit">部分例句與填空題取自 <a href="https://tatoeba.org" target="_blank" rel="noopener">Tatoeba</a>,授權 CC BY 2.0 FR,中文翻譯經過修改 · <a href="https://github.com/Chen931222/mi-espanol-web#例句來源" target="_blank" rel="noopener">逐句出處</a></p>
-    <p class="foot-note foot-ev">使用統計只記每天的匿名次數(幾個瀏覽器來過、選了哪支影片、開始、有沒有練、做完、點了影片),不設 cookie;IP 只用來防濫用,最多留一小時;開了「不追蹤」就不送。</p>
+    <p class="foot-note foot-ev">使用統計只記每天的匿名次數(幾個瀏覽器來過、選了哪支影片、開始、有沒有練、做完、點了影片或頻道),不設 cookie;IP 只用來防濫用,最多留一小時;開了「不追蹤」就不送。</p>
   </footer>
 
     </div>
@@ -6107,7 +6107,7 @@ function fbSend(body){ try{ return fetch("/api/feedback",{method:"POST",headers:
 /* ===== 匿名計數(2026-10-25):推估 YouTube 有沒有帶人來。不帶來源(手打網址本來就沒有),只能看上片時間前後的變化。
    送 /api/feedback {type:"ev"},日期由伺服器記(台北時間) =====
    new 新的瀏覽器(進站時沒有任何 miEsp 開頭的紀錄,見最前面的 EV_NEW)/ back 來過的瀏覽器今天第一次來 /
-   start 按「開始今天的五分鐘」/ done 三步做完(不一定經過 start,從分頁直接做完也算)/ video 點今日影片 /
+   start 按「開始今天的五分鐘」/ done 三步做完(不一定經過 start,從分頁直接做完也算)/ video 點今日影片(排好的播完後是「去頻道」)/
    pick 在「從影片來的?」點了哪一支(2026-10-28,多帶 ep,例如 ep01;伺服器記成「日期|ep」;每一支各記一次)/
    try 今天練過了(2026-10-28,拿到任何 XP 都算,從哪個分頁練的都一樣;start 只量得到「今天」那顆按鈕)。
    每個瀏覽器每個台北日每種最多送一次(記在 miEsp_ev);斷線沒送出去就不算送過,下次再補。不帶任何 id、不設 cookie。
@@ -6199,7 +6199,9 @@ function renderHoy(){
    寫錯的那筆跳過,在主控台留警告(驗收:原本寫錯格式完全沒提示,沒寫時區會照訪客當地時間算,晚 15 小時):
    - publishAt 要像 2026-10-21T19:00:00+08:00;沒寫時區當台北時間;只寫日期或其他寫法都不收
    - 網址只收 youtube.com / m.youtube.com / youtu.be
-   頁面開著跨過台北午夜、或到了下一支的上線時間,會重新讀 videos.json 再畫一次。 */
+   頁面開著跨過台北午夜、或到了下一支的上線時間,會重新讀 videos.json 再畫一次。
+   2026-11-03 網站和頻道分開:videos.json 不再每週補。排好的都播完、今天也沒有新的,卡片改成固定連頻道(點了一樣記 video)。 */
+const HV_CHANNEL="https://www.youtube.com/@breme3991";
 let hvData=null, hvTimer=0;
 function hvLoad(){
   if(hvData) return Promise.resolve(hvData);
@@ -6230,6 +6232,12 @@ function renderHoyVideo(){
     hfLive=live; try{ renderHoyFrom(live); }catch(e){ console.warn(e); }   /* 出錯不要拖累下面的今日影片卡 */
     if(!live.length){ box.hidden=true; box.innerHTML=""; return; }
     const {v,at}=live[0], day=tpeDate(at), [,mo,dd]=day.split("-");
+    if(day!==tpeDate(now)&&!list.some(x=>x.at>now)){   /* 排好的都播完了、今天也沒有新的 → 改成固定連頻道,不再停在最後一支 */
+      box.innerHTML=`<div class="hv"><div class="hv-body"><span class="hv-tag">YouTube 頻道</span>`+
+        `<p class="hv-t">每日一段 ${live.length} 集，還有名人致詞翻譯</p><p class="hv-m">Breme · YouTube</p></div>`+
+        `<a class="btn hv-go" href="${HV_CHANNEL}" target="_blank" rel="noopener" aria-label="去頻道:Breme(YouTube,另開分頁)">去頻道 ›</a></div>`;
+      box.hidden=false; return;
+    }
     const sec=Number(v.seconds), meta=[v.scene?esc(v.scene):"", sec>0?`${Math.round(sec)} 秒`:"", "YouTube"].filter(Boolean).join(" · ");
     box.innerHTML=`<div class="hv"><div class="hv-body"><span class="hv-tag">${day===tpeDate(now)?"今日影片":`${+mo}/${+dd} 的影片`}</span>`+
       `<p class="hv-t">${esc(v.title)}</p><p class="hv-m">${meta}</p></div>`+
