@@ -710,6 +710,52 @@ body.rt-bar-on #toast-box{bottom:92px}
 .vg-sub{color:var(--ink-soft);font-size:.9rem}
 .vg-end{text-align:center;padding:26px 10px}
 .vg-end .big{font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--terra-deep)}
+
+/* 2026-11-10 綜合練習:混合一輪、逐字解析、查字 */
+.mx-card{padding:22px 20px}
+.mx-card [hidden]{display:none!important}
+.mx-start{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.mx-h{font-family:var(--font-display);font-weight:800;font-size:1.35rem;margin:0}
+.mx-sub{color:var(--ink-soft);margin:0 0 10px;max-width:58ch}
+.mx-go{min-width:200px}
+.mx-top{display:flex;justify-content:space-between;align-items:center;font-size:.86rem;font-weight:700;color:var(--ink-soft)}
+.mx-bar{height:4px;background:var(--line);border-radius:4px;margin:8px 0 16px;overflow:hidden}
+.mx-bar i{display:block;height:100%;background:var(--terra);transition:width .3s}
+.mx-cn{font-size:1.12rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.mx-word{font-family:var(--font-display);font-weight:800;font-size:1.6rem;color:var(--terra-deep);margin-bottom:4px}
+.mx-hint{font-size:.86rem;color:var(--ink-soft);margin-bottom:10px}
+.mx-es{font-family:var(--font-display);font-size:1.2rem;font-weight:600;color:var(--ink);line-height:2;margin-bottom:4px}
+.mx-in{font:inherit;font-family:var(--font-body);font-size:1rem;padding:6px 10px;margin:0 4px;border:1.5px solid var(--line-strong);border-radius:10px;background:#fff;color:var(--ink);outline:none;min-height:40px}
+.mx-in:focus{border-color:var(--azul)}
+.mx-in.ok{border-color:var(--good);background:#F0F6EC}
+.mx-in.no{border-color:var(--bad);background:#FBEDEA}
+.mx-in-wide{width:min(100%,320px);margin:4px 0 0}
+.mx-fix{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0}
+.ord-w.ok{border-color:var(--good);background:#F0F6EC;color:var(--good)}
+.ord-w.no{border-color:var(--bad);background:#FBEDEA;color:var(--bad);text-decoration:line-through}
+.mx-audio{margin:2px 0 6px}
+.mx-opts .vg-opt[disabled]{cursor:default}
+.mx-ph{color:var(--ink-soft);font-size:.85rem;font-weight:700;padding:4px 6px}
+.mx-fb{flex-wrap:wrap;justify-content:flex-start;text-align:left;gap:4px 8px}
+.mx-why{font-weight:600;color:var(--ink-soft)}
+.wb:empty{display:none}
+.wb{margin:6px 0 4px}
+.wb-h{font-size:.82rem;font-weight:800;color:var(--ink);margin-bottom:8px}
+.wb-h span{font-weight:600;color:var(--ink-soft);margin-left:6px}
+.wb-row{display:flex;flex-wrap:wrap;gap:8px}
+.wb-w{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:7px 11px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer;font:inherit;text-align:left;min-height:44px}
+.wb-w:hover{border-color:var(--line-strong)}
+.wb-es{font-family:var(--font-display);font-weight:700;color:var(--terra-deep)}
+.wb-cn{font-size:.84rem;color:var(--ink)}
+.wb-g{font-size:.72rem;color:var(--ink-soft)}
+.tk-ask,.a-es,.q-es,.lyric-line,.ej .es,.vh-ej .es,.flash-stage.shown .fc .es,.mx-es{cursor:pointer}
+.lk-pop{position:absolute;z-index:9500;min-width:150px;max-width:min(280px,calc(100vw - 16px));background:var(--card);border:1.5px solid var(--line-strong);border-radius:12px;padding:10px 12px;box-shadow:0 8px 24px rgba(60,40,20,.14)}
+.lk-pop[hidden]{display:none}
+.lk-w{font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:var(--terra-deep);display:flex;align-items:center;gap:6px}
+.lk-say{appearance:none;border:1px solid var(--line-strong);background:var(--paper);border-radius:999px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
+.lk-g{font-size:.76rem;color:var(--ink-soft);margin-top:2px}
+.lk-cn{font-size:.95rem;color:var(--ink);margin-top:2px}
+.lk-none{font-size:.86rem;color:var(--ink-soft);margin-top:2px}
 .ord-card{padding:22px 20px}
 .ord-cn{font-weight:900;font-size:1.18rem;color:var(--ink);margin-bottom:4px}
 .ord-cn small{display:block;color:var(--ink-soft);font-weight:700;font-size:.82rem;margin-top:2px}
@@ -1026,8 +1072,9 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="ejercicios">
     <div class="reveal sec-head"><div class="sec-num">5</div>
       <h2 class="sec-h"><span class="sec-title">綜合練習</span> <span class="sec-es">Ejercicios</span></h2></div>
-    <p class="reveal sec-desc"><b>填空</b>:每輪隨機 5 題,填一題按 Enter 就對那一題,也可以填完再按「檢查全部」。<b>句子重組</b>:看中文,把打亂的單字磚塊照順序點回去。有沒有打重音符號都算對。</p>
+    <p class="reveal sec-desc"><b>混合一輪</b>:10 題,填空、重組、改錯、聽句子、看中文選西文、動詞變化、單字輪著出,答錯的自動收進錯題本。也可以只練<b>填空</b>或<b>句子重組</b>。有沒有打重音符號都算對。</p>
     <div class="filters reveal" id="ex-mode"></div>
+    <div id="ex-mix" style="display:none"><div class="card mx-card reveal" id="mx-card"></div></div>
     <div id="ex-fill">
     <div id="ex-list"></div>
     <div class="reveal ex-bar"><button class="btn" id="ex-check">檢查全部 · Comprobar</button><button class="btn" id="ex-new"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg>換 5 題<span class="es2">Otras 5</span></button><span class="score" id="ex-score"></span></div>
@@ -1039,6 +1086,7 @@ body.np-open .note-pop{transform:translateY(0)}
         <div class="ord-ans" id="ord-ans"></div>
         <div class="ord-pool" id="ord-pool"></div>
         <div class="ord-fb" id="ord-fb"></div>
+        <div class="wb" id="ord-break"></div>
         <div class="vb-ctrls"><button class="btn" id="ord-check">檢查 · Comprobar</button><button class="btn reset" id="ord-redo">重來</button><button class="btn nav" id="ord-next">下一題 ›</button></div>
         <div class="vb-score" id="ord-score"></div>
       </div>
@@ -6491,17 +6539,19 @@ vgStart();
 
 /* ===== 5. 綜合練習:句子重組 ===== */
 let ordQ=null, ordScore={ok:0,total:0};
-buildChips($("#ex-mode"),[["fill","填空 Rellenar"],["ord","句子重組 Ordenar"]],"fill",k=>{
+buildChips($("#ex-mode"),[["mix","混合一輪 Mezcla"],["fill","填空 Rellenar"],["ord","句子重組 Ordenar"]],"mix",k=>{
+  $("#ex-mix").style.display=(k==="mix")?"":"none";
   $("#ex-fill").style.display=(k==="fill")?"":"none";
   $("#ex-ord").style.display=(k==="ord")?"":"none";
   if(k==="ord"&&!ordQ)ordNew(); });
+$("#ex-fill").style.display="none"; $("#ex-mix").style.display="";
 function ordNew(){
   const pool=SENTS.filter(s=>{ const n=s.es.split(/\s+/).length; return n>=3&&n<=9; });
   const s=pickFresh("ord",pool);
   const toks=s.es.split(/\s+/);
   const order=shuffleA(toks.map((_,i)=>i));
   let tries=0; while(order.every((v,i)=>v===i)&&tries++<10)shuffleA(order);
-  ordQ={s:s,toks:toks,order:order,ans:[],done:false};
+  ordQ={s:s,toks:toks,order:order,ans:[],done:false}; { const wb=$("#ord-break"); if(wb) wb.innerHTML=""; }
   $("#ord-cn").innerHTML=esc(s.cn)+"<small>把下面的單字磚塊按正確順序點上去</small>";
   $("#ord-fb").className="ord-fb"; $("#ord-fb").textContent=""; $("#ord-ans").className="ord-ans";
   renderOrd(); }
@@ -6522,10 +6572,158 @@ function ordCheck(){
   secLog("ord",strip(guess)===strip(ordQ.s.es)); ordDone(ordQ.s.es);
   if(strip(guess)===strip(ordQ.s.es)){ ordScore.ok++; fb.className="ord-fb ok"; fb.innerHTML=svgIcon(ICON.check,15)+" 正確! "+spkHTML(ordQ.s.es); ansEl.className="ord-ans ok"; award(3); cnt("reorder"); speak(ordQ.s.es); }
   else { fb.className="ord-fb no"; fb.innerHTML="正確答案:"+esc(ordQ.s.es)+" "+spkHTML(ordQ.s.es); ansEl.className="ord-ans no"; award(1); recordMistake("重組", ordQ.s.cn, ordQ.s.es, guess); }
-  $("#ord-score").textContent="本回合 "+ordScore.ok+" / "+ordScore.total; renderDaily(); }
+  $("#ord-score").textContent="本回合 "+ordScore.ok+" / "+ordScore.total; $("#ord-break").innerHTML=wordBreakHTML(ordQ.s.es); bindWb($("#ord-break")); renderDaily(); }
 $("#ord-check").onclick=ordCheck;
 $("#ord-redo").onclick=()=>{ if(ordQ){ ordQ.ans=[]; ordQ.done=false; $("#ord-fb").textContent=""; $("#ord-fb").className="ord-fb"; $("#ord-ans").className="ord-ans"; renderOrd(); } };
 $("#ord-next").onclick=ordNew;
+
+/* ===== 2026-11-10 查字:全站點西文字看意思;句子重組、混合一輪的逐字解析共用 ===== */
+const LK_FUNC={"el":["冠詞","這個/那個(陽性單數,the)"],"la":["冠詞;代名詞","陰性單數 the;她、它(受詞)"],"los":["冠詞;代名詞","陽性複數 the;他們(受詞)"],"las":["冠詞;代名詞","陰性複數 the;她們(受詞)"],
+ "un":["冠詞","一個(陽性)"],"una":["冠詞","一個(陰性)"],"unos":["冠詞","一些(陽性)"],"unas":["冠詞","一些(陰性)"],"de":["介系詞","的;從"],"del":["縮寫","de + el"],"a":["介系詞","到;給;在(時間)"],"al":["縮寫","a + el"],
+ "en":["介系詞","在;搭(交通)"],"con":["介系詞","跟;用"],"sin":["介系詞","沒有"],"por":["介系詞","因為;經過;透過"],"para":["介系詞","為了;對…來說"],"y":["連接詞","和"],"e":["連接詞","和(i-/hi- 前)"],"o":["連接詞","或"],
+ "pero":["連接詞","但是"],"que":["連接詞;關係詞","…的;(比較)比;連接子句"],"qué":["疑問詞","什麼"],"no":["副詞","不;沒有"],"sí":["副詞","是"],"si":["連接詞","如果"],"muy":["副詞","很"],"más":["副詞","更;比較"],"ya":["副詞","已經"],
+ "también":["副詞","也"],"mi":["所有格","我的"],"mis":["所有格","我的(複數)"],"tu":["所有格","你的"],"tus":["所有格","你的(複數)"],"su":["所有格","他的、她的、您的、他們的"],"sus":["所有格","他的…(複數)"],"nuestro":["所有格","我們的"],"nuestra":["所有格","我們的(陰性)"],
+ "me":["代名詞","我(受詞/反身)"],"te":["代名詞","你(受詞/反身)"],"se":["代名詞","反身;無人稱;給他(se lo)"],"nos":["代名詞","我們(受詞/反身)"],"lo":["代名詞","它、他(受詞);lo + 形容詞"],"le":["代名詞","給他、給她、給您"],"les":["代名詞","給他們"],
+ "yo":["代名詞","我"],"tú":["代名詞","你"],"él":["代名詞","他"],"ella":["代名詞","她"],"usted":["代名詞","您"],"nosotros":["代名詞","我們"],"ellos":["代名詞","他們"],"ellas":["代名詞","她們"],"conmigo":["代名詞","跟我"],"contigo":["代名詞","跟你"],
+ "este":["指示詞;名詞","這個;東"],"esta":["指示詞","這個(陰性)"],"estos":["指示詞","這些"],"ese":["指示詞","那個"],"esa":["指示詞","那個(陰性)"],"eso":["指示詞","那件事"],"esto":["指示詞","這件事"],
+ "hay":["haber 無人稱","有(某處有…)"],"cuando":["連接詞","當…的時候"],"porque":["連接詞","因為"],"cómo":["疑問詞","怎麼;如何"],"dónde":["疑問詞","哪裡"],"adónde":["疑問詞","去哪裡"],"cuándo":["疑問詞","什麼時候"],"cuánto":["疑問詞","多少"],"quién":["疑問詞","誰"],"cuál":["疑問詞","哪一個"],
+ "todo":["形容詞","全部"],"todos":["形容詞","全部;每個"],"todas":["形容詞","全部(陰性)"],"bien":["副詞","好"],"mal":["副詞","不好"],"aquí":["副詞","這裡"],"allí":["副詞","那裡"],"hoy":["副詞","今天"],"ayer":["副詞","昨天"],"siempre":["副詞","總是"],"nunca":["副詞","從不"],"mucho":["副詞;形容詞","很多"],"poco":["副詞;形容詞","少;一點"]};
+const LK_PRON=["yo","tú","él/ella","nosotros","vosotros","ellos"], LK_T={pres:"現在式",pret:"簡單過去",imp:"未完成過去",fut:"未來式",presubj:"現在虛擬式"};
+let LK_VF=null;
+function lkVerbForms(){ if(LK_VF) return LK_VF; LK_VF={};
+  (typeof VERBOS!=="undefined"?VERBOS:[]).forEach(v=>["pres","pret","imp","fut","presubj"].forEach(t=>(v[t]||[]).forEach((f,i)=>{ const k=f.toLowerCase(), g=v.inf+" · "+LK_T[t]+"("+LK_PRON[i]+")", o=LK_VF[k]; if(!o) LK_VF[k]={g:g,cn:v.cn,inf:[v.inf]}; else if(o.inf.indexOf(v.inf)<0){ o.inf.push(v.inf); o.g+=" / "+g; o.cn+=" / "+v.cn; } })));
+  return LK_VF; }
+let LK_GL=null, LK_CD=null;
+function lkMaps(){ if(LK_GL) return; LK_GL={}; LK_CD={};
+  (typeof GLOSS!=="undefined"?GLOSS:[]).forEach(x=>{ const k=(x.t||"").toLowerCase(); if(k&&!LK_GL[k]) LK_GL[k]={g:x.g,cn:x.cn}; });
+  CARDS.forEach(w=>{ const k=(w.es||"").toLowerCase(); if(k&&!LK_CD[k]) LK_CD[k]={g:w.pos||"",cn:w.cn}; }); }
+/* 查一個字:先看這一句的逐字對照,再看功能字、動詞變化、歌詞字典、單字卡,最後試複數/陰性;都沒有就回 null,不猜 */
+function wordInfo(word,sentence){ lkMaps();
+  const raw=String(word||"").replace(/^[¿¡"«(]+|[.,!?;:"»)…]+$/g,""); const k=raw.toLowerCase(); if(!k) return null;
+  if(sentence&&typeof EJW!=="undefined"&&EJW[sentence]){ const t=EJW[sentence].find(x=>(x.w||"").toLowerCase()===k); if(t) return {w:raw,g:t.p||"",cn:t.cn}; }
+  if(LK_FUNC[k]) return {w:raw,g:LK_FUNC[k][0],cn:LK_FUNC[k][1]};
+  const vf=lkVerbForms()[k]; if(vf) return {w:raw,g:vf.g,cn:vf.cn};
+  if(LK_GL[k]) return {w:raw,g:LK_GL[k].g,cn:LK_GL[k].cn};
+  if(LK_CD[k]) return {w:raw,g:LK_CD[k].g,cn:LK_CD[k].cn};
+  const tries=[]; if(/es$/.test(k)) tries.push([k.slice(0,-2),"複數"]); if(/s$/.test(k)) tries.push([k.slice(0,-1),"複數"]); if(/a$/.test(k)) tries.push([k.slice(0,-1)+"o","陰性"]); if(/as$/.test(k)) tries.push([k.slice(0,-2)+"o","陰性複數"]);
+  for(const [b,lab] of tries){ const h=LK_CD[b]||LK_GL[b]; if(h) return {w:raw,g:(h.g?h.g+" · ":"")+lab+"(原形 "+b+")",cn:h.cn}; }
+  return null; }
+function wordBreakHTML(es){ const toks=String(es).split(/\s+/).filter(Boolean);
+  return `<div class="wb-h">逐字解析 <span>點一個字聽發音</span></div><div class="wb-row">`+toks.map(t=>{ const i=wordInfo(t,es);
+    return `<button type="button" class="wb-w" data-say="${esc(t.replace(/[¿¡.,!?;:"«»]/g,""))}"><span class="wb-es" lang="es">${esc(t)}</span><span class="wb-cn">${i?esc(i.cn):"(查不到)"}</span>${i&&i.g?`<span class="wb-g">${esc(i.g)}</span>`:""}</button>`; }).join("")+`</div>`; }
+function bindWb(box){ if(!box) return; box.querySelectorAll(".wb-w").forEach(b=>b.onclick=()=>speak(b.dataset.say,b)); }
+
+/* 點字查意思:對話、例句、歌詞、混合一輪的西文句子;已經有畫底線註解的字照舊用原本的說明 */
+(function(){
+  const SEL=".tk-ask,.a-es:not(.rp-hide),.q-es,.lyric-line,.ej .es,.vh-ej .es,.flash-stage.shown .fc .es,.mx-es";
+  const pop=document.createElement("div"); pop.className="lk-pop"; pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","查字"); pop.hidden=true; document.body.appendChild(pop);
+  const close=()=>{ pop.hidden=true; };
+  const isL=c=>/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(c||"");
+  function caretAt(x,y){ if(document.caretPositionFromPoint){ const p=document.caretPositionFromPoint(x,y); return p&&{node:p.offsetNode,off:p.offset}; }
+    if(document.caretRangeFromPoint){ const r=document.caretRangeFromPoint(x,y); return r&&{node:r.startContainer,off:r.startOffset}; } return null; }
+  document.addEventListener("click",e=>{
+    if(!pop.hidden&&!pop.contains(e.target)) close();
+    const host=e.target.closest&&e.target.closest(SEL); if(!host||e.target.closest(".w,button,a,input,.spk")) return;
+    const c=caretAt(e.clientX,e.clientY); if(!c||!c.node||c.node.nodeType!==3) return;
+    const tx=c.node.textContent; let a=c.off, b=c.off; if(!isL(tx[a])&&isL(tx[a-1])) a--, b--; if(!isL(tx[a])) return;
+    while(a>0&&isL(tx[a-1])) a--; while(b<tx.length&&isL(tx[b])) b++;
+    const word=tx.slice(a,b); if(!word) return;
+    const sent=(host.textContent||"").trim(); const info=wordInfo(word,sent);
+    const rg=document.createRange(); rg.setStart(c.node,a); rg.setEnd(c.node,b); const rc=rg.getBoundingClientRect();
+    pop.innerHTML=`<div class="lk-w" lang="es">${esc(word)} <button type="button" class="lk-say" aria-label="唸 ${esc(word)}">${svgIcon(ICON.vol,13)}</button></div>`+
+      (info?`${info.g?`<div class="lk-g">${esc(info.g)}</div>`:""}<div class="lk-cn">${esc(info.cn)}</div>`:`<div class="lk-none">網站的字典裡還沒有這個字</div>`);
+    pop.hidden=false;
+    const w=pop.offsetWidth, h=pop.offsetHeight; let left=Math.min(Math.max(8,rc.left+rc.width/2-w/2),innerWidth-w-8); let top=rc.bottom+8; if(top+h>innerHeight-8) top=rc.top-h-8;
+    pop.style.left=(left+scrollX)+"px"; pop.style.top=(top+scrollY)+"px";
+    pop.querySelector(".lk-say").onclick=ev=>{ ev.stopPropagation(); speak(word,ev.currentTarget); };
+    e.stopPropagation(); },true);
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape") close(); });
+  addEventListener("scroll",()=>{ if(!pop.hidden) close(); },{passive:true});
+})();
+
+/* ===== 2026-11-10 綜合練習:混合一輪 ===== */
+const MX_FIX=[{"t": ["Frank", "está", "ingeniero."], "w": 1, "g": "es", "ok": "Frank es ingeniero.", "why": "職業是身分 → ser,不是 estar"}, {"t": ["Silvia", "es", "maestro", "de", "primaria."], "w": 2, "g": "maestra", "ok": "Silvia es maestra de primaria.", "why": "Silvia 是女生 → maestra"}, {"t": ["Compro", "tres", "yogurs."], "w": 2, "g": "yogures.", "ok": "Compro tres yogures.", "why": "子音結尾的名詞,複數加 -es"}, {"t": ["Vamos", "a el", "supermercado."], "w": 1, "g": "al", "ok": "Vamos al supermercado.", "why": "a + el 一定縮成 al"}, {"t": ["Este", "fin", "de", "semana", "voy", "al", "Taipéi."], "w": 5, "g": "a", "ok": "Este fin de semana voy a Taipéi.", "why": "城市不加冠詞,所以只有 a"}, {"t": ["A", "mis", "padres", "les", "gustan", "la", "fruta."], "w": 4, "g": "gusta", "ok": "A mis padres les gusta la fruta.", "why": "gustar 跟著喜歡的東西變:la fruta 一個 → gusta"}, {"t": ["Ella", "no", "habla", "italiana."], "w": 3, "g": "italiano.", "ok": "Ella no habla italiano.", "why": "語言永遠是陽性"}, {"t": ["Luigi", "es", "italiana."], "w": 2, "g": "italiano.", "ok": "Luigi es italiano.", "why": "國籍跟著人變;Luigi 是男生"}, {"t": ["Soy", "taiwaneso."], "w": 1, "g": "taiwanés.", "ok": "Soy taiwanés.", "why": "陽性是 taiwanés,沒有 -o"}, {"t": ["Mi", "hermana", "ya", "es", "casada."], "w": 3, "g": "está", "ok": "Mi hermana ya está casada.", "why": "婚姻狀態口語用 estar"}, {"t": ["Mi", "clase", "de", "español", "es", "tres", "horas."], "w": 4, "g": "dura", "ok": "Mi clase de español dura tres horas.", "why": "「持續多久」用 durar"}, {"t": ["El", "piso", "tiene", "uno", "sofá."], "w": 3, "g": "un", "ok": "El piso tiene un sofá.", "why": "陽性名詞前 uno 變 un"}, {"t": ["Estes", "son", "mis", "amigos."], "w": 0, "g": "Estos", "ok": "Estos son mis amigos.", "why": "陽性複數是 estos,沒有 estes"}, {"t": ["Todas", "las", "noche", "leo", "un", "poco."], "w": 2, "g": "noches", "ok": "Todas las noches leo un poco.", "why": "las 是複數,名詞也要複數"}, {"t": ["Los", "domingos", "ver", "una", "película."], "w": 2, "g": "veo", "ok": "Los domingos veo una película.", "why": "動詞要依主詞變化:我 → veo"}, {"t": ["Es", "una", "persona", "that", "sabe", "disfrutar."], "w": 3, "g": "que", "ok": "Es una persona que sabe disfrutar.", "why": "英文的 that,西語用 que"}, {"t": ["Me", "interesa", "la", "música", "de", "clásica."], "w": 4, "g": "", "ok": "Me interesa la música clásica.", "why": "種類直接接形容詞,不加 de"}, {"t": ["Esta", "noche", "vemos", "el", "juego", "de", "fútbol."], "w": 4, "g": "partido", "ok": "Esta noche vemos el partido de fútbol.", "why": "球賽是 partido;juego 是遊戲"}, {"t": ["Hay", "que", "por", "practicar", "todos", "los", "días."], "w": 2, "g": "", "ok": "Hay que practicar todos los días.", "why": "hay que 後面直接接原形"}, {"t": ["Hay", "que", "aprender", "cosas", "nueves."], "w": 4, "g": "nuevas.", "ok": "Hay que aprender cosas nuevas.", "why": "cosas 陰性複數 → nuevas"}, {"t": ["Voy", "a", "la", "oficina", "caminanda."], "w": 4, "g": "caminando.", "ok": "Voy a la oficina caminando.", "why": "現在分詞 -ando 不分陰陽"}, {"t": ["Irene", "vive", "en", "Tainan", "por", "cinco", "años."], "w": 4, "g": "desde hace", "ok": "Irene vive en Tainan desde hace cinco años.", "why": "從過去持續到現在:desde hace + 時間"}];
+const MX_TYPES={fill:"填空",ord:"句子重組",fix:"改錯",listen:"聽句子",choose:"看中文選西文",verb:"動詞變化",vocab:"單字"};
+let mx=null;
+function mxPlan(){ const canSpeak=("speechSynthesis" in window);
+  const base=["fill","ord","fix",canSpeak?"listen":"choose","verb","choose","vocab","fill","fix","ord"];
+  for(let t=0;t<30;t++){ shuffleA(base); if(base.every((x,i)=>i===0||x!==base[i-1])) break; } return base.slice(); }
+function mxStartView(){ const box=$("#mx-card");
+  box.innerHTML=`<div class="mx-start"><h3 class="mx-h">混合一輪 · 10 題</h3><p class="mx-sub">填空、句子重組、改錯、聽句子、看中文選西文、動詞變化、單字,輪著出。答錯的自動收進錯題本。</p>`+
+    `<button class="btn vh-act mx-go" id="mx-go" type="button">開始<small>大約 5 分鐘</small></button></div>`;
+  $("#mx-go").onclick=()=>{ mx={plan:mxPlan(),i:0,ok:0,miss:0}; mxQ(); }; }
+function mxSents(min,max){ return SENTS.filter(s=>{ const n=s.es.split(/\s+/).length; return n>=min&&n<=max&&s.cn; }); }
+function mxOne(a){ return a[Math.floor(Math.random()*a.length)]; }
+function mxQ(){ const box=$("#mx-card"); if(mx.i>=mx.plan.length) return mxEnd();
+  const type=mx.plan[mx.i]; let q={type:type,done:false};
+  let body="", check=false;
+  if(type==="fill"){ const e=mxOne(POOL); q.e=e;
+    body=`<div class="mx-es mx-fill" lang="es">${esc(e.before)}<input class="mx-in" id="mx-in" lang="es" autocomplete="off" spellcheck="false" autocapitalize="off" aria-label="填入答案" size="${Math.max(6,e.answer.length+2)}">${esc(e.after)}</div><div class="mx-hint">${esc(e.inf)} ｜ ${esc(e.cn)}</div>`; check=true; }
+  else if(type==="ord"){ const s=mxOne(mxSents(3,8)); const toks=s.es.split(/\s+/); const order=shuffleA(toks.map((_,i)=>i)); let t=0; while(order.every((v,i)=>v===i)&&t++<10) shuffleA(order);
+    q.s=s; q.toks=toks; q.order=order; q.ans=[];
+    body=`<div class="mx-cn">${esc(s.cn)}</div><div class="mx-hint">把字塊按順序點上去</div><div class="ord-ans" id="mx-ans"></div><div class="ord-pool" id="mx-pool"></div>`; check=true; }
+  else if(type==="fix"){ const f=mxOne(MX_FIX); q.f=f;
+    body=`<div class="mx-hint">這句有一個地方寫錯了,點那個字</div><div class="mx-fix">`+f.t.map((w,i)=>`<button type="button" class="ord-w mx-fw" data-i="${i}" lang="es">${esc(w)}</button>`).join("")+`</div>`; }
+  else if(type==="listen"){ const pool=mxSents(3,9); const s=mxOne(pool); q.s=s;
+    const opts=shuffleA([s].concat(shuffleA(pool.filter(x=>x.cn!==s.cn)).slice(0,3))); q.opts=opts;
+    body=`<div class="mx-hint">聽一句,選出意思</div><div class="mx-audio"><button class="lp-play" id="mx-play" type="button">${svgIcon(ICON.vol,16)} 播放</button> <button class="lp-play slow" id="mx-slow" type="button">${svgIcon(ICON.vol,13)} 慢速</button></div>`+
+      `<div class="mx-opts">`+opts.map((o,i)=>`<button class="vg-opt" type="button" data-i="${i}">${esc(o.cn)}</button>`).join("")+`</div>`; }
+  else if(type==="choose"){ const s=mxOne(mxSents(3,9)); q.s=s; const n=s.es.split(/\s+/).length;
+    const others=shuffleA(mxSents(Math.max(3,n-2),n+2).filter(x=>x.es!==s.es&&x.cn!==s.cn)).slice(0,3); const opts=shuffleA([s].concat(others)); q.opts=opts;
+    body=`<div class="mx-cn">${esc(s.cn)}</div><div class="mx-hint">選出對的西班牙文</div><div class="mx-opts">`+opts.map((o,i)=>`<button class="vg-opt" type="button" data-i="${i}" lang="es">${esc(o.es)}</button>`).join("")+`</div>`; }
+  else if(type==="verb"){ const v=mxOne(VERBOS), t=Math.random()<0.6?"pres":"pret", p=mxOne([0,1,2,3,5]); q.v=v; q.t=t; q.p=p; q.ans=v[t][p];
+    body=`<div class="mx-cn"><span lang="es">${esc(v.inf)}</span>(${esc(v.cn)})</div><div class="mx-hint">${LK_T[t]} · ${esc(PRON6[p])}</div><input class="mx-in mx-in-wide" id="mx-in" lang="es" autocomplete="off" spellcheck="false" autocapitalize="off" aria-label="寫出動詞變化" placeholder="寫出變化…">`; check=true; }
+  else { const pool=CARDS.filter(w=>w.lv&&w.cn); const w=mxOne(pool); q.w=w;
+    const opts=shuffleA([w].concat(shuffleA(pool.filter(x=>x.cn!==w.cn&&x.es!==w.es)).slice(0,3))); q.opts=opts;
+    body=`<div class="mx-word" lang="es">${esc(w.es)} ${spkHTML(w.es)}</div><div class="mx-hint">選出中文意思</div><div class="mx-opts">`+opts.map((o,i)=>`<button class="vg-opt" type="button" data-i="${i}">${esc(o.cn)}</button>`).join("")+`</div>`; }
+  mx.q=q;
+  box.innerHTML=`<div class="mx-top"><span>第 ${mx.i+1} / ${mx.plan.length} 題 · ${MX_TYPES[type]}</span><button class="tk-link" id="mx-quit" type="button">結束</button></div><div class="mx-bar"><i style="width:${mx.i/mx.plan.length*100}%"></i></div>`+
+    `<div class="mx-body">${body}</div><div class="vb-fb mx-fb" id="mx-fb" aria-live="polite"></div><div class="wb" id="mx-wb"></div>`+
+    `<div class="vb-ctrls">${check?'<button class="btn" id="mx-check" type="button">檢查</button>':""}<button class="btn nav" id="mx-next" type="button" hidden>${mx.i+1<mx.plan.length?"下一題 ›":"看結果 ›"}</button></div>`;
+  $("#mx-quit").onclick=mxEnd; $("#mx-next").onclick=()=>{ mx.i++; mxQ(); };
+  $$("#mx-card .spk").forEach(b=>b.onclick=e=>{ e.stopPropagation(); speak(b.dataset.t,b); });
+  const inp=$("#mx-in"); if(inp){ inp.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); q.done?$("#mx-next").click():mxCheck(); } }; if(matchMedia("(pointer:fine)").matches) inp.focus({preventScroll:true}); }
+  if($("#mx-check")) $("#mx-check").onclick=mxCheck;
+  if(type==="ord") mxOrdRender();
+  if(type==="fix") $$(".mx-fw").forEach(b=>b.onclick=()=>mxFix(+b.dataset.i));
+  if(q.opts) $$("#mx-card .vg-opt").forEach(b=>b.onclick=()=>mxPick(+b.dataset.i));
+  if(type==="listen"){ $("#mx-play").onclick=()=>speak(q.s.es,null); $("#mx-slow").onclick=()=>speak(q.s.es,null,0.55); speak(q.s.es,null); }
+  if(type==="vocab") speak(q.w.es,null);
+  box.scrollIntoView({block:"nearest"}); }
+function mxOrdRender(){ const q=mx.q, a=$("#mx-ans"), p=$("#mx-pool");
+  a.innerHTML=q.ans.length?q.ans.map((ti,pos)=>`<button class="ord-w" type="button" data-pos="${pos}" lang="es">${esc(q.toks[ti])}</button>`).join(""):'<span class="mx-ph">點下面的字組成句子…</span>';
+  p.innerHTML=q.order.map(ti=>`<button class="ord-w${q.ans.indexOf(ti)>=0?" ghost":""}" type="button" data-ti="${ti}" lang="es">${esc(q.toks[ti])}</button>`).join("");
+  $$(".ord-w",p).forEach(b=>b.onclick=()=>{ if(q.done||q.ans.indexOf(+b.dataset.ti)>=0)return; q.ans.push(+b.dataset.ti); mxOrdRender(); });
+  $$(".ord-w",a).forEach(b=>b.onclick=()=>{ if(q.done)return; q.ans.splice(+b.dataset.pos,1); mxOrdRender(); }); }
+function mxResult(right,correctText,why){ const q=mx.q; q.done=true; const fb=$("#mx-fb");
+  if(right){ mx.ok++; award(2); fb.className="vb-fb mx-fb ok"; fb.innerHTML=svgIcon(ICON.check,15)+" 正確!"+(why?` <span class="mx-why">${esc(why)}</span>`:""); }
+  else { mx.miss++; award(1); fb.className="vb-fb mx-fb no"; fb.innerHTML=`正確答案:<b lang="es">${esc(correctText)}</b>`+(why?` <span class="mx-why">${esc(why)}</span>`:""); }
+  const ck=$("#mx-check"); if(ck) ck.hidden=true; const nx=$("#mx-next"); nx.hidden=false; nx.focus({preventScroll:true}); }
+function mxCheck(){ const q=mx.q; if(q.done) return;
+  if(q.type==="fill"){ const v=$("#mx-in").value; if(!strip(v)){ showToast("先填一個答案"); return; } const ok=strip(v)===strip(q.e.answer);
+    secLog("fill",ok); if(!ok){ const wc=exCard(q.e); recordMistake("填空", q.e.before+" ___ "+q.e.after+"("+q.e.cn+")", q.e.answer, v, wc&&wc.es); }
+    $("#mx-in").classList.add(ok?"ok":"no"); $("#mx-in").readOnly=true; mxResult(ok,q.e.answer,q.e.why); return; }
+  if(q.type==="ord"){ if(q.ans.length!==q.toks.length){ showToast("還沒把所有字放上去"); return; } const guess=q.ans.map(i=>q.toks[i]).join(" "); const ok=strip(guess)===strip(q.s.es);
+    secLog("ord",ok); if(ok) cnt("reorder"); else recordMistake("重組", q.s.cn, q.s.es, guess);
+    $("#mx-ans").className="ord-ans "+(ok?"ok":"no"); mxResult(ok,q.s.es,""); $("#mx-wb").innerHTML=wordBreakHTML(q.s.es); bindWb($("#mx-wb")); speak(q.s.es,null); return; }
+  if(q.type==="verb"){ const v=$("#mx-in").value; if(!strip(v)){ showToast("先寫一個答案"); return; } const ok=strip(v)===strip(q.ans);
+    secLog("verb",ok); if(ok) cnt("verbOk"); else recordMistake("動詞", q.v.inf+"("+q.v.cn+") · "+PRON6[q.p]+" · "+LK_T[q.t], q.ans, v);
+    $("#mx-in").classList.add(ok?"ok":"no"); $("#mx-in").readOnly=true; mxResult(ok,q.ans,""); } }
+function mxFix(i){ const q=mx.q; if(q.done) return; const f=q.f, ok=i===f.w; const bs=$$(".mx-fw");
+  bs[i].classList.add(ok?"ok":"no"); if(!ok) bs[f.w].classList.add("ok");
+  secLog("mix",ok); if(!ok){ if(f.g) recordMistake("改錯", "改哪個字?"+f.t.join(" "), f.g.replace(/[.,]$/,""), f.t[i]); else recordMistake("重組", "改正:"+f.t.join(" "), f.ok, f.t.join(" ")); }
+  mxResult(ok,f.ok,(f.g?f.t[f.w]+" → "+f.g+"。":"刪掉 "+f.t[f.w]+"。")+f.why); speak(f.ok,null); }
+function mxPick(i){ const q=mx.q; if(q.done) return; const bs=$$("#mx-card .vg-opt"); let ok, right;
+  if(q.type==="vocab"){ ok=q.opts[i].cn===q.w.cn; right=q.opts.findIndex(o=>o.cn===q.w.cn); secLog("mc",ok); if(!ok) recordMistake("選擇", q.w.es, q.w.cn, q.opts[i].cn, q.w.es); mxResult(ok,q.w.es+" = "+q.w.cn,""); }
+  else { ok=q.opts[i].es===q.s.es; right=q.opts.findIndex(o=>o.es===q.s.es); secLog(q.type==="listen"?"dict":"mix",ok);
+    if(!ok) recordMistake(q.type==="listen"?"聽寫":"重組", q.s.cn, q.s.es, q.opts[i].es);
+    mxResult(ok,q.s.es+(q.type==="listen"?"("+q.s.cn+")":""),""); $("#mx-wb").innerHTML=wordBreakHTML(q.s.es); bindWb($("#mx-wb")); if(q.type!=="listen") speak(q.s.es,null); }
+  bs[i].classList.add(ok?"ok":"no"); if(!ok&&right>=0) bs[right].classList.add("ok"); bs.forEach(b=>b.disabled=true); }
+function mxEnd(){ const box=$("#mx-card"); const n=mx?mx.ok+mx.miss:0;
+  if(mx&&n){ box.innerHTML=`<div class="mx-start"><h3 class="mx-h">答對 ${mx.ok} / ${n}</h3><p class="mx-sub">${mx.miss?"錯的 "+mx.miss+" 題已收進錯題本,到「學習進度」可以重練。":"全對。"}</p><button class="btn vh-act mx-go" id="mx-go" type="button">再來一輪</button></div>`;
+    $("#mx-go").onclick=()=>{ mx={plan:mxPlan(),i:0,ok:0,miss:0}; mxQ(); }; renderDaily(); mx=null; }
+  else { mx=null; mxStartView(); } }
+mxStartView();
 
 /* ===== 4. 歌詞填空挑戰 ===== */
 function renderCloze(){
@@ -6933,7 +7131,7 @@ function rtCardsSave(rated){ if(!rtCards||!rvActive) return; if(rated) rtCardsK+
 /* 某一步做到一半(重新整理後還記著的那種),首頁按鈕寫「繼續」不寫「開始」 */
 function rtStarted(r){ return !!((r.talkP&&(r.talkP.n||r.talkP.f)) || (r.drillP&&(r.drillP.res||[]).some(Boolean)) || (r.cardsP&&r.cardsP.k>0)); }
 function rtGoDrill(){ show("ejercicios");
-  if($("#ex-fill").style.display==="none"){ const m=$("#ex-mode .chip"); if(m) m.click(); }
+  if($("#ex-fill").style.display==="none"){ const m=[...$$("#ex-mode .chip")].find(x=>/填空/.test(x.textContent)); if(m) m.click(); }
   if(roundLogged||!roundA1) newRound(true);
   rtScrollTo(exList);
   if(matchMedia("(pointer:fine)").matches){ const p=Math.max(0,round.findIndex((_,i)=>!res[i])); const inp=$(`.blank[data-i="${p}"]`,exList); if(inp) inp.focus({preventScroll:true}); } }
