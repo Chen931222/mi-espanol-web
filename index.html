@@ -782,6 +782,16 @@ body.split-dragging iframe{pointer-events:none}
   body.split-dragging{cursor:row-resize}
   body.split-on .main{padding-bottom:var(--split-h,50vh)}
 }
+/* 2026-11-10 文法補充預設收起 */
+details.g-plus{padding-left:0;border-left:0;margin:4px 0 2px}
+details.g-plus>summary{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:6px 0;font-size:.8rem;font-weight:700;color:var(--terra-deep);cursor:pointer;list-style:none;letter-spacing:.02em}
+details.g-plus>summary::-webkit-details-marker{display:none}
+details.g-plus>summary::before{content:"＋";font-weight:800}
+details.g-plus[open]>summary::before{content:"－"}
+details.g-plus>summary:hover{text-decoration:underline}
+details.g-plus>summary:focus-visible{outline:2px solid var(--azul);outline-offset:2px;border-radius:6px}
+.g-plus-in{padding-left:12px;border-left:2px solid var(--line)}
+.g-plus-in>.g-sub:first-child{margin-top:4px}
 /* 2026-11-10 依課本查 */
 .vc-les{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:2px 0 10px}
 .vc-les-l{color:var(--ink-soft);font-size:.82rem;font-weight:700}
@@ -4094,7 +4104,9 @@ function gPlusHTML(x){ if(!x) return ""; let h="";
   if(x.tbl) h+=`<div class="g-sub">變化表</div><div class="cr-scroll gram-conj g-tbl"><table><tr>${x.tbl.cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>`+x.tbl.rows.map(r=>`<tr>${r.map((c,i)=>i?`<td>${esc(c)}</td>`:`<td class="pr">${esc(c)}</td>`).join("")}</tr>`).join("")+`</table></div>`;
   if(x.more&&x.more.length) h+=`<div class="g-sub">再看 ${x.more.length} 句</div>`+x.more.map(m=>ejHTML(m[0],m[1])).join("");
   if(x.dlg) h+=`<div class="g-dlg"><div class="g-sub">放進對話 · ${esc(x.dlg.t)}</div>`+x.dlg.l.map(l=>`<div class="g-dl"><span class="g-who">${esc(l[0])}</span><div><div class="es" lang="es">${esc(l[1])} ${spkHTML(l[1])}</div><div class="cn">${esc(l[2])}</div></div></div>`).join("")+ejWB(x.dlg.l.map(l=>l[1]))+`</div>`;
-  return h?`<div class="g-plus">${h}</div>`:""; }
+  if(!h) return "";   /* 2026-11-10 預設收起:每天五分鐘,先看重點;想多看再點開 */
+  const what=[x.more&&x.more.length?"再看 "+x.more.length+" 句":"",x.dlg?"對話":"",x.tbl?"變化表":""].filter(Boolean).join("、");
+  return `<details class="g-plus"><summary>${what}</summary><div class="g-plus-in">${h}</div></details>`; }
 function ejHTML(ej,cn){ if(!ej) return "";
   const parts=ej.split(/\s+\/\s+/).map(p=>p.trim()).filter(p=>GEJW[p]);
   const wb=parts.length?`<button type="button" class="ej-wb" aria-expanded="false" data-ej="${esc(parts.join("\n"))}">逐字解析</button><div class="ej-wbx" hidden></div>`:"";
