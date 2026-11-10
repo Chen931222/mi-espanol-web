@@ -270,10 +270,27 @@ body.rt-bar-on #voz-aviso{bottom:calc(34px + var(--rtbar-h,56px) + env(safe-area
 .gram-search:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(58,110,132,.14)}
 .gram-search-count{font-size:.85rem;color:var(--terra-deep);font-weight:700;white-space:nowrap}
 .gram-group{margin-bottom:2px}
-.gram-jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.gram-jump{display:flex;flex-wrap:wrap;gap:8px}
 .gram-jump .chip{min-height:40px}
 .gram-layer{scroll-margin-top:16px}
-@media (max-width:860px){.gram-layer{scroll-margin-top:60px}}
+.gram-layer{scroll-margin-top:64px}
+/* 2026-11-10 文法清單:一個小節一個框,一條一行 */
+#verb-list .gram-rows{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);overflow:hidden}
+#verb-list .gram-rows .verb{margin:0;border:0;border-radius:0;background:transparent}
+#verb-list .gram-rows .verb + .verb{border-top:1px solid var(--line)}
+#verb-list .verb-head{padding:12px 16px;gap:2px 10px;min-height:48px}
+#verb-list .verb-inf{font-size:1.06rem;font-weight:800}
+#verb-list .verb-mean{font-size:.88rem;font-weight:600}
+#verb-list .verb-tag{display:none}
+#verb-list .verb-arrow{margin-left:auto}
+#verb-list .verb.open{background:color-mix(in srgb,var(--paper) 55%,var(--card))}
+#verb-list .verb-head:hover .verb-inf{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+#verb-list .verb-body-in{padding:0 16px 16px}
+#verb-list .gram-conj{margin-top:0}
+#verb-list .gram-conj table{margin-bottom:10px}
+.gram-jump{position:sticky;top:0;z-index:6;padding:8px 0;margin:0 0 4px;background:color-mix(in srgb,var(--paper) 94%,transparent)}
+@media (max-width:860px){#verb-list .verb-head{display:grid;grid-template-columns:1fr auto;column-gap:12px;row-gap:1px}#verb-list .verb-inf{grid-column:1}#verb-list .verb-mean{grid-column:1;grid-row:2;font-size:.84rem}#verb-list .verb-arrow{grid-column:2;grid-row:1 / span 2;align-self:center}.gram-jump{top:59px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.gram-jump::-webkit-scrollbar{display:none}.gram-jump .chip{flex:0 0 auto}.gram-layer{scroll-margin-top:116px}}
+
 .gram-layer + .gram-layer{margin-top:44px;padding-top:22px;border-top:1px solid var(--line-strong)}
 .gram-layer-h{font-family:var(--font-display);font-weight:800;font-size:clamp(1.3rem,1.1rem + .8vw,1.6rem);line-height:1.2;color:var(--ink);margin:22px 0 4px;text-wrap:balance}
 .gram-layer-es{font-style:italic;font-weight:600;font-size:.72em;color:var(--ink-soft)}
@@ -308,6 +325,58 @@ body.rt-bar-on #voz-aviso{bottom:calc(34px + var(--rtbar-h,56px) + env(safe-area
 .fc-word .spk{width:30px;height:30px}
 .ejw-c{cursor:pointer}
 .ejw-c.speaking{border-bottom-color:var(--terra)}
+
+/* 2026-11-10 單字卡頁改版 */
+body:not(.rv-on) #flash-stage{display:none}
+body.rv-on .vh-fold{display:none}
+#vocabulario .vc-pick,#vocabulario #vc-mode{display:none}
+#flash-stage #fc-ok{display:none}
+#flash-stage.reviewing .fc-ctrls{width:min(100%,460px)}
+#flash-stage.reviewing .fc-ctrls .nav{display:none}
+#flash-stage.reviewing .srs-btns{width:100%;gap:10px}
+#flash-stage.reviewing .srs-btns .btn{border-radius:14px;padding:12px 10px;min-height:64px;font-size:1.02rem;gap:3px}
+#flash-stage.reviewing .srs-iv{font-size:.78rem}
+.vh{background:linear-gradient(180deg,#FBEEE2,var(--card));border:1.5px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:18px}
+.vh-line{color:var(--ink-soft);font-size:.9rem;margin-bottom:14px}
+.vh-line b{color:var(--ink);font-weight:800}
+.vh-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.vh-act{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:16px 18px;min-height:74px;border-radius:14px;font-size:1.06rem;font-weight:800;line-height:1.25}
+.vh-act small{font-size:.8rem;font-weight:600;opacity:.85}
+.vh-act{background:var(--terra-deep);color:#fff;border:1.5px solid var(--terra-deep)}
+.vh-act:hover{filter:brightness(1.08)}
+.vh-act:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+.vh-act.sec{background:var(--card);color:var(--ink);border:1.5px solid var(--line-strong)}
+.vh-act.sec:hover{border-color:var(--terra)}
+.vh-done{color:var(--good-deep,#38592A);font-size:.9rem;margin:12px 0 0;display:flex;align-items:center;gap:6px}
+.vh-fold{border-top:1.5px dashed var(--line-strong);padding-top:4px;margin-top:8px}
+.vh-sum{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:10px;padding:14px 2px;font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:var(--ink);min-height:48px}
+.vh-sum::-webkit-details-marker{display:none}
+.vh-sum::after{content:"▾";margin-left:auto;color:var(--ink-soft);font-family:var(--font-body);transition:transform .25s}
+.vh-fold[open]>.vh-sum::after{transform:rotate(180deg)}
+.vh-sum-n{font-family:var(--font-body);font-weight:600;font-size:.84rem;color:var(--ink-soft)}
+.vh-sum:focus-visible{outline:2px solid var(--azul);outline-offset:2px;border-radius:8px}
+.vh-browse-in .vc-search{margin:2px 0 10px;justify-content:flex-start}
+.vh-browse-in .vc-search input{width:100%;padding:11px 16px;font-size:1rem}
+.vh-browse-in .filters{justify-content:flex-start;margin-bottom:6px}
+.vh-list{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:8px}
+.vh-row + .vh-row{border-top:1px solid var(--line)}
+.vh-rh{display:grid;grid-template-columns:auto 1fr auto;align-items:baseline;gap:4px 12px;width:100%;padding:11px 16px;background:none;border:0;text-align:left;font:inherit;color:inherit;cursor:pointer;min-height:48px}
+.vh-rh:focus-visible{outline:2px solid var(--azul);outline-offset:-2px}
+.vh-es{font-family:var(--font-display);font-weight:800;color:var(--terra);font-size:1.02rem}
+.vh-cn{color:var(--ink);font-size:.92rem;min-width:0}
+.vh-st{font-size:.72rem;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+.vh-st.learned{color:var(--good-deep,#38592A)}
+.vh-st.review{color:var(--terra-deep)}
+.vh-rb{display:none;padding:0 16px 14px}
+.vh-row.open{background:color-mix(in srgb,var(--paper) 55%,var(--card))}
+.vh-row.open .vh-rb{display:block}
+.vh-pos{font-size:.8rem;color:var(--ink-soft);margin-bottom:4px}
+.vh-ej .es{font-family:var(--font-display);font-style:italic;color:var(--terra-deep)}
+.vh-ej .ejcn{display:block;color:var(--ink-soft);font-size:.88rem}
+.vh-empty{padding:16px;color:var(--ink-soft)}
+.vh-more{margin:10px auto 0;display:block}
+.vh-more[hidden]{display:none}
+@media (max-width:560px){.vh-browse-in .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;margin-left:-2px;margin-right:-16px;padding-right:16px}.vh-browse-in .filters::-webkit-scrollbar{display:none}.vh-browse-in .filters>*{flex:0 0 auto}.vh-rh{grid-template-columns:1fr auto}.vh-cn{grid-column:1;grid-row:2}.vh-st{grid-row:1 / span 2;align-self:center}}
 .daily{background:linear-gradient(180deg,#FBEEE2,var(--card));border:1.5px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:22px}
 .daily-h{font-family:var(--font-display);font-weight:900;font-size:1.12rem;color:var(--terra-deep);display:flex;align-items:center;gap:7px;margin-bottom:8px}
 .daily-row{color:var(--ink);font-size:.96rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -859,14 +928,14 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="vocabulario">
     <div class="reveal sec-head"><div class="sec-num">4</div>
       <h2 class="sec-h"><span class="sec-title">單字卡</span> <span class="sec-es">Vocabulario</span></h2></div>
-    <p class="reveal sec-desc">平常翻閱是<b>中西對照</b>;<b>複習</b>時先只看西文,想好意思再點開,照實按「忘了／普通／記得」,系統依此排下次複習。也可以切到<b>翻卡測驗</b>。進度自動存。</p>
+    <p class="reveal sec-desc">每天先複習到期的卡,再學幾個新字。卡片先只給西文,想好意思再翻開,照實按「還不會」或「記住了」,系統會安排下次什麼時候再考你。</p>
     <div class="daily reveal" id="daily"></div>
     <div class="reveal flash-stage" id="flash-stage">
       <div class="vc-mode" id="vc-mode"></div>
       <div class="filters vc-cats" id="vc-cats"></div>
       <div class="filters" id="vc-filters"></div>
       <div class="progress"><i id="vc-prog"></i></div>
-      <div class="rv-bar" id="rv-bar"><span>複習中 · 剩 <b id="rv-left">0</b> 張</span><button class="rv-end" id="rv-end">結束複習</button></div>
+      <div class="rv-bar" id="rv-bar"><span>複習中 · 剩 <b id="rv-left">0</b> 張</span><button class="rv-end" id="rv-end">結束</button></div>
       <div class="fc" id="fc"><div class="fc-inner">
         <div class="fc-face fc-front">
           <span class="fc-status" id="fc-status"></span>
@@ -887,20 +956,27 @@ body.np-open .note-pop{transform:translateY(0)}
         <button class="btn nav" id="fc-prev">‹</button>
         <button class="btn fc-show-btn" id="fc-show" type="button">看意思 ›</button>
         <div class="srs-btns">
-          <button class="btn srs-bad" id="fc-bad">忘了<span class="srs-iv" id="iv-bad"></span></button>
+          <button class="btn srs-bad" id="fc-bad">還不會<span class="srs-iv" id="iv-bad"></span></button>
           <button class="btn srs-ok" id="fc-ok">普通<span class="srs-iv" id="iv-ok"></span></button>
-          <button class="btn srs-good" id="fc-good">記得<span class="srs-iv" id="iv-good"></span></button>
+          <button class="btn srs-good" id="fc-good">記住了<span class="srs-iv" id="iv-good"></span></button>
         </div>
         <button class="btn nav" id="fc-next">›</button>
       </div>
       <div class="fc-meta"><span id="fc-count"></span><span>已學會 / Aprendidas <b id="fc-done">0</b> / <b id="fc-total">0</b></span></div>
     </div>
-    <div class="reveal game-wrap">
+    <details class="reveal vh-fold vh-browse" id="vh-browse">
+      <summary class="vh-sum">查單字 <span class="vh-sum-n" id="vh-browse-n"></span></summary>
+      <div class="vh-browse-in" id="vh-browse-in"><div class="vh-list" id="vh-list" role="list"></div><button class="tk-link vh-more" id="vh-more" type="button"></button></div>
+    </details>
+    <details class="reveal vh-fold vh-games">
+      <summary class="vh-sum">單字小遊戲 <span class="vh-sum-n">配對、選擇題、拼寫</span></summary>
+    <div class="game-wrap">
       <div class="game-head" id="vg-head"></div>
       <p class="game-tip">用上面選好的<b>主題</b>出題;答錯的字會自動排進今日複習。</p>
       <div class="filters" id="vg-mode"></div>
       <div id="vg-stage"></div>
     </div>
+    </details>
   </section>
 
   <!-- 4 -->
@@ -1786,6 +1862,12 @@ const DATA = {
       {k:"Ya es momento de + 原形", v:"現在該是…的時候了", ej:"Ya es momento de cambiar de trabajo.", ejcn:"該是換工作的時候了。"},
       {k:"cambiar de + 名詞", v:"換成另一個同類的(工作、房子、生活)用 cambiar de + 無冠詞名詞;換零件、換東西不加 de(cambiar la bombilla)", ej:"Quiero cambiar de vida.", ejcn:"我想改變生活。"},
       {k:"querer + 原形 = 想要", v:"", ej:"Quiero comer algo dulce.", ejcn:"我想吃點甜的。"} ]},
+    { type:"note", cat:"動詞時態 · Tiempos", title:"簡單過去 vs 未完成過去", mean:"Pretérito / Imperfecto 怎麼選", tag:"過去式", points:[
+      {k:"簡單過去 Pretérito", v:"做完的一次事件,通常有明確時間", ej:"Ayer comí paella.", ejcn:"昨天我吃了燉飯。"},
+      {k:"未完成過去 Imperfecto", v:"過去的習慣、背景、描述(那時候常…、那時候是…)", ej:"De niño comía mucho arroz.", ejcn:"我小時候常吃米飯。"},
+      {k:"兩個一起用", v:"背景用未完成過去,中途插進來的事件用簡單過去", ej:"Leía un libro cuando sonó el teléfono.", ejcn:"我在看書的時候電話響了。"},
+      {k:"線索字", v:"ayer、anoche、el año pasado、una vez → 簡單過去;siempre、todos los días、de niño、antes → 未完成過去", ej:"Antes vivía en Taipéi, pero el año pasado me mudé a Hsinchu.", ejcn:"我以前住台北,但去年搬到新竹了。"},
+      {k:"規則變化", v:"簡單過去 -ar:é, aste, ó, amos, asteis, aron;-er/-ir:í, iste, ió, imos, isteis, ieron。未完成過去 -ar:aba, abas, aba, ábamos, abais, aban;-er/-ir:ía, ías, ía, íamos, íais, ían", ej:"hablé / hablaba", ejcn:"我說了 / 我那時常說"} ]},
     { type:"note", cat:"動詞時態 · Tiempos", title:"現在式不規則類型", mean:"背規律,不背單字", tag:"現在式 · Presente", points:[
       {k:"規則", v:"-ar:o, as, a, amos, áis, an;-er:o, es, e, emos, éis, en;-ir:o, es, e, imos, ís, en", ej:"hablo · como · vivo", ejcn:"我說 · 我吃 · 我住"},
       {k:"e → ie", v:"querer, pensar, preferir, entender, recomendar, empezar(nosotros / vosotros 不變)", ej:"quiero, quieres, quiere, queremos, queréis, quieren", ejcn:"querer 想要"},
@@ -3043,7 +3125,10 @@ const DATA = {
     {before:"Tengo ", after:" sueño.", answer:"mucho", inf:"mucho / muy", cn:"我好睏。", why:"tener + 名詞用 mucho / mucha,不用 muy", g:"tener 慣用語"},
     {before:"Es mi ", after:" trabajo.", answer:"primer", inf:"primero", cn:"這是我的第一份工作。", why:"陽性單數名詞前 primero → primer", g:"序數 primero–décimo"},
     {before:"¿", after:" no vienes? —Porque estoy enfermo.", answer:"Por qué", inf:"por qué / porque", cn:"「你為什麼不來？」「因為我生病了。」", why:"問句是分開、有重音的 por qué", g:"邀約與拒絕"},
-    {before:"No puedo, ", after:" que trabajar.", answer:"tengo", inf:"tener que", cn:"不行耶，我得工作。", why:"婉拒常用 No puedo, tengo que + 原形", g:"邀約與拒絕"}
+    {before:"No puedo, ", after:" que trabajar.", answer:"tengo", inf:"tener que", cn:"不行耶，我得工作。", why:"婉拒常用 No puedo, tengo que + 原形", g:"邀約與拒絕"},
+    {before:"Ayer ", after:" paella con mis amigos.", answer:"comí", inf:"comer(過去)", cn:"昨天我跟朋友吃了燉飯。", why:"ayer + 做完的一次事件 → 簡單過去 comí", g:"簡單過去 vs 未完成過去"},
+    {before:"De niño ", after:" en Taichung.", answer:"vivía", inf:"vivir(過去)", cn:"我小時候住在台中。", why:"de niño = 那時候的狀態 → 未完成過去 vivía", g:"簡單過去 vs 未完成過去"},
+    {before:"", after:" un libro cuando sonó el teléfono.", answer:"Leía", inf:"leer(過去,我)", cn:"我在看書的時候電話響了。", why:"正在進行的背景 → 未完成過去 leía;插進來的事件 sonó 用簡單過去", g:"簡單過去 vs 未完成過去"}
   ],
 };
 
@@ -4788,7 +4873,7 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
     {id:"g-verbos", h:"動詞系統", es:"Verbos", d:"由淺到深:現在式 → 過去 → 未來 → 命令式 → 虛擬式。", subs:[
       ["現在式",["現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","ponerse / quedarse"]],
       ["現在式的延伸",["現在進行式","ir a + 原形","soler + 原形"]],
-      ["過去",["haber + 過去分詞","過去進行式(estaba + 現在分詞)","過去完成式 Pluscuamperfecto(había + 過去分詞)"]],
+      ["過去",["簡單過去 vs 未完成過去","haber + 過去分詞","過去進行式(estaba + 現在分詞)","過去完成式 Pluscuamperfecto(había + 過去分詞)"]],
       ["未來與條件",["未來式 Futuro","條件式 Condicional"]],
       ["命令式",["命令式 Imperativo"]],
       ["虛擬式",["虛擬式 Subjuntivo","虛擬式觸發詞(para que / hasta que…)","如果…就…(Si + hubiera)","como si(彷彿)+ 過去虛擬式"]] ]},
@@ -4801,7 +4886,7 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
       ["動詞片語",["義務:hay que / tener que / deber","打算、會、該是時候","動詞 + 介系詞 + 原形","llevar + 現在分詞","ir + 現在分詞(漸進)","seguir + 形容詞/分詞","使役 hacer + 原形","完成式不定詞(haber + 過去分詞)"]],
       ["連接與句子結構",["por 還是 para","關係代名詞 que / lo que","sino(而是)","sin vs no","條件句 Si(真實條件)","無人稱說法(uno / dicen que)"]],
       ["字詞小知識",["課本裡的易混字","重音辨義(mas / sí / sé…)","歌詞口語縮寫"]] ]},
-    {id:"g-conj", h:"動詞變化表", es:"Conjugaciones", d:"一個動詞一張表,查變化用。24 個常用動詞的五種時態,在「動詞練習」最下面的變位總表。", subs:[] }
+    {id:"g-conj", h:"動詞變化表", es:"Conjugaciones", d:"一個動詞一張表:現在式、簡單過去、未完成過去、未來式、現在虛擬式。表格可以左右滑。", subs:[] }
   ];
   const CONJ_ORDER=["ser","estar","ir","tener","hacer","poder","querer","saber","decir","poner","pedir","preferir","creer","comer","ayudar"];
   const OLDCAT_LAYER={"動詞時態 · Tiempos":0,"語氣 · Modos":0,"代名詞 · Pronombres":1,"詞彙與其他 · Léxico":1,"動詞結構 · Perífrasis":2,"特殊句型 · Estructuras":2};
@@ -4839,9 +4924,16 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
     return makeCard({title:g.title,mean:g.mean,tag:g.tag,keys:[gk],label:g.title,
       body:g.type==="table"?tableHTML(g):g.points.map(p=>`<div class="gpoint"><div><span class="gk">${p.k}</span>${p.v?` <span class="gv">— ${p.v}</span>`:""}</div>${ejHTML(p.ej,p.ejcn)}</div>`).join(""),
       search:[sub,g.title,g.mean||"",g.tag||""].concat((g.points||[]).map(p=>[p.k,p.v,p.ej,p.ejcn].join(" "))).concat(g.type==="table"?[(g.conj||[]).join(" "),g.ej||"",g.ejcn||""]:[]).join(" ")}); }
-  function verbCard(v){ const ts=tables[v].slice().sort((x,y)=>tenseRank(x.tag)-tenseRank(y.tag));
+  function verbCard(v,full){ const ts=(tables[v]||[]).slice().sort((x,y)=>tenseRank(x.tag)-tenseRank(y.tag));
+    if(full){ /* 完整五時態(資料來自動詞練習的 VERBOS);原本零星的表只留例句與練習題 */
+      const T=["pres","pret","imp","fut","presubj"], TL={pres:"現在式",pret:"簡單過去",imp:"未完成過去",fut:"未來式",presubj:"現在虛擬式"};
+      const tbl=`<div class="cr-scroll gram-conj"><table><tr><th>人稱</th>${T.map(k=>`<th>${TL[k]}</th>`).join("")}</tr>`+
+        DATA.pronombres.map((p,i)=>`<tr><td class="pr">${p}</td>${T.map(k=>`<td>${esc(full[k][i])}</td>`).join("")}</tr>`).join("")+`</table></div>`;
+      const ejs=ts.filter(t=>t.ej).map(t=>ejHTML(t.ej,t.ejcn)).join("");
+      return makeCard({title:v,mean:full.cn||(ts[0]&&ts[0].mean)||"",tag:"",keys:ts.length?ts.map(gKey):["conj:"+v],label:v,body:tbl+ejs,
+        search:["動詞變化表 變化 conjugación",v,full.cn||""].concat(T.map(k=>full[k].join(" "))).concat(ts.map(t=>[t.mean,t.ej||"",t.ejcn||""].join(" "))).join(" ")}); }
     const multi=ts.length>1;
-    return makeCard({title:v,mean:ts[0].mean,tag:ts.map(t=>tenseName(t.tag)).join(" · "),keys:ts.map(gKey),label:v,
+    return makeCard({title:v,mean:ts[0].mean,tag:"",keys:ts.map(gKey),label:v,
       body:ts.map(t=>(multi?`<div class="conj-tense">${t.tag}</div>`:"")+tableHTML(t)).join(""),
       search:["動詞變化表 變化 conjugación",v].concat(ts.map(t=>[t.mean,t.tag,(t.conj||[]).join(" "),t.ej||"",t.ejcn||""].join(" "))).join(" ")}); }
   /* 頂端跳層 */
@@ -4854,11 +4946,17 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
     layer.innerHTML=`<div class="reveal"><h3 class="gram-layer-h" id="${L.id}-h">${L.h} <span class="gram-layer-es">${L.es}</span></h3><p class="gram-layer-d">${L.d}</p></div>`;
     const addGroup=(name,cards)=>{ if(!cards.length)return; const group=document.createElement("div"); group.className="gram-group reveal";
       if(name){ const head=document.createElement("div"); head.className="gram-cat"; head.textContent=name; group.appendChild(head); }
-      cards.forEach(c=>group.appendChild(c)); layer.appendChild(group); };
+      const wrap=document.createElement("div"); wrap.className="gram-rows"; cards.forEach(c=>wrap.appendChild(c)); group.appendChild(wrap); layer.appendChild(group); };
     L.subs.forEach((sb,si)=>addGroup(sb[0], bins[li][si].sort((x,y)=>x[0]-y[0]).map(x=>noteCard(x[1],sb[0]))));
     addGroup(L.subs.length?"其他":"", extra[li].map(g=>noteCard(g,"其他")));
-    if(L.id==="g-conj"){ const vs=CONJ_ORDER.filter(v=>tables[v]).concat(Object.keys(tables).filter(v=>CONJ_ORDER.indexOf(v)<0));
-      addGroup("", vs.map(verbCard)); }
+    if(L.id==="g-conj"){ const holder=document.createElement("div"); holder.className="gram-conj-holder"; layer.appendChild(holder);
+      /* VERBOS 在 script 後段才宣告並補齊時態;等整支 script 跑完再畫 */
+      setTimeout(()=>{ const VB={}; (typeof VERBOS!=="undefined"?VERBOS:[]).forEach(x=>VB[x.inf]=x);
+        const vs=CONJ_ORDER.filter(v=>VB[v]||tables[v]).concat(Object.keys(VB).filter(v=>CONJ_ORDER.indexOf(v)<0)).concat(Object.keys(tables).filter(v=>CONJ_ORDER.indexOf(v)<0&&!VB[v]));
+        const rows=document.createElement("div"); rows.className="gram-group reveal";
+        const wrap=document.createElement("div"); wrap.className="gram-rows"; vs.forEach(v=>wrap.appendChild(verbCard(v,VB[v]))); rows.appendChild(wrap);
+        holder.appendChild(rows); rows.style.transitionDelay="0s";
+        const gn=$("#gram-n"); if(gn) gn.textContent=document.querySelectorAll("#verb-list .card.verb").length; },0); }
     verbList.appendChild(layer);
   });
   /* 文法搜尋:即時過濾(中文/西文/時態名都比對,忽略大小寫與重音);命中 ≤6 筆自動展開 */
@@ -6975,6 +7073,57 @@ const _buildVListBase=buildVList;
 buildVList=function(){ _buildVListBase(); vcPickRender(false); };
 $("#vc-mode").addEventListener("click",e=>{ if(e.target.closest(".chip")) vcPickRender(false); });
 vcPickRender(false);
+
+/* ===== 2026-11-10 單字卡頁改版:首頁只剩兩件事(複習、學新字),翻閱改成查單字清單 ===== */
+(function(){
+  const vsec=$("#vocabulario"); vsec.classList.add("vc-open");
+  /* 主題、狀態、搜尋搬進「查單字」 */
+  const bin=$("#vh-browse-in"); bin.prepend($("#vc-filters")); bin.prepend($("#vc-cats")); bin.prepend(document.querySelector("#vocabulario .vc-search"));
+  vcPickRender=function(){ vsec.classList.add("vc-open"); };
+  function freshCards(){ const f=CARDS.filter(w=>!store[w.es]); return f.filter(w=>w.lv==="A1").concat(f.filter(w=>w.lv!=="A1")); }
+  function barLabel(t){ const b=$("#rv-bar span"); if(b) b.innerHTML=t+' · 剩 <b id="rv-left">0</b> 張'; }
+  function startNew(){ const q=freshCards().slice(0,5); if(!q.length){ showToast("所有單字都學過了"); return; } barLabel("學新字"); startReview(q); }
+  renderDaily=function(){ const box=$("#daily"); if(!box)return; if(!rvActive&&!rtCards) barLabel("複習中");
+    box.className="vh reveal"+(box.classList.contains("in")?" in":"");
+    const total=CARDS.length, dueN=CARDS.filter(w=>isDue(w.es)).length, learned=CARDS.filter(w=>cardStatus(w.es)==="learned").length;
+    const freshN=freshCards().length, todayN=(stats.days&&stats.days[dayStr()])||0, ss=curStreak();
+    box.innerHTML=`<div class="vh-line">連續 <b>${ss}</b> 天 · 已學會 <b>${learned}</b> / ${total}</div>`+
+      `<div class="vh-actions">`+
+        (dueN?`<button class="btn vh-act" id="vh-review" type="button">複習到期的卡<small>${dueN} 張</small></button>`:"")+
+        (freshN?`<button class="btn vh-act${dueN?" sec":""}" id="vh-new" type="button">學 5 個新字<small>還有 ${freshN} 個沒學過</small></button>`:"")+
+      `</div>`+
+      (!dueN?`<p class="vh-done">${svgIcon(ICON.check,14)} ${todayN?"今天的複習做完了。":"今天沒有到期的卡。"}</p>`:"");
+    const r=$("#vh-review"); if(r) r.onclick=()=>{ barLabel("複習中"); startReview(); };
+    const n=$("#vh-new"); if(n) n.onclick=startNew; };
+  /* 評分鈕下面那行小字:講結果,不講系統內部的天數 */
+  const _rc=renderCard;
+  renderCard=function(){ _rc();
+    const w=vList[vIdx]; if(!w) return;
+    const g=nextIvLabel(w.es,2);
+    $("#iv-bad").textContent="等一下再考你"; $("#iv-good").textContent=g==="今天"?"今天再考一次":g+"後再考你";
+    if(!rvActive) renderList(); };
+  /* 查單字清單 */
+  let shown=40;
+  function renderList(){ const box=$("#vh-list"); if(!box) return;
+    const list=vList, n=list.length; $("#vh-browse-n").textContent=CARDS.length+" 個";
+    const STL={learned:"已學會",review:"學習中"};
+    box.innerHTML=n?list.slice(0,shown).map((w,i)=>{ const st=cardStatus(w.es)||"";
+      return `<div class="vh-row" role="listitem"><button class="vh-rh" type="button" aria-expanded="false" data-i="${i}"><span class="vh-es" lang="es">${esc(w.es)}</span><span class="vh-cn">${esc(w.cn)}</span><span class="vh-st ${st}">${STL[st]||""}</span></button>`+
+        `<div class="vh-rb"><div class="vh-pos">${esc(w.pos||"")} ${spkHTML(w.es)}</div>${w.ej?`<div class="vh-ej"><span class="es" lang="es">${esc(w.ej)}</span> ${spkHTML(w.ej)}<span class="ejcn">${esc(w.ejcn||"")}</span></div>`:""}</div></div>`; }).join("")
+      :`<div class="vh-empty">${vQ?"找不到「"+esc(vQ)+"」":"這個分類還沒有字"}</div>`;
+    const more=$("#vh-more"); more.hidden=n<=shown; more.textContent="再顯示 "+Math.min(40,n-shown)+" 個(共 "+n+" 個)";
+    $$("#vh-list .vh-rh").forEach(b=>b.onclick=()=>{ const row=b.parentElement; row.classList.toggle("open"); b.setAttribute("aria-expanded",row.classList.contains("open")); });
+    $$("#vh-list .spk").forEach(b=>b.onclick=e=>{ e.stopPropagation(); speak(b.dataset.t,b); }); }
+  $("#vh-more").onclick=()=>{ shown+=40; renderList(); };
+  const _bv=buildVList; buildVList=function(){ shown=40; _bv(); };
+  /* 專心模式的鍵盤:空白鍵翻面,1 還不會,2 記住了 */
+  document.addEventListener("keydown",e=>{ if(!document.body.classList.contains("rv-on")||/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||"")) return;
+    const st=$("#flash-stage"), shownNow=st.classList.contains("shown");
+    const tg=e.target&&e.target.closest?e.target:document.body;
+    if((e.key===" "||e.key==="Enter")&&!shownNow&&!tg.closest("button,a,summary")){ e.preventDefault(); fcReveal(); }
+    else if(shownNow&&e.key==="1"){ rate(0); } else if(shownNow&&e.key==="2"){ rate(2); } });
+  buildVList(); renderDaily();
+})();
 
 /* 對話頁頂端原本 3 顆模式＋7 顆場景一字排開;改成一行「目前的選擇 · 更換」,點了才展開。
    晶片本身沒拆,所以「今天的五分鐘」照樣用 .click() 切場景 */
