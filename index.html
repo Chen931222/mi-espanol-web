@@ -270,6 +270,18 @@ body.rt-bar-on #voz-aviso{bottom:calc(34px + var(--rtbar-h,56px) + env(safe-area
 .gram-search:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(58,110,132,.14)}
 .gram-search-count{font-size:.85rem;color:var(--terra-deep);font-weight:700;white-space:nowrap}
 .gram-group{margin-bottom:2px}
+.gram-jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.gram-jump .chip{min-height:40px}
+.gram-layer{scroll-margin-top:16px}
+@media (max-width:860px){.gram-layer{scroll-margin-top:60px}}
+.gram-layer + .gram-layer{margin-top:44px;padding-top:22px;border-top:1px solid var(--line-strong)}
+.gram-layer-h{font-family:var(--font-display);font-weight:800;font-size:clamp(1.3rem,1.1rem + .8vw,1.6rem);line-height:1.2;color:var(--ink);margin:22px 0 4px;text-wrap:balance}
+.gram-layer-es{font-style:italic;font-weight:600;font-size:.72em;color:var(--ink-soft)}
+.gram-layer-d{margin:0 0 4px;color:var(--ink-soft);font-size:.92rem;line-height:1.55;max-width:62ch}
+.gram-layer .gram-cat:first-child{margin-top:18px}
+.conj-tense{margin:14px 0 6px;font-weight:800;font-size:.8rem;letter-spacing:.06em;color:var(--terra-deep)}
+.conj-tense:first-child{margin-top:2px}
+.verb-head:focus-visible{outline:2px solid var(--azul);outline-offset:-2px;border-radius:inherit}
 .song-artists{margin-bottom:9px}
 .chips-lbl{align-self:center;font-size:.8rem;font-weight:700;color:var(--ink-soft);margin-right:2px}
 .artist-chip:hover{border-color:var(--terra);color:var(--terra)}
@@ -4770,38 +4782,84 @@ function renderDlg(){
 const verbList=$("#verb-list");
 function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHTML(ej)}</div>${cn?`<div class="cn">${cn}</div>`:""}${EN[ej]?`<div class="ejen en-line">${esc(EN[ej])}</div>`:""}</div>`:""; }
 (function(){
-  const GRAM_ORDER=["動詞時態 · Tiempos","語氣 · Modos","動詞結構 · Perífrasis","代名詞 · Pronombres","特殊句型 · Estructuras","詞彙與其他 · Léxico"];
-  /* 既有 33 條依序對應的分類(新加的條目自帶 cat,不靠這張表) */
-  const GRAMCAT=["特殊句型 · Estructuras","詞彙與其他 · Léxico","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞結構 · Perífrasis","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞結構 · Perífrasis","動詞結構 · Perífrasis","特殊句型 · Estructuras","代名詞 · Pronombres","代名詞 · Pronombres","語氣 · Modos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","語氣 · Modos","詞彙與其他 · Léxico","代名詞 · Pronombres","詞彙與其他 · Léxico"];
+  /* 2026-11-10 四層:一、動詞系統(由淺到深)二、名詞與代名詞 三、句型 四、動詞變化表(一個動詞一張卡)。
+     新增筆記把標題加進 GRAM_LAYERS 對應小節;沒列到的會依舊 cat 落到該層最後的「其他」,並在 console 警告。 */
+  const GRAM_LAYERS=[
+    {id:"g-verbos", h:"動詞系統", es:"Verbos", d:"由淺到深:現在式 → 過去 → 未來 → 命令式 → 虛擬式。", subs:[
+      ["現在式",["現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","ponerse / quedarse"]],
+      ["現在式的延伸",["現在進行式","ir a + 原形","soler + 原形"]],
+      ["過去",["haber + 過去分詞","過去進行式(estaba + 現在分詞)","過去完成式 Pluscuamperfecto(había + 過去分詞)"]],
+      ["未來與條件",["未來式 Futuro","條件式 Condicional"]],
+      ["命令式",["命令式 Imperativo"]],
+      ["虛擬式",["虛擬式 Subjuntivo","虛擬式觸發詞(para que / hasta que…)","如果…就…(Si + hubiera)","como si(彷彿)+ 過去虛擬式"]] ]},
+    {id:"g-nombres", h:"名詞與代名詞", es:"Nombres y pronombres", d:"陰陽性、冠詞、數字,還有「這個、我的、它」這些小字。", subs:[
+      ["名詞與冠詞",["名詞的陰陽性與單複數","冠詞 un / el","縮寫 al / del","短尾形容詞 Apócope","指小詞 -ito / -ita"]],
+      ["數字",["數字 Números","序數 primero–décimo"]],
+      ["代名詞",["指示詞 este / ese / aquel","所有格 mi / tu / su","所有格代名詞(el mío)","重讀代名詞(介系詞後)","受詞代名詞位置","雙受詞代名詞(te lo / se lo)","se 的六種用法","中性 lo(lo + 形容詞)"]] ]},
+    {id:"g-frases", h:"句型", es:"Estructuras", d:"拿來就能說的說法,和把句子接起來的方法。", subs:[
+      ["日常表達",["gustar 類動詞","tener 慣用語","Me da + 名詞","¡Qué + 形容詞!","比較級與最高級","現在幾點 ¿Qué hora es?","日期與星期","天氣:hace…","去哪裡、在哪裡、怎麼去","國籍與語言","頻率說法","邀約與拒絕"]],
+      ["動詞片語",["義務:hay que / tener que / deber","打算、會、該是時候","動詞 + 介系詞 + 原形","llevar + 現在分詞","ir + 現在分詞(漸進)","seguir + 形容詞/分詞","使役 hacer + 原形","完成式不定詞(haber + 過去分詞)"]],
+      ["連接與句子結構",["por 還是 para","關係代名詞 que / lo que","sino(而是)","sin vs no","條件句 Si(真實條件)","無人稱說法(uno / dicen que)"]],
+      ["字詞小知識",["課本裡的易混字","重音辨義(mas / sí / sé…)","歌詞口語縮寫"]] ]},
+    {id:"g-conj", h:"動詞變化表", es:"Conjugaciones", d:"一個動詞一張表,查變化用。24 個常用動詞的五種時態,在「動詞練習」最下面的變位總表。", subs:[] }
+  ];
+  const CONJ_ORDER=["ser","estar","ir","tener","hacer","poder","querer","saber","decir","poner","pedir","preferir","creer","comer","ayudar"];
+  const OLDCAT_LAYER={"動詞時態 · Tiempos":0,"語氣 · Modos":0,"代名詞 · Pronombres":1,"詞彙與其他 · Léxico":1,"動詞結構 · Perífrasis":2,"特殊句型 · Estructuras":2};
+  /* 既有 33 條依序對應的舊分類(只拿來給沒列進 GRAM_LAYERS 的條目找層) */
+  const GRAMCAT_OLD=["特殊句型 · Estructuras","詞彙與其他 · Léxico","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞結構 · Perífrasis","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞結構 · Perífrasis","動詞結構 · Perífrasis","特殊句型 · Estructuras","代名詞 · Pronombres","代名詞 · Pronombres","語氣 · Modos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","動詞時態 · Tiempos","語氣 · Modos","詞彙與其他 · Léxico","代名詞 · Pronombres","詞彙與其他 · Léxico"];
   const tCount={}; DATA.gramatica.forEach(g=>tCount[g.title]=(tCount[g.title]||0)+1);
   const gKey=g=>tCount[g.title]>1?g.title+"|"+g.tag:g.title;
-  const byCat={}; DATA.gramatica.forEach((g,i)=>{ const c=g.cat||GRAMCAT[i]||"其他"; (byCat[c]=byCat[c]||[]).push(g); });
-  Object.keys(byCat).forEach(c=>{ const a=byCat[c]; byCat[c]=a.map((g,i)=>[g,i]).sort((x,y)=>((/現在/.test(x[0].tag||"")?0:1)-(/現在/.test(y[0].tag||"")?0:1))||x[1]-y[1]).map(x=>x[0]); });
-  const cats=GRAM_ORDER.filter(c=>byCat[c]).concat(Object.keys(byCat).filter(c=>GRAM_ORDER.indexOf(c)<0));
   const norm=s=>(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
-  cats.forEach(cat=>{
-    const group=document.createElement("div"); group.className="gram-group reveal";
-    const head=document.createElement("div"); head.className="gram-cat"; head.textContent=cat; group.appendChild(head);
-    byCat[cat].forEach(g=>{
-      let body;
-      if(g.type==="table"){
-        body=`<table>${g.conj.map((c,i)=>`<tr><td class="pron">${DATA.pronombres[i]}</td><td class="conj">${c}</td></tr>`).join("")}</table>`+ejHTML(g.ej,g.ejcn);
-      }else{
-        body=g.points.map(p=>`<div class="gpoint"><div><span class="gk">${p.k}</span>${p.v?` <span class="gv">— ${p.v}</span>`:""}</div>${ejHTML(p.ej,p.ejcn)}</div>`).join("");
-      }
-      /* 有填空題標了這條(e.g===title)就給一顆「練這條」 */
-      const gk=gKey(g), nq=DATA.ejercicios.filter(e=>e.g===gk).length;
-      if(nq) body+=`<div class="g-practice"><button class="btn" type="button" data-gp="${esc(gk)}">${svgIcon(ICON.edit,13)} 練這條 · ${nq} 題填空</button></div>`;
-      const el=document.createElement("div"); el.className="card verb";
-      el.dataset.title=gk;
-      el.innerHTML=`<div class="verb-head"><span class="verb-inf">${g.title}</span><span class="verb-mean">${g.mean||""}</span><span class="verb-tag">${g.tag}</span><span class="verb-arrow">▾</span></div>
-        <div class="verb-body"><div class="verb-body-in">${body}</div></div>`;
-      const gp=el.querySelector("[data-gp]"); if(gp) gp.onclick=()=>practiceGram(gk);
-      el.dataset.s=norm([cat,g.title,g.mean||"",g.tag||""].concat((g.points||[]).map(p=>[p.k,p.v,p.ej,p.ejcn].join(" "))).concat(g.type==="table"?[(g.conj||[]).join(" "),g.ej||"",g.ejcn||""]:[]).join(" "));
-      el.querySelector(".verb-head").onclick=()=>el.classList.toggle("open");
-      group.appendChild(el);
-    });
-    verbList.appendChild(group);
+  const where={}; GRAM_LAYERS.forEach((L,li)=>L.subs.forEach((sb,si)=>sb[1].forEach((t,ti)=>where[t]=[li,si,ti])));
+  const bins=GRAM_LAYERS.map(L=>L.subs.map(()=>[])), extra=GRAM_LAYERS.map(()=>[]), tables={};
+  DATA.gramatica.forEach((g,i)=>{
+    const w=where[g.title];
+    if(w){ bins[w[0]][w[1]].push([w[2],g]); return; }
+    if(g.type==="table"){ (tables[g.title]=tables[g.title]||[]).push(g); return; }
+    const li=OLDCAT_LAYER[g.cat||GRAMCAT_OLD[i]]; extra[li==null?2:li].push(g);
+    console.warn("文法筆記沒排進四層:",g.title);
+  });
+  const tenseRank=t=>/現在/.test(t)?0:/Pretérito/.test(t)?1:/Imperfecto/.test(t)?2:3;
+  const tenseName=t=>(t||"").replace(/ · .*$/,"").replace(/\s*\(.*\)$/,"");
+  function practiceBtn(keys,label){ const nq=DATA.ejercicios.filter(e=>keys.indexOf(e.g)>=0).length;
+    return nq?`<div class="g-practice"><button class="btn" type="button" data-gp="1">${svgIcon(ICON.edit,13)} 練這條 · ${nq} 題填空</button></div>`:""; }
+  function makeCard(o){ /* o:{title,mean,tag,body,keys,label,search} */
+    const el=document.createElement("div"); el.className="card verb";
+    el.dataset.title=o.keys[0]; el.dataset.keys=o.keys.join("\n");
+    el.innerHTML=`<div class="verb-head" role="button" tabindex="0" aria-expanded="false"><span class="verb-inf">${o.title}</span><span class="verb-mean">${o.mean||""}</span><span class="verb-tag">${o.tag}</span><span class="verb-arrow" aria-hidden="true">▾</span></div>
+      <div class="verb-body"><div class="verb-body-in">${o.body}${practiceBtn(o.keys)}</div></div>`;
+    const gp=el.querySelector("[data-gp]"); if(gp) gp.onclick=()=>practiceGram(o.keys,o.label);
+    el.dataset.s=norm(o.search);
+    const hd=el.querySelector(".verb-head");
+    const tog=()=>{ el.classList.toggle("open"); hd.setAttribute("aria-expanded",el.classList.contains("open")); };
+    hd.onclick=tog; hd.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); tog(); } };
+    return el; }
+  const tableHTML=g=>`<table>${g.conj.map((c,i)=>`<tr><td class="pron">${DATA.pronombres[i]}</td><td class="conj">${c}</td></tr>`).join("")}</table>`+ejHTML(g.ej,g.ejcn);
+  function noteCard(g,sub){ const gk=gKey(g);
+    return makeCard({title:g.title,mean:g.mean,tag:g.tag,keys:[gk],label:g.title,
+      body:g.type==="table"?tableHTML(g):g.points.map(p=>`<div class="gpoint"><div><span class="gk">${p.k}</span>${p.v?` <span class="gv">— ${p.v}</span>`:""}</div>${ejHTML(p.ej,p.ejcn)}</div>`).join(""),
+      search:[sub,g.title,g.mean||"",g.tag||""].concat((g.points||[]).map(p=>[p.k,p.v,p.ej,p.ejcn].join(" "))).concat(g.type==="table"?[(g.conj||[]).join(" "),g.ej||"",g.ejcn||""]:[]).join(" ")}); }
+  function verbCard(v){ const ts=tables[v].slice().sort((x,y)=>tenseRank(x.tag)-tenseRank(y.tag));
+    const multi=ts.length>1;
+    return makeCard({title:v,mean:ts[0].mean,tag:ts.map(t=>tenseName(t.tag)).join(" · "),keys:ts.map(gKey),label:v,
+      body:ts.map(t=>(multi?`<div class="conj-tense">${t.tag}</div>`:"")+tableHTML(t)).join(""),
+      search:["動詞變化表 變化 conjugación",v].concat(ts.map(t=>[t.mean,t.tag,(t.conj||[]).join(" "),t.ej||"",t.ejcn||""].join(" "))).join(" ")}); }
+  /* 頂端跳層 */
+  const jump=document.createElement("nav"); jump.className="gram-jump reveal"; jump.setAttribute("aria-label","文法分層");
+  GRAM_LAYERS.forEach(L=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=L.h;
+    b.onclick=()=>{ const t=document.getElementById(L.id); if(t) t.scrollIntoView({block:"start",behavior:"smooth"}); }; jump.appendChild(b); });
+  verbList.appendChild(jump);
+  GRAM_LAYERS.forEach((L,li)=>{
+    const layer=document.createElement("div"); layer.className="gram-layer"; layer.id=L.id; layer.setAttribute("role","region"); layer.setAttribute("aria-labelledby",L.id+"-h");
+    layer.innerHTML=`<div class="reveal"><h3 class="gram-layer-h" id="${L.id}-h">${L.h} <span class="gram-layer-es">${L.es}</span></h3><p class="gram-layer-d">${L.d}</p></div>`;
+    const addGroup=(name,cards)=>{ if(!cards.length)return; const group=document.createElement("div"); group.className="gram-group reveal";
+      if(name){ const head=document.createElement("div"); head.className="gram-cat"; head.textContent=name; group.appendChild(head); }
+      cards.forEach(c=>group.appendChild(c)); layer.appendChild(group); };
+    L.subs.forEach((sb,si)=>addGroup(sb[0], bins[li][si].sort((x,y)=>x[0]-y[0]).map(x=>noteCard(x[1],sb[0]))));
+    addGroup(L.subs.length?"其他":"", extra[li].map(g=>noteCard(g,"其他")));
+    if(L.id==="g-conj"){ const vs=CONJ_ORDER.filter(v=>tables[v]).concat(Object.keys(tables).filter(v=>CONJ_ORDER.indexOf(v)<0));
+      addGroup("", vs.map(verbCard)); }
+    verbList.appendChild(layer);
   });
   /* 文法搜尋:即時過濾(中文/西文/時態名都比對,忽略大小寫與重音);命中 ≤6 筆自動展開 */
   const gInp=document.getElementById("gram-search"), gCnt=document.getElementById("gram-search-count");
@@ -4810,11 +4868,14 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
     const cards=Array.prototype.slice.call(document.querySelectorAll("#verb-list .verb"));
     const matches=cards.filter(c=>!q||c.dataset.s.indexOf(q)>=0);
     const autoOpen=!!q && matches.length<=6;
-    cards.forEach(c=>{ const hit=!q||c.dataset.s.indexOf(q)>=0; c.style.display=hit?"":"none"; c.classList.toggle("open",hit&&autoOpen); });
+    cards.forEach(c=>{ const hit=!q||c.dataset.s.indexOf(q)>=0; c.style.display=hit?"":"none"; c.classList.toggle("open",hit&&autoOpen); const h=c.querySelector(".verb-head"); if(h) h.setAttribute("aria-expanded",c.classList.contains("open")); });
     document.querySelectorAll("#verb-list .gram-group").forEach(group=>{
       const any=Array.prototype.slice.call(group.querySelectorAll(".verb")).some(c=>c.style.display!=="none");
       group.style.display=any?"":"none";
     });
+    document.querySelectorAll("#verb-list .gram-layer").forEach(layer=>{
+      layer.style.display=[...layer.querySelectorAll(".gram-group")].some(g=>g.style.display!=="none")?"":"none"; });
+    const jp=document.querySelector("#verb-list .gram-jump"); if(jp) jp.style.display=q?"none":"";
     if(gCnt) gCnt.textContent=q?(matches.length?("找到 "+matches.length+" 筆"+(autoOpen?"":" · 點標題展開")):"找不到相關文法 😅"):"";
   }
   if(gInp){ gInp.addEventListener("input",applyGramSearch); }
@@ -5827,14 +5888,15 @@ function checkOne(pos){
   cnt("exq",1); exScore(); return true;
 }
 /* 從文法筆記按「練這條」:這一輪只出標了這條的題(最多 5 題) */
-function practiceGram(title){
-  const idx=[...POOL.keys()].filter(i=>POOL[i].g===title); if(!idx.length)return;
+function practiceGram(title,label){
+  const keys=[].concat(title); title=label||keys[0];
+  const idx=[...POOL.keys()].filter(i=>keys.indexOf(POOL[i].g)>=0); if(!idx.length)return;
   shuffleA(idx); show("ejercicios");
   if($("#ex-fill").style.display==="none"){ const c=[...$$("#ex-mode .chip")].find(x=>/填空/.test(x.textContent)); if(c)c.click(); }
   newRound(false, idx.slice(0,5)); window.scrollTo(0,0); showToast("這一輪練「"+title.replace("|"," · ")+"」"); }
 /* 填空答錯時附「看文法」:跳回文法筆記那一條並展開 */
 function openGram(title){ show("gramatica"); const gi=$("#gram-search"); if(gi){ gi.value=""; gi.dispatchEvent(new Event("input")); }
-  const el=[...$$("#verb-list .verb")].find(c=>c.dataset.title===title); if(el){ el.classList.add("open"); setTimeout(()=>el.scrollIntoView({block:"start",behavior:"smooth"}),80); } }
+  const el=[...$$("#verb-list .verb")].find(c=>c.dataset.title===title||(c.dataset.keys||"").split("\n").indexOf(title)>=0); if(el){ el.classList.add("open"); const h=el.querySelector(".verb-head"); if(h) h.setAttribute("aria-expanded","true"); setTimeout(()=>el.scrollIntoView({block:"start",behavior:"smooth"}),80); } }
 /* 「檢查全部」只對填了的題;沒填的留著繼續作答 */
 function checkAll(){ round.forEach((_,pos)=>checkOne(pos)); const p=round.findIndex((_,i)=>!res[i]); if(p>=0) $(`.blank[data-i="${p}"]`,exList).focus(); }
 function exFocusNext(pos){
@@ -6930,7 +6992,7 @@ dlgPickRender(false);
 checkLogros();
 
 renderDlg(); buildVList(); renderSong(); buildVerbos(); renderDaily(); show("hoy");
-{ const gn=$("#gram-n"); if(gn) gn.textContent=DATA.gramatica.length; }
+{ const gn=$("#gram-n"); if(gn) gn.textContent=document.querySelectorAll("#verb-list .card.verb").length; }
 if("serviceWorker" in navigator){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
 </script>
 </body>
