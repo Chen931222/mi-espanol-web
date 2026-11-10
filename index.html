@@ -1113,6 +1113,67 @@ body.np-open .note-pop{transform:translateY(0)}
 .np-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;border:none;background:var(--paper-2);color:var(--ink-soft);font-size:1.05rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
 .np-close:hover{background:var(--terra);color:#fff}
 @media(min-width:681px){.note-back,.note-pop{display:none!important}}
+/* 9. 考試 · DELE(2026-11-10) */
+.dl-tb{width:100%;border-collapse:collapse;font-size:.92rem}
+.dl-tb th,.dl-tb td{border-bottom:1px solid var(--line);padding:9px 8px 9px 0;text-align:left;vertical-align:top}
+.dl-tb th{color:var(--ink-soft);font-weight:700;font-size:.78rem;letter-spacing:.04em}
+.dl-tb td:first-child{white-space:nowrap}
+.dl-tb .es{display:block;font-size:.76rem;color:var(--ink-soft);font-weight:500;white-space:normal}
+.dl-p{margin-top:10px;font-size:.93rem}
+.dl-src{margin-top:12px;font-size:.78rem;color:var(--ink-soft)}
+.dl-dates{list-style:none;display:grid;gap:6px;margin-top:4px}
+.dl-dates li{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;padding:9px 12px;border-radius:10px;background:var(--paper-2);font-size:.92rem}
+.dl-dates li.past{opacity:.45}
+.dl-dates li.next{box-shadow:inset 0 0 0 1.5px var(--terra)}
+.dl-dates li span{color:var(--ink-soft)}
+.dl-dates .dl-left{margin-left:auto;font-weight:700;color:var(--ink-soft)}
+.dl-dates li.next .dl-left{color:var(--terra-deep)}
+.dl-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media (max-width:640px){.dl-pair{grid-template-columns:1fr}}
+.dl-lam{text-align:left;cursor:pointer;border:1.5px solid var(--line-strong);background:var(--paper-2);border-radius:14px;padding:14px 16px;font:inherit;color:inherit;display:flex;flex-direction:column;gap:3px;transition:border-color .18s,transform .18s}
+.dl-lam:hover{border-color:var(--azul)}
+.dl-lam:active{transform:scale(.99)}
+.dl-lam-n{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.dl-lam b{font-family:var(--font-display);font-size:1.15rem;font-weight:900}
+.dl-lam-cn{font-size:.86rem;color:var(--ink-soft)}
+.dl-lam ul{margin:8px 0 0 18px;font-size:.86rem;color:var(--ink)}
+.dl-big{border:1.5px solid var(--line-strong);border-radius:14px;padding:14px 16px;background:var(--paper-2)}
+.dl-big h3{font-family:var(--font-display);font-weight:900;font-size:1.15rem}
+.dl-big h3 .cn{font-family:var(--font-body);font-weight:500;font-size:.86rem;color:var(--ink-soft);margin-left:6px}
+.dl-big ol{margin:8px 0 0 20px}
+.dl-big li{margin:5px 0}
+.dl-big li .cn,.dl-m .cn,.dl-err .cn,.dl-pts .cn{display:block;color:var(--ink-soft);font-size:.84rem}
+.dl-rule{font-size:.82rem;color:var(--terra-deep);margin-top:10px;font-weight:700}
+.dl-lab{display:block;margin-top:14px;font-size:.86rem;color:var(--ink-soft)}
+.dl-lab textarea{display:block;width:100%;margin-top:6px;min-height:88px;border:1.5px solid var(--line-strong);border-radius:10px;padding:10px 12px;font:inherit;font-size:.95rem;background:var(--card);color:var(--ink);resize:vertical}
+.dl-help{margin-top:12px}
+.dl-help summary{cursor:pointer;font-weight:700;color:var(--azul);font-size:.9rem}
+.dl-m{margin:8px 0 0 2px}
+.dl-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+#dl-clk{font-variant-numeric:tabular-nums}
+.dl-notes-show{margin-top:12px;padding:10px 12px;border-radius:10px;border:1.5px dashed var(--line-strong);font-size:.9rem}
+.dl-notes-show span{font-size:.76rem;color:var(--ink-soft);font-weight:700}
+.dl-notes-show p{white-space:pre-wrap}
+#dl-oral .lp-mic{margin-top:16px}
+.dl-live{margin-top:12px;min-height:3.2em;padding:10px 12px;border-radius:10px;background:var(--paper-2);font-size:.95rem}
+.dl-live i{color:var(--ink-soft)}
+.dl-left-ai{font-size:.84rem;color:var(--ink-soft)}
+.dl-ai-box{margin-top:14px;padding:14px 16px;border-radius:12px;background:var(--card);border:1.5px solid var(--line)}
+.dl-score{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.dl-score b{font-family:var(--font-display);font-size:1.6rem;font-weight:900;color:var(--terra-deep)}
+.dl-score span{font-size:.86rem;color:var(--ink-soft)}
+.dl-pts{list-style:none;margin-top:10px;display:grid;gap:6px;font-size:.9rem}
+.dl-pts li.ok>svg{color:var(--good)}
+.dl-pts li.no{color:var(--ink-soft)}
+.dl-errs-h{margin-top:14px;font-size:.8rem;font-weight:700;color:var(--ink-soft);letter-spacing:.04em}
+.dl-err{margin-top:8px;padding:8px 12px;border-left:3px solid var(--ochre);background:var(--paper-2);border-radius:0 8px 8px 0;font-size:.92rem}
+.dl-err s{color:var(--bad)}
+.dl-chk label{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:.9rem;cursor:pointer}
+.dl-chk input{margin-top:.3em;accent-color:var(--azul)}
+.dl-logl details{border-bottom:1px solid var(--line);padding:9px 0}
+.dl-logl summary{cursor:pointer;display:flex;gap:12px;flex-wrap:wrap;align-items:baseline;font-size:.9rem}
+.dl-logl summary span{color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.dl-logl .dl-sc{margin-left:auto;color:var(--terra-deep);font-weight:700}
 </style>
 </head>
 <body>
@@ -1299,6 +1360,18 @@ body.np-open .note-pop{transform:translateY(0)}
     <div class="card pg-card reveal"><div class="pg-h" id="pg-err-h"></div><div id="pg-err"></div></div>
     <div class="card pg-card reveal" id="pg-settings"><div class="pg-h">設定 · Ajustes</div>
       <div class="pg-set-row" id="pg-set-en"><span class="sub">對話與歌詞的英文對照</span></div><div class="pg-set-row" id="pg-set-wl" hidden></div></div>
+  </section>
+
+  <!-- 9 -->
+  <section id="examen">
+    <div class="reveal sec-head"><div class="sec-num">9</div>
+      <h2 class="sec-h"><span class="sec-title">考試</span> <span class="sec-es">Examen DELE</span></h2></div>
+    <p class="reveal sec-desc">準備 Instituto Cervantes 的 <b>DELE A1 / A2</b>。先選級別;最上面是照考試格式做的<b>口說模擬</b>:抽主題卡、計時準備、對著麥克風講 2–3 分鐘。下面是考試結構、2027 考期和你的練習紀錄。</p>
+    <div class="reveal chips" id="dl-lvl"></div>
+    <div class="card pg-card reveal" id="dl-oral"></div>
+    <div class="card pg-card reveal" id="dl-info"></div>
+    <div class="card pg-card reveal" id="dl-dates"></div>
+    <div class="card pg-card reveal" id="dl-log"></div>
   </section>
 
   <footer>
@@ -3529,8 +3602,9 @@ const TABS=[
   {id:"verbos",cn:"動詞練習",sh:"動詞",es:"Verbos",ic:svgIcon(ICON.verb,"1.1em")},
   {id:"escucha",cn:"聽力口說",sh:"聽說",es:"Escuchar y hablar",ic:svgIcon(ICON.mic,"1.1em")},
   {id:"progreso",cn:"學習進度",sh:"進度",es:"Progreso",ic:svgIcon(ICON.trophy,"1.1em")},
+  {id:"examen",cn:"考試",sh:"考試",es:"Examen DELE",ic:svgIcon('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 14 2 2 4-4"/>',"1.1em")},
 ];
-const NAVGROUP={dialogos:"學 · Aprender",vocabulario:"練 · Practicar",progreso:"我 · Yo"};
+const NAVGROUP={dialogos:"學 · Aprender",vocabulario:"練 · Practicar",progreso:"我 · Yo",examen:"考 · Examen"};
 const tabsEl=$("#tabs");
 TABS.forEach((t,i)=>{ if(NAVGROUP[t.id]){ const g=document.createElement("span"); g.className="nav-group"; g.textContent=NAVGROUP[t.id]; tabsEl.appendChild(g); }
   const b=document.createElement("button"); b.className="tab"+(i===0?" active":"");
@@ -6181,6 +6255,166 @@ function spRender(){
   };
 }
 lpRender();
+
+/* ===== 9. 考試 · DELE(2026-11-10 本人要求:在「學習進度」下面另立一區,放 A1、A2)=====
+   考試結構整理自備考網站(官方說明當天維護中打不開);考期是當天在 cervantes.org 查的。
+   口說模擬:A1 練第 2 題「講一個主題」、A2 練第 1 題「主題獨白」。題目卡與範例都是自寫的,不是官方題。
+   紀錄存 miEspanol.examen(跟同步碼走);AI 估分走 /api/talk-check 的 kind:"mono",跟對話的 AI 檢查共用同一組次數。 */
+const DELE={"A1":{"info":{"pruebas":[["閱讀","Comprensión de lectura","45 分鐘","4 組・25 題"],["聽力","Comprensión auditiva","25 分鐘","4 組・25 題"],["寫作","Expresión e interacción escritas","45 分鐘","2 題:填表、寫短訊息(30–40 字)"],["口說","Expresión e interacción orales","約 10 分鐘","3 題:自我介紹、講一個主題、跟考官對話"]],"oral":"口說三題:①自我介紹(1–2 分鐘)②從兩張主題卡選一張,卡上 5 個方向至少講 3 個(2–3 分鐘)③考官就你講的內容問你問題。這裡練的是第 ② 題。"},"dates":[["2027-04-02","2027-02-10"],["2027-05-22","2027-04-07"],["2027-11-13","2027-09-29"]],"prep":180,"max":180,"need":3,"temas":[{"id":"a1-vac","es":"Mis vacaciones","cn":"我的假期","p":[["¿Adónde vas normalmente?","通常去哪裡?"],["¿Con quién vas?","跟誰去?"],["¿Qué haces allí?","在那裡做什麼?"],["¿Qué comes?","吃什麼?"],["¿Qué es lo que más te gusta?","最喜歡什麼?"]],"m":[["Normalmente voy de vacaciones a Kenting, en el sur de Taiwán.","我通常去墾丁度假,在台灣南部。"],["Voy con mi familia: mis padres y mi hermana.","我跟家人去:爸媽和我妹妹。"],["Allí nadamos en el mar y caminamos por la playa.","我們在那裡游泳、在海邊散步。"],["Por la noche vamos al mercado y comemos pescado y fruta.","晚上去夜市,吃魚和水果。"],["Lo que más me gusta es el mar, porque es muy bonito y tranquilo.","我最喜歡海,因為很漂亮又安靜。"]]},{"id":"a1-fin","es":"Mi fin de semana","cn":"我的週末","p":[["¿A qué hora te levantas?","幾點起床?"],["¿Qué haces el sábado?","星期六做什麼?"],["¿Y el domingo?","星期天呢?"],["¿Con quién estás?","跟誰在一起?"],["¿Qué no te gusta hacer?","不喜歡做什麼?"]],"m":[["El fin de semana me levanto tarde, a las diez.","週末我很晚起床,十點。"],["El sábado por la mañana lavo mi coche; es un coche viejo, pero me gusta mucho.","星期六早上我洗車;那是一台老車,但我很喜歡。"],["Por la tarde estudio español una hora.","下午讀一小時西文。"],["El domingo como con mi familia y por la noche veo béisbol en la televisión.","星期天跟家人吃飯,晚上看電視轉播棒球。"],["No me gusta limpiar la casa, pero lo hago.","我不喜歡打掃家裡,但還是會做。"]]},{"id":"a1-fam","es":"Una persona de mi familia","cn":"我的一位家人","p":[["¿Quién es?","是誰?"],["¿Cómo es físicamente?","外表長怎樣?"],["¿Cómo es su carácter?","個性怎麼樣?"],["¿En qué trabaja?","做什麼工作?"],["¿Qué hacen juntos?","你們一起做什麼?"]],"m":[["Voy a hablar de mi hermana. Se llama Ana y tiene dieciocho años.","我要講我妹妹。她叫 Ana,十八歲。"],["Es alta y delgada, y tiene el pelo largo y negro.","她又高又瘦,留著黑色長頭髮。"],["Es muy simpática y un poco tímida.","她很親切,有一點害羞。"],["No trabaja; es estudiante en la universidad.","她沒工作;是大學生。"],["Los domingos vamos juntos al cine o a tomar un café.","星期天我們一起去看電影或喝咖啡。"]]},{"id":"a1-casa","es":"Mi casa","cn":"我的家","p":[["¿Dónde está?","在哪裡?"],["¿Es grande o pequeña?","大還是小?"],["¿Qué hay en tu casa?","家裡有什麼?"],["¿Cuál es tu lugar favorito?","你最喜歡哪個地方?"],["¿Con quién vives?","跟誰住?"]],"m":[["Vivo en un departamento en Taichung, cerca de la universidad.","我住在台中一間公寓,在大學附近。"],["No es muy grande: tiene dos dormitorios, una cocina y un baño.","不太大:有兩間臥室、一間廚房和一間浴室。"],["En la sala hay un sofá, una mesa y muchos libros.","客廳有一張沙發、一張桌子和很多書。"],["Mi lugar favorito es mi cuarto, porque es tranquilo.","我最喜歡我的房間,因為很安靜。"],["Vivo con dos compañeros de la universidad.","我跟兩個大學同學住。"]]},{"id":"a1-ciu","es":"Mi ciudad","cn":"我的城市","p":[["¿Cómo se llama y dónde está?","叫什麼、在哪裡?"],["¿Cómo es?","是什麼樣的城市?"],["¿Qué hay para hacer?","有什麼可以做?"],["¿Qué tiempo hace?","天氣怎麼樣?"],["¿Te gusta? ¿Por qué?","你喜歡嗎?為什麼?"]],"m":[["Mi ciudad se llama Taichung y está en el centro de Taiwán.","我的城市叫台中,在台灣中部。"],["Es una ciudad grande, pero no es tan ruidosa como Taipéi.","是個大城市,但沒有台北那麼吵。"],["Hay muchos mercados nocturnos, parques y cafeterías.","有很多夜市、公園和咖啡店。"],["Casi siempre hace buen tiempo; en verano hace mucho calor.","天氣幾乎都很好;夏天很熱。"],["Me gusta mucho porque la comida es buena y barata.","我很喜歡,因為食物好吃又便宜。"]]},{"id":"a1-dia","es":"Un día normal","cn":"我平常的一天","p":[["¿A qué hora te levantas?","幾點起床?"],["¿Qué desayunas?","早餐吃什麼?"],["¿Cómo vas a clase o al trabajo?","怎麼去上課或上班?"],["¿Qué haces por la tarde?","下午做什麼?"],["¿A qué hora te acuestas?","幾點睡?"]],"m":[["Me levanto a las siete y media.","我七點半起床。"],["Desayuno pan y un café con leche.","早餐吃麵包、喝一杯拿鐵。"],["Voy a la universidad en moto; tardo quince minutos.","騎機車去學校;要十五分鐘。"],["Por la tarde tengo clase y después estudio en la biblioteca.","下午有課,之後去圖書館讀書。"],["Ceno a las siete y me acuesto a las doce.","七點吃晚餐,十二點睡覺。"]]},{"id":"a1-com","es":"Mi comida favorita","cn":"我最喜歡的食物","p":[["¿Cuál es?","是什麼?"],["¿Cómo es?","吃起來怎樣?"],["¿Dónde la comes?","在哪裡吃?"],["¿Cuándo la comes?","什麼時候吃?"],["¿Qué comida no te gusta?","不喜歡什麼食物?"]],"m":[["Mi comida favorita es la sopa de fideos con carne.","我最喜歡牛肉麵。"],["Es caliente, un poco picante y muy rica.","熱熱的、有點辣,很好吃。"],["La como en un restaurante pequeño cerca de mi casa.","我在家附近一間小店吃。"],["La como una vez a la semana, normalmente los viernes.","一星期吃一次,通常是星期五。"],["No me gusta el tofu apestoso, porque huele muy fuerte.","我不喜歡臭豆腐,因為味道很重。"]]},{"id":"a1-lib","es":"Mi tiempo libre","cn":"我的空閒時間","p":[["¿Qué te gusta hacer?","喜歡做什麼?"],["¿Con quién?","跟誰?"],["¿Dónde?","在哪裡?"],["¿Cuántas veces a la semana?","一週幾次?"],["¿Practicas algún deporte?","有做什麼運動嗎?"]],"m":[["En mi tiempo libre me gusta leer y escuchar música.","空閒時我喜歡看書和聽音樂。"],["Leo solo, pero escucho música con mis amigos.","看書是自己看,聽音樂會跟朋友一起。"],["Leo en casa o en una cafetería.","在家或咖啡店看書。"],["Leo casi todos los días, una hora más o menos.","幾乎每天看,大概一小時。"],["También juego béisbol los sábados.","星期六也會打棒球。"]]}]},"A2":{"info":{"pruebas":[["閱讀","Comprensión de lectura","60 分鐘","4 組・25 題"],["聽力","Comprensión auditiva","40 分鐘","4 組・25 題"],["寫作","Expresión e interacción escritas","45 分鐘","2 題:寫信或訊息(最多約 80 字)、看圖寫過去的事"],["口說","Expresión e interacción orales","12 分鐘(先準備 12 分鐘)","3 題:主題獨白、看照片描述、情境對話"]],"oral":"口說先有 12 分鐘準備三題,可以寫關鍵字筆記(考試中可以看,不能照念)。①主題獨白:兩張主題卡選一張,照卡上的要點講 2–3 分鐘 ②看照片描述 2–3 分鐘 ③跟考官演一段跟照片有關的情境對話 3–4 分鐘。這裡練的是第 ① 題。"},"dates":[["2027-03-05","2027-01-20"],["2027-04-02","2027-02-10"],["2027-05-22","2027-04-07"],["2027-07-09","2027-05-12"],["2027-09-10","2027-07-14"],["2027-10-15","2027-09-01"],["2027-11-13","2027-09-29"]],"prep":240,"max":180,"need":0,"temas":[{"id":"a2-viaje","es":"Un viaje que recuerdas","cn":"一趟你記得的旅行","p":[["¿Adónde fuiste y cuándo?","去哪裡、什麼時候?"],["¿Con quién fuiste y cómo?","跟誰、怎麼去?"],["¿Qué hiciste allí?","在那裡做了什麼?"],["¿Qué te gustó más y qué no?","最喜歡什麼、不喜歡什麼?"],["¿Te gustaría volver? ¿Por qué?","想再去嗎?為什麼?"]],"m":[["Voy a hablar de un viaje a Japón. Fui el año pasado, en verano.","我要講一趟日本旅行。去年夏天去的。"],["Fui con dos amigos de la universidad y viajamos en avión hasta Osaka.","跟兩個大學同學去,搭飛機到大阪。"],["Allí visitamos templos, comimos mucho y un día fuimos en tren a Kioto.","我們去看寺廟、吃了很多,有一天搭火車去京都。"],["Lo que más me gustó fue la comida, sobre todo el ramen.","我最喜歡的是食物,尤其是拉麵。"],["Lo que no me gustó fue el calor: hacía treinta y cinco grados.","不喜歡的是熱:那時三十五度。"],["Sí, me gustaría volver, pero en invierno, porque quiero ver la nieve.","想再去,但要冬天去,因為想看雪。"]]},{"id":"a2-inf","es":"Tu infancia","cn":"你的童年","p":[["¿Dónde vivías?","那時住在哪裡?"],["¿Cómo era tu escuela?","學校是什麼樣子?"],["¿Qué te gustaba hacer?","喜歡做什麼?"],["¿Quién era tu mejor amigo y cómo era?","最好的朋友是誰、是怎樣的人?"],["¿Qué es diferente ahora?","現在有什麼不一樣?"]],"m":[["Cuando era pequeño, vivía con mis padres en un pueblo cerca de Changhua.","小時候我跟爸媽住在彰化附近一個小鎮。"],["Mi escuela era pequeña y estaba al lado de un campo de arroz.","我的學校很小,就在一片稻田旁邊。"],["Me gustaba jugar béisbol con mis amigos después de clase.","我喜歡下課後跟朋友打棒球。"],["Mi mejor amigo se llamaba Wei; era muy divertido y siempre llegaba tarde.","我最好的朋友叫阿威;他很好笑,總是遲到。"],["Ahora vivo en una ciudad grande y casi no juego béisbol, pero todavía lo veo en la televisión.","現在我住在大城市,幾乎不打棒球了,但還是會看電視轉播。"]]},{"id":"a2-est","es":"Tus estudios o tu trabajo","cn":"你的學業或工作","p":[["¿Qué estudias o en qué trabajas?","念什麼、做什麼工作?"],["¿Por qué lo elegiste?","為什麼選這個?"],["¿Cómo es un día normal?","平常的一天是怎樣?"],["¿Qué es lo más difícil?","最難的是什麼?"],["¿Qué planes tienes para el futuro?","未來有什麼打算?"]],"m":[["Estudio Informática en una universidad de Taichung.","我在台中一間大學念資工。"],["Lo elegí porque me gustan las computadoras y los videojuegos.","選這個是因為我喜歡電腦和電動。"],["Normalmente tengo clase por la mañana y por la tarde trabajo en mis proyectos.","通常早上上課,下午做我的專題。"],["Lo más difícil es terminar los proyectos a tiempo.","最難的是準時把專題做完。"],["En el futuro quiero trabajar en una empresa de tecnología o estudiar una maestría.","未來想去科技公司工作,或念碩士。"]]},{"id":"a2-fiesta","es":"Una fiesta o celebración","cn":"一個節日或慶祝活動","p":[["¿Qué fiesta es y cuándo es?","是什麼節日、什麼時候?"],["¿Qué hace la gente normalmente?","大家通常做什麼?"],["¿Qué comida hay?","吃什麼?"],["¿Cómo la celebraste la última vez?","你上次怎麼過的?"],["¿Te gusta? ¿Por qué?","你喜歡嗎?為什麼?"]],"m":[["La fiesta más importante en Taiwán es el Año Nuevo chino. Es en enero o febrero.","台灣最重要的節日是農曆新年。在一月或二月。"],["La gente vuelve a casa de su familia y todos cenan juntos.","大家回家,全家一起吃年夜飯。"],["Hay mucha comida: pescado, pollo, verduras y dulces.","吃的很多:魚、雞、青菜和甜點。"],["La última vez fui a casa de mis abuelos, cenamos mucho y jugamos cartas hasta muy tarde.","上次我去祖父母家,吃了很多,打牌打到很晚。"],["Me gusta porque es el único momento del año en que está toda la familia.","我喜歡,因為那是一年裡唯一全家都在的時候。"]]},{"id":"a2-dep","es":"El deporte y el tiempo libre","cn":"運動與休閒","p":[["¿Qué haces en tu tiempo libre?","空閒時做什麼?"],["¿Practicas algún deporte? ¿Con qué frecuencia?","有做運動嗎?多常?"],["¿Qué hacías en tu tiempo libre antes?","以前空閒時做什麼?"],["¿Qué hiciste el fin de semana pasado?","上個週末做了什麼?"],["¿Qué te gustaría probar?","想試試看什麼?"]],"m":[["En mi tiempo libre me gusta ver béisbol y leer.","空閒時我喜歡看棒球和看書。"],["Corro dos o tres veces a la semana en el parque.","我一週去公園跑步兩三次。"],["Antes jugaba béisbol todos los fines de semana, pero ahora no tengo tiempo.","以前每個週末都打棒球,但現在沒時間。"],["El fin de semana pasado fui al estadio con un amigo y vi un partido muy bueno.","上個週末跟朋友去球場,看了一場很精彩的比賽。"],["Me gustaría probar el surf, porque parece muy divertido.","我想試試衝浪,因為看起來很好玩。"]]},{"id":"a2-ciu","es":"Tu ciudad antes y ahora","cn":"你的城市:以前和現在","p":[["¿Dónde vives?","住在哪裡?"],["¿Cómo era antes?","以前是什麼樣子?"],["¿Qué cambió?","改變了什麼?"],["¿Qué te gusta y qué no te gusta ahora?","現在喜歡什麼、不喜歡什麼?"],["¿Dónde te gustaría vivir en el futuro?","未來想住哪裡?"]],"m":[["Vivo en Taichung desde hace tres años.","我住在台中三年了。"],["Antes era una ciudad más tranquila y había menos coches.","以前比較安靜,車子比較少。"],["Ahora hay metro, muchos edificios nuevos y más tiendas.","現在有捷運、很多新大樓,商店也更多。"],["Me gusta el metro, pero no me gusta el tráfico de la mañana.","我喜歡捷運,但不喜歡早上的車潮。"],["En el futuro me gustaría vivir cerca del mar.","未來想住在海邊附近。"]]},{"id":"a2-com","es":"La comida de tu país","cn":"你們國家的食物","p":[["¿Qué come la gente normalmente?","大家平常吃什麼?"],["¿Cuál es tu plato favorito?","你最喜歡哪道菜?"],["¿Sabes cocinar algo?","你會煮什麼嗎?"],["¿Qué comiste ayer?","昨天吃了什麼?"],["¿Qué comida extranjera te gusta?","喜歡哪國的食物?"]],"m":[["En Taiwán la gente come mucho arroz, fideos, verduras y carne de cerdo.","台灣人很常吃飯、麵、青菜和豬肉。"],["Mi plato favorito es el arroz con cerdo, porque es sencillo y barato.","我最喜歡滷肉飯,因為簡單又便宜。"],["Sé cocinar un poco: huevos con tomate y sopa.","我會煮一點:番茄炒蛋和湯。"],["Ayer comí en el mercado nocturno con mis compañeros.","昨天跟同學在夜市吃。"],["De la comida extranjera me gusta la mexicana, sobre todo los tacos.","外國菜我喜歡墨西哥菜,尤其是塔可。"]]},{"id":"a2-comp","es":"Las compras","cn":"購物","p":[["¿Dónde compras normalmente?","通常在哪裡買東西?"],["¿Compras por internet? ¿Qué?","會網購嗎?買什麼?"],["¿Qué fue lo último que compraste?","最近一次買了什麼?"],["¿Te gusta ir de compras? ¿Por qué?","喜歡逛街嗎?為什麼?"],["¿Qué te gustaría comprar?","想買什麼?"]],"m":[["Normalmente compro la comida en el supermercado y en las tiendas de conveniencia.","吃的通常在超市和便利商店買。"],["Compro ropa y cosas para la computadora por internet, porque es más barato.","衣服和電腦用品會網購,因為比較便宜。"],["Lo último que compré fue un libro de español; me costó trescientos dólares.","最近一次買的是一本西文書,花了三百塊。"],["No me gusta mucho ir de compras, porque siempre hay mucha gente.","我不太喜歡逛街,因為人總是很多。"],["Me gustaría comprar piezas nuevas para mi coche, que es muy viejo.","我想幫我的車買新零件,它很舊了。"]]}]},"conect":{"A1":[["Primero…","首先…"],["Después…","然後…"],["También…","也…"],["Pero…","但是…"],["porque…","因為…"],["Lo que más me gusta es…","我最喜歡的是…"]],"A2":[["Voy a hablar de…","我要講…"],["Cuando era pequeño/a…","我小時候…"],["El año pasado… / La última vez…","去年… / 上次…"],["Lo que más me gustó fue…","我最喜歡的是…(過去)"],["Además… / Por eso…","而且… / 所以…"],["Me gustaría…","我想要…"],["Para terminar…","最後…"]]}};
+const DLKEY="miEspanol.examen";
+let dl=lsGet(DLKEY,{lvl:"A2",log:[]}); if(!dl||typeof dl!=="object") dl={lvl:"A2",log:[]};
+if(!Array.isArray(dl.log)) dl.log=[]; if(dl.lvl!=="A1"&&dl.lvl!=="A2") dl.lvl="A2";
+function dlSave(){ try{ localStorage.setItem(DLKEY,JSON.stringify(dl)); }catch(_){} }
+let dlS={st:"pick"}, dlTimer=null, dlRec=null, dlOn=false;
+const dlD=()=>DELE[dl.lvl];
+const dlMMSS=s=>Math.floor(s/60)+":"+String(Math.max(0,s)%60).padStart(2,"0");
+const dlYMD=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const dlWords=t=>String(t||"").split(/\s+/).filter(w=>/[a-záéíóúüñ]/i.test(w)).length;
+function dlStop(){ clearInterval(dlTimer); dlTimer=null; dlOn=false; if(dlRec){ try{ dlRec.stop(); }catch(_){} dlRec=null; } }
+function dlTema(id){ return dlD().temas.find(t=>t.id===id); }
+function dlBindSpk(box){ box.querySelectorAll(".spk").forEach(s=>s.onclick=e=>{ e.stopPropagation(); speak(s.dataset.t,s); }); }
+
+/* 考試結構 */
+function dlInfo(){ const d=dlD(), box=$("#dl-info"); if(!box) return;
+  box.innerHTML=`<div class="pg-h">DELE ${dl.lvl} 怎麼考</div>
+    <table class="dl-tb"><thead><tr><th>科目</th><th>時間</th><th>題目</th></tr></thead><tbody>`+
+    d.info.pruebas.map(p=>`<tr><td><b>${esc(p[0])}</b><span class="es" lang="es">${esc(p[1])}</span></td><td>${esc(p[2])}</td><td>${esc(p[3])}</td></tr>`).join("")+
+    `</tbody></table>
+    <p class="dl-p">四科各 25 分,滿分 100。及格要 <b>60 分</b>,而且兩組<b>各至少 30 分</b>:閱讀＋寫作一組、<b>聽力＋口說</b>一組。口說考很好也救不了聽力太低。</p>
+    <p class="dl-p">${esc(d.info.oral)}</p>
+    <p class="dl-src">考試結構整理自備考網站(Instituto Cervantes 官方考試說明 2026-11 改版中打不開),時間、題數報名前以官方公告為準。</p>`; }
+
+/* 考期 */
+function dlDates(){ const d=dlD(), box=$("#dl-dates"); if(!box) return;
+  const td=dlYMD(new Date()), wk="日一二三四五六", fmt=s=>{ const [y,m,dd]=s.split("-").map(Number); return `${m}/${dd}(${wk[new Date(y,m-1,dd).getDay()]})`; };
+  let nextDone=false;
+  const rows=d.dates.map(([e,c])=>{ let cls="", tail="";
+    if(c<td){ cls="past"; tail="報名已截止"; }
+    else { const days=Math.round((new Date(e+"T00:00")-new Date(td+"T00:00"))/864e5); if(!nextDone){ cls="next"; nextDone=true; } tail=`還有 ${days} 天`; }
+    return `<li class="${cls}"><b>2027 年 ${fmt(e)}</b><span>報名截止 ${fmt(c)}</span><span class="dl-left">${tail}</span></li>`; }).join("");
+  box.innerHTML=`<div class="pg-h">2027 考期 · ${dl.lvl}</div>`+
+    (td<"2026-11-18"?`<p class="dl-p">2027 年的報名 <b>2026 年 11 月 18 日</b>開始。</p>`:"")+
+    `<ul class="dl-dates">${rows}</ul>
+    <p class="dl-src">考期查自 cervantes.org(2026-11-10)。日期是筆試那天,口試可能排在前後幾天;報名截止日各考場可能更早,以報名的考場為準。</p>`; }
+
+/* 口說模擬 */
+function dlPickPair(){ const ts=dlD().temas.slice(), recent=dl.log.slice(0,6).map(r=>r.t);
+  shuffleA(ts); ts.sort((a,b)=>(recent.includes(a.id)?1:0)-(recent.includes(b.id)?1:0)); return [ts[0].id,ts[1].id]; }
+function dlOral(){ const box=$("#dl-oral"); if(!box) return; const d=dlD(), st=dlS.st;
+  const head=dl.lvl==="A1"?"口說模擬 · 第 2 題 講一個主題":"口說模擬 · 第 1 題 主題獨白";
+  const rule=dl.lvl==="A1"?"5 個方向至少講 3 個,講 2–3 分鐘":"每一個要點都要講到,講 2–3 分鐘";
+  if(st==="pick"){ if(!dlS.pair) dlS.pair=dlPickPair();
+    box.innerHTML=`<div class="pg-h">${head}</div>
+      <p class="dl-p">跟考試一樣:兩張主題卡選一張 → 準備 ${Math.round(d.prep/60)} 分鐘,可以寫關鍵字 → 對著麥克風講 2–3 分鐘 → 對照自己講到哪些要點,也可以請 AI 照 DELE 的兩項標準估分。</p>
+      <div class="dl-pair">`+dlS.pair.map((id,i)=>{ const t=dlTema(id);
+        return `<button class="dl-lam" type="button" data-id="${id}"><span class="dl-lam-n">Lámina ${"AB"[i]}</span><b lang="es">${esc(t.es)}</b><span class="dl-lam-cn">${esc(t.cn)}</span><ul lang="es">${t.p.map(p=>`<li>${esc(p[0])}</li>`).join("")}</ul></button>`; }).join("")+
+      `</div><div class="dl-acts"><button class="btn sec" id="dl-swap" type="button">換兩張</button></div>`;
+    $("#dl-swap").onclick=()=>{ dlS.pair=dlPickPair(); dlOral(); };
+    box.querySelectorAll(".dl-lam").forEach(b=>b.onclick=()=>{ dlS={st:"prep",t:b.dataset.id,notes:"",txt:"",secs:0,left:d.prep}; dlOral(); dlStartPrep(); });
+    return; }
+  const t=dlTema(dlS.t); if(!t){ dlS={st:"pick"}; return dlOral(); }
+  const card=`<div class="dl-big"><h3 lang="es">${esc(t.es)} <span class="cn">${esc(t.cn)}</span></h3><ol>`+
+    t.p.map(p=>`<li><span lang="es">${esc(p[0])}</span> ${spkHTML(p[0])}<span class="cn">${esc(p[1])}</span></li>`).join("")+`</ol><p class="dl-rule">${rule}</p></div>`;
+  if(st==="prep"){
+    box.innerHTML=`<div class="pg-h">準備 · <span id="dl-clk">${dlMMSS(dlS.left)}</span></div>${card}
+      <label class="dl-lab">筆記:只寫關鍵字。考試中可以看,不能照著念。<textarea id="dl-notes" lang="es" spellcheck="false">${esc(dlS.notes)}</textarea></label>
+      <details class="dl-help"><summary>好用的開頭和連接詞</summary>${DELE.conect[dl.lvl].map(c=>`<div class="dl-m"><span lang="es">${esc(c[0])}</span><span class="cn">${esc(c[1])}</span></div>`).join("")}</details>
+      <details class="dl-help"><summary>看範例回答(先自己想過再看)</summary>${t.m.map(m=>`<div class="dl-m"><span lang="es">${esc(m[0])}</span> ${spkHTML(m[0])}<span class="cn">${esc(m[1])}</span></div>`).join("")}</details>
+      <div class="dl-acts"><button class="btn" id="dl-go" type="button">準備好了,開始講</button><button class="btn sec" id="dl-back" type="button">換題</button></div>`;
+    dlBindSpk(box);
+    $("#dl-notes").oninput=e=>{ dlS.notes=e.target.value; };
+    $("#dl-go").onclick=()=>{ dlStop(); dlS.st="speak"; dlOral(); };
+    $("#dl-back").onclick=()=>{ dlStop(); dlS={st:"pick"}; dlOral(); };
+    return; }
+  if(st==="speak"){ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    box.innerHTML=`<div class="pg-h">開始講 · <span id="dl-clk">${dlMMSS(dlS.secs)}</span> / ${dlMMSS(d.max)}</div>${card}`+
+      (dlS.notes.trim()?`<div class="dl-notes-show"><span>你的筆記</span><p lang="es">${esc(dlS.notes)}</p></div>`:"")+
+      (SR?`<button class="lp-mic" id="dl-mic" type="button">${svgIcon(ICON.mic,16)} 按下開始講</button><div class="dl-live" id="dl-live" lang="es"><i>講的內容會出現在這裡。停頓一下沒關係,會繼續聽。</i></div>`
+         :`<p class="dl-p">這個瀏覽器不能語音辨識(電腦版 Chrome、Edge 可以)。可以按開始計時,一邊講一邊把講的打下來。</p><button class="btn" id="dl-mic" type="button">開始計時</button><label class="dl-lab">你講的內容<textarea id="dl-type" lang="es" spellcheck="false"></textarea></label>`)+
+      `<div class="dl-acts"><button class="btn" id="dl-done" type="button" disabled>講完了</button><button class="btn sec" id="dl-back" type="button">換題</button></div>`;
+    dlBindSpk(box);
+    $("#dl-back").onclick=()=>{ dlStop(); dlS={st:"pick"}; dlOral(); };
+    $("#dl-done").onclick=()=>dlFinish();
+    const mic=$("#dl-mic");
+    mic.onclick=()=>{ if(dlOn){ dlFinish(); return; }
+      dlOn=true; dlS.t0=Date.now(); $("#dl-done").disabled=false;
+      dlTimer=setInterval(()=>{ dlS.secs=Math.round((Date.now()-dlS.t0)/1000); const c=$("#dl-clk"); if(c) c.textContent=dlMMSS(dlS.secs); if(dlS.secs>=d.max){ showToast("3 分鐘到了。"); dlFinish(); } },500);
+      if(!SR){ mic.disabled=true; mic.textContent="計時中…"; const ta=$("#dl-type"); ta.oninput=e=>{ dlS.txt=e.target.value; }; ta.focus(); return; }
+      mic.classList.add("listening"); mic.innerHTML=svgIcon(ICON.mic,16)+" 正在聽… 講完再按一次";
+      const v=pickESVoice(), live=$("#dl-live");
+      const startRec=()=>{ let rec; try{ rec=new SR(); }catch(_){ showToast("無法啟動語音辨識。"); return; }
+        rec.lang=(v&&v.lang)||"es-MX"; rec.continuous=true; rec.interimResults=true; dlRec=rec;
+        rec.onresult=ev=>{ let interim="";
+          for(let i=ev.resultIndex;i<ev.results.length;i++){ const r=ev.results[i]; if(r.isFinal) dlS.txt=(dlS.txt+" "+r[0].transcript).trim(); else interim+=r[0].transcript; }
+          if(live) live.innerHTML=esc(dlS.txt)+(interim?` <i>${esc(interim)}</i>`:""); };
+        rec.onerror=e=>{ if(e.error==="not-allowed"||e.error==="service-not-allowed"){ showToast("請允許瀏覽器使用麥克風。"); dlOn=false; } };
+        rec.onend=()=>{ if(dlOn&&dlRec===rec) startRec(); };   /* Chrome 停頓太久會自己停:還在講就接著聽 */
+        try{ rec.start(); }catch(_){} };
+      startRec(); };
+    return; }
+  if(st==="result") return dlResult(); }
+function dlStartPrep(){ clearInterval(dlTimer);
+  dlTimer=setInterval(()=>{ if(dlS.st!=="prep"){ clearInterval(dlTimer); return; } dlS.left--; const c=$("#dl-clk"); if(c) c.textContent=dlMMSS(dlS.left);
+    if(dlS.left<=0){ clearInterval(dlTimer); showToast("準備時間到,開始講。"); dlS.st="speak"; dlOral(); } },1000); }
+function dlFinish(){ dlStop(); const ta=$("#dl-type"); if(ta) dlS.txt=ta.value;
+  dlS.txt=String(dlS.txt||"").trim(); dlS.st="result";
+  const t=dlTema(dlS.t), rec={d:Date.now(),lvl:dl.lvl,t:dlS.t,es:t.es,secs:dlS.secs,txt:dlS.txt.slice(0,3000),chk:[],ai:null};
+  dl.log.unshift(rec); dl.log=dl.log.slice(0,30); dlSave(); dlS.rec=rec;
+  if(dlS.txt){ award(2); cnt("dele"); }
+  dlOral(); dlLog(); }
+function dlAIHTML(a,t){ const sc=Math.round((a.uso*0.66+a.tarea*0.34)/3*25);
+  return `<div class="dl-score"><b>約 ${sc} / 25</b><span>語言使用 ${a.uso} / 3 · 完成任務 ${a.tarea} / 3</span></div>
+    <ul class="dl-pts">`+t.p.map((p,i)=>{ const x=a.puntos[i]||{ok:false,cn:""}; return `<li class="${x.ok?"ok":"no"}">${x.ok?svgIcon(ICON.check,13):"✕"} <span lang="es">${esc(p[0])}</span> <span class="cn">${esc(x.cn)}</span></li>`; }).join("")+`</ul>`+
+    (a.errores.length?`<div class="dl-errs-h">最該改的地方</div>`+a.errores.map(e=>`<div class="dl-err"><s lang="es">${esc(e.dijo)}</s> → <b lang="es">${esc(e.mejor)}</b> ${spkHTML(e.mejor)}<span class="cn">${esc(e.cn)}</span></div>`).join(""):"")+
+    (a.note?`<p class="dl-p">${esc(a.note)}</p>`:"")+
+    `<p class="dl-src">AI 看逐字稿估的,只算這一題;真的口試是三題合起來算,考官也會聽發音。語音辨識會把你講錯的字猜成對的,所以實際分數可能比這個低。</p>`; }
+function dlResult(){ const box=$("#dl-oral"), t=dlTema(dlS.t), rec=dlS.rec, d=dlD(); if(!box||!t||!rec) return;
+  const s=rec.secs, w=dlWords(rec.txt);
+  const len=!rec.txt?"沒有收到聲音。檢查麥克風權限,或換電腦版 Chrome 再試一次。":s<60?"太短了:考試要講 2–3 分鐘。":s<120?"有點短,下次目標 2 分鐘以上。":"長度夠了。";
+  box.innerHTML=`<div class="pg-h">講完了 · ${dlMMSS(s)} · 約 ${w} 個字</div><p class="dl-p"><b>${len}</b></p>
+    <label class="dl-lab">辨識出來的逐字稿:辨識錯的字可以改,你真的講錯的地方不要改,AI 才看得到。<textarea id="dl-txt" lang="es" spellcheck="false">${esc(rec.txt)}</textarea></label>
+    <div class="dl-chk"><div class="dl-errs-h">自己對照:講到了哪些?</div>`+t.p.map((p,i)=>`<label><input type="checkbox" data-i="${i}" ${rec.chk.includes(i)?"checked":""}> <span lang="es">${esc(p[0])}</span></label>`).join("")+`</div>
+    <div class="dl-acts"><button class="btn" id="dl-ask" type="button">請 AI 照 DELE 標準估分</button><span class="dl-left-ai" id="dl-ai-left">${aiLeftTxt()}</span></div>
+    <div class="dl-ai-box" id="dl-ai"${rec.ai?"":" hidden"}>${rec.ai?dlAIHTML(rec.ai,t):""}</div>
+    <details class="dl-help"><summary>看範例回答</summary>${t.m.map(m=>`<div class="dl-m"><span lang="es">${esc(m[0])}</span> ${spkHTML(m[0])}<span class="cn">${esc(m[1])}</span></div>`).join("")}</details>
+    <div class="dl-acts"><button class="btn sec" id="dl-again" type="button">再練一題</button><button class="btn sec" id="dl-same" type="button">同一題再講一次</button></div>`;
+  dlBindSpk(box);
+  $("#dl-txt").oninput=e=>{ rec.txt=e.target.value.slice(0,3000); dlSave(); };
+  box.querySelectorAll(".dl-chk input").forEach(c=>c.onchange=()=>{ rec.chk=[...box.querySelectorAll(".dl-chk input:checked")].map(x=>+x.dataset.i); dlSave(); dlLog(); });
+  $("#dl-again").onclick=()=>{ dlS={st:"pick"}; dlOral(); };
+  $("#dl-same").onclick=()=>{ dlS={st:"speak",t:t.id,notes:dlS.notes||"",txt:"",secs:0}; dlOral(); };
+  const ask=$("#dl-ask"), out=$("#dl-ai");
+  if(rec.ai) ask.hidden=true;
+  const locked=()=>!aiDevKey()&&(aiUsedLocal()>=AI_MAX||aiLeft===0);
+  if(locked()){ ask.disabled=true; }
+  if(aiLeft==null) fetch("/api/talk-check?cid="+aiCid(),{cache:"no-store",headers:aiHdr()}).then(r=>r.ok?r.json():null).then(j=>{ if(j&&typeof j.left==="number"){ aiLeft=j.left>=999?j.left:Math.min(j.left,Math.max(0,AI_MAX-aiUsedLocal())); const l=$("#dl-ai-left"); if(l) l.textContent=aiLeftTxt(); if(aiLeft===0&&ask) ask.disabled=true; } else if(ask) ask.hidden=true; }).catch(()=>{ if(ask) ask.hidden=true; });
+  ask.onclick=()=>{ const txt=String(rec.txt||"").trim();
+    if(dlWords(txt)<5){ showToast("逐字稿太短,AI 沒辦法評。"); return; }
+    if(locked()){ out.hidden=false; out.innerHTML=`<p class="dl-p">這台瀏覽器的 ${AI_MAX} 次 AI 檢查用完了。可以先對照範例回答和上面的要點自己檢查。</p>`; ask.disabled=true; return; }
+    ask.disabled=true; out.hidden=false; out.innerHTML=`<p class="dl-p">AI 在看…(大約 10 秒)</p>`;
+    fetch("/api/talk-check",{method:"POST",headers:aiHdr(),body:JSON.stringify({cid:aiCid(),kind:"mono",lvl:rec.lvl,q:t.es+"("+t.cn+")",pts:t.p.map(p=>p[0]+"("+p[1]+")"),secs:rec.secs,typed:txt})})
+      .then(r=>r.json().then(j=>[r.status,j])).then(([st,j])=>{
+        if(typeof j.left==="number"){ aiLeft=j.left; aiNoteUsed(j.left); const l=$("#dl-ai-left"); if(l) l.textContent=aiLeftTxt(); }
+        if(st===429){ out.innerHTML=`<p class="dl-p">${j.error==="cid_full"?`這台瀏覽器的 ${AI_MAX} 次 AI 檢查用完了。`:"今天大家用 AI 的次數滿了,明天再試。"}</p>`; return; }
+        if(st===422){ out.innerHTML=`<p class="dl-p">逐字稿裡沒有西文,這次不扣次數。</p>`; ask.disabled=false; return; }
+        if(st!==200||!j.mono){ out.innerHTML=`<p class="dl-p">AI 現在沒有回應,這次不扣次數。</p>`; ask.disabled=aiLeft===0; return; }
+        rec.ai={uso:j.uso,tarea:j.tarea,puntos:j.puntos,errores:j.errores,note:j.note}; dlSave(); dlLog();
+        out.innerHTML=dlAIHTML(rec.ai,t); dlBindSpk(out); ask.hidden=true;
+      }).catch(()=>{ out.innerHTML=`<p class="dl-p">連不上,這次不扣次數。</p>`; ask.disabled=false; }); };
+}
+/* 練習紀錄 */
+function dlLog(){ const box=$("#dl-log"); if(!box) return; const L=dl.log.filter(r=>r.lvl===dl.lvl);
+  if(!L.length){ box.innerHTML=`<div class="pg-h">練習紀錄 · ${dl.lvl}</div><p class="dl-p">還沒練過。講完一題會自動記在這裡,有開同步碼的話會跟其他進度一起同步。</p>`; return; }
+  box.innerHTML=`<div class="pg-h">練習紀錄 · ${dl.lvl} · ${L.length} 次</div><div class="dl-logl">`+L.slice(0,12).map(r=>{
+    const dt=new Date(r.d), when=(dt.getMonth()+1)+"/"+dt.getDate();
+    const sc=r.ai?`AI 約 ${Math.round((r.ai.uso*0.66+r.ai.tarea*0.34)/3*25)} / 25`:(r.chk&&r.chk.length?`自評講到 ${r.chk.length} 點`:"");
+    return `<details><summary><span>${when}</span><b lang="es">${esc(r.es)}</b><span>${dlMMSS(r.secs)}</span><span class="dl-sc">${sc}</span></summary>
+      <p class="dl-p" lang="es">${esc(r.txt||"(沒有逐字稿)")}</p>`+
+      (r.ai&&r.ai.errores.length?r.ai.errores.map(e=>`<div class="dl-err"><s lang="es">${esc(e.dijo)}</s> → <b lang="es">${esc(e.mejor)}</b><span class="cn">${esc(e.cn)}</span></div>`).join(""):"")+
+      (r.ai&&r.ai.note?`<p class="dl-p">${esc(r.ai.note)}</p>`:"")+`</details>`; }).join("")+`</div>`; }
+function renderExamen(){ dlInfo(); dlDates(); dlOral(); dlLog(); }
+buildChips($("#dl-lvl"),[["A1","DELE A1"],["A2","DELE A2"]],dl.lvl,k=>{ dlStop(); dl.lvl=k; dlSave(); dlS={st:"pick"}; renderExamen(); });
+renderExamen();
 
 /* ===== 8. 學習進度 ===== */
 function renderHeat(){
