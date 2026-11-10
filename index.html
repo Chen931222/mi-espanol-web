@@ -766,6 +766,22 @@ body.rt-bar-on #toast-box{bottom:92px}
 #cr-table th.pr,#cr-table td.pr{position:sticky;left:0;background:var(--card);z-index:1}
 .cr-info{font-size:.82rem;color:var(--ink-soft);line-height:1.7;margin:8px 0 0}
 .cr-info b{color:var(--terra-deep);font-family:var(--font-display)}
+/* 2026-11-10 並排拖曳調大小 */
+.split{position:sticky}
+.split-grip{position:absolute;left:-8px;top:0;bottom:0;width:16px;cursor:col-resize;z-index:6;touch-action:none}
+.split-grip::after{content:"";position:absolute;left:6px;top:50%;width:4px;height:44px;margin-top:-22px;border-radius:4px;background:var(--line-strong);opacity:.0;transition:opacity .15s}
+.split:hover .split-grip::after,.split-grip:focus-visible::after,body.split-dragging .split-grip::after{opacity:1}
+.split-grip:focus-visible{outline:2px solid var(--azul);outline-offset:-2px}
+body.split-dragging{user-select:none;cursor:col-resize}
+body.split-dragging iframe{pointer-events:none}
+@media(max-width:860px){
+  .split{position:fixed}
+  .split-grip{left:0;right:0;top:0;bottom:auto;width:auto;height:22px;cursor:row-resize}
+  .split-grip::after{left:50%;top:7px;width:44px;height:5px;margin:0 0 0 -22px;opacity:1}
+  .split-bar{padding-top:18px}
+  body.split-dragging{cursor:row-resize}
+  body.split-on .main{padding-bottom:var(--split-h,50vh)}
+}
 /* 2026-11-10 依課本查 */
 .vc-les{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:2px 0 10px}
 .vc-les-l{color:var(--ink-soft);font-size:.82rem;font-weight:700}
@@ -6733,6 +6749,31 @@ var SPLIT_ID=null;
   box.innerHTML=`<div class="split-bar"><span class="split-t" id="split-t"></span><button type="button" class="split-b" data-sa="big">放大</button><button type="button" class="split-b" data-sa="swap" title="左右對調">對調</button><button type="button" class="split-b" data-sa="close" aria-label="關閉並排">✕</button></div><div class="split-body wrap" id="split-body"></div>`;
   $(".app").appendChild(box);
   const body=$("#split-body"), tEl=$("#split-t"); let ph=null;
+  /* 拖曳調大小:桌機拖左緣調寬度,手機拖上緣調高度 */
+  const grip=document.createElement("div"); grip.className="split-grip"; grip.tabIndex=0; grip.setAttribute("role","separator");
+  grip.setAttribute("aria-label","拖曳調整並排大小(雙擊回預設)"); grip.title="拖曳調整大小 · 雙擊回預設"; box.prepend(grip);
+  const WK="miEspanolUI.splitW", HK="miEspanolUI.splitH", phone=()=>matchMedia("(max-width:860px)").matches;
+  const lsG=k=>{ try{ return +localStorage.getItem(k)||0; }catch(_){ return 0; } }, lsS=(k,v)=>{ try{ v?localStorage.setItem(k,String(Math.round(v))):localStorage.removeItem(k); }catch(_){} };
+  function clampW(w){ const side=($(".sidebar")&&$(".sidebar").offsetWidth)||0; return Math.max(300,Math.min(w,innerWidth-side-340)); }
+  function clampH(h){ return Math.max(innerHeight*0.25,Math.min(h,innerHeight-140)); }
+  function applySize(){ box.style.flex=""; box.style.maxWidth=""; box.style.height=""; document.documentElement.style.removeProperty("--split-h");
+    if(phone()){ const h=lsG(HK); if(h){ const v=clampH(h); box.style.height=v+"px"; document.documentElement.style.setProperty("--split-h",v+"px"); document.body.classList.remove("split-big"); } }
+    else { const w=lsG(WK); if(w){ box.style.flex="0 0 "+clampW(w)+"px"; box.style.maxWidth="none"; } }
+    grip.setAttribute("aria-orientation",phone()?"horizontal":"vertical"); }
+  let drag=null;
+  grip.addEventListener("pointerdown",e=>{ e.preventDefault(); grip.setPointerCapture(e.pointerId); drag={ph:phone()}; document.body.classList.add("split-dragging"); });
+  grip.addEventListener("pointermove",e=>{ if(!drag) return;
+    if(drag.ph){ const bottom=box.getBoundingClientRect().bottom; lsS(HK,clampH(bottom-e.clientY)); }
+    else lsS(WK,clampW(innerWidth-e.clientX));
+    applySize(); });
+  const end=()=>{ if(!drag) return; drag=null; document.body.classList.remove("split-dragging"); };
+  grip.addEventListener("pointerup",end); grip.addEventListener("pointercancel",end);
+  grip.addEventListener("dblclick",()=>{ lsS(phone()?HK:WK,0); applySize(); });
+  grip.addEventListener("keydown",e=>{ const ph=phone(), step=e.shiftKey?80:24;
+    const cur=ph?box.getBoundingClientRect().height:box.getBoundingClientRect().width;
+    const d=ph?(e.key==="ArrowUp"?step:e.key==="ArrowDown"?-step:0):(e.key==="ArrowLeft"?step:e.key==="ArrowRight"?-step:0);
+    if(!d) return; e.preventDefault(); ph?lsS(HK,clampH(cur+d)):lsS(WK,clampW(cur+d)); applySize(); });
+  addEventListener("resize",()=>{ if(SPLIT_ID) applySize(); });
   const cur=()=>{ const x=$$("section.active").find(e=>e.id!==SPLIT_ID); return x?x.id:"hoy"; };
   const SKEY="miEspanol.split";
   window.splitClose=function(){ if(!SPLIT_ID) return; const el=document.getElementById(SPLIT_ID);
@@ -6741,13 +6782,13 @@ var SPLIT_ID=null;
   window.splitOpen=function(id){ if(id===cur()){ showToast("這一頁已經在主畫面了。先把主畫面換到別頁，再把它開在側邊。"); return; }
     splitClose(); const el=document.getElementById(id); if(!el) return;
     ph=document.createComment("split"); el.before(ph); body.appendChild(el); el.classList.add("active","in");
-    SPLIT_ID=id; tEl.textContent=tabOf(id).cn; box.hidden=false; document.body.classList.add("split-on"); body.scrollTop=0;
+    SPLIT_ID=id; tEl.textContent=tabOf(id).cn; box.hidden=false; document.body.classList.add("split-on"); body.scrollTop=0; applySize();
     box.querySelector('[data-sa="big"]').textContent="放大";
     try{ if(id==="progreso"){ renderProgreso(); wlRender(); } if(id==="hoy") renderHoy(); }catch(_){}
     try{ sessionStorage.setItem(SKEY,id); }catch(_){} };
   box.addEventListener("click",e=>{ const b=e.target.closest("[data-sa]"); if(!b) return; const a=b.dataset.sa;
     if(a==="close") splitClose();
-    else if(a==="big"){ const on=document.body.classList.toggle("split-big"); b.textContent=on?"縮小":"放大"; }
+    else if(a==="big"){ lsS(HK,0); applySize(); const on=document.body.classList.toggle("split-big"); b.textContent=on?"縮小":"放大"; }
     else if(a==="swap"){ const sid=SPLIT_ID, m=cur(); splitClose(); show(sid); splitOpen(m); } });
 
   /* 桌機:左側分頁按右鍵 */
