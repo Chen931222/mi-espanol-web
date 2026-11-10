@@ -4032,7 +4032,7 @@ function renderTalk(){
     vd.innerHTML=`<div class="tk-v-h">${answering?"跟範例句說法不一樣":"你說要講別的,所以沒有拿範例句比對"}</div>
       ${answering?`<div class="tk-v-diff">${rep.diffHtml}</div>`:""}
       ${blocks.join("")}
-      <p class="tk-v-note"><b>整句對不對,本機判斷不了</b>。可以請 AI 看一下(每天 ${AI_MAX} 次),或直接記下來:不計分,也不算錯。</p>
+      <p class="tk-v-note"><b>整句對不對,本機判斷不了</b>。可以請 AI 看一下(每台瀏覽器共 ${AI_MAX} 次),或直接記下來:不計分,也不算錯。</p>
       <p class="tk-v-note">對方是照劇本走的:不管你回什麼,他都會問劇本的下一句。</p>
       <div class="tk-ai" id="tk-ai"></div>
       <div class="tk-acts"><button class="btn" id="tk-ask" type="button">請 AI 看這句<small id="tk-ai-left">${aiLeftTxt()}</small></button>
@@ -5813,19 +5813,28 @@ document.addEventListener("click",e=>{ const t=e.target; if(!t.closest) return;
 /* ===== 2026-11-10 對話打字請 AI 看(/api/talk-check,Claude Haiku 5.5)=====
    只在本機比對不上時出現;每個瀏覽器每天 4 次,次數在伺服器算。cid 是這台瀏覽器隨機產生的編號,
    key 用 miEsp_ 開頭:同步碼、匯出不帶走(跟 miEsp_ev 同慣例)。AI 的判斷照實標成「AI 判斷,可能出錯」。 */
-const AI_MAX=4, AICID="miEsp_aicid";
+const AI_MAX=10, AICID="miEsp_aicid", AIUSED="miEsp_aiused", DEVK="miEsp_devkey";   /* 2026-11-10:每台瀏覽器總共 10 次;瀏覽器自己也記(第一道),伺服器再擋(第二道) */
 let aiLeft=null;
+const aiDevKey=()=>{ try{ return localStorage.getItem(DEVK)||""; }catch(_){ return ""; } };
+const aiHdr=()=>{ const h={"Content-Type":"application/json"}, k=aiDevKey(); if(k) h["x-dev-key"]=k; return h; };
+const aiUsedLocal=()=>{ try{ return +localStorage.getItem(AIUSED)||0; }catch(_){ return 0; } };
+function aiNoteUsed(left){ if(left>=999) return; try{ localStorage.setItem(AIUSED,String(Math.max(aiUsedLocal(),AI_MAX-left))); }catch(_){} }
+/* 開發者:網址後面加 #dev,輸入 Vercel 上設的 DEV_KEY;只存這台瀏覽器(不跟同步走) */
+(function(){ if(location.hash!=="#dev") return; const v=prompt("開發者碼(留空=關閉開發者模式)",aiDevKey()); if(v===null) return;
+  try{ v.trim()?localStorage.setItem(DEVK,v.trim()):localStorage.removeItem(DEVK); }catch(_){} history.replaceState(null,"",location.pathname+location.search); })();
 function aiCid(){ try{ let c=localStorage.getItem(AICID); if(!/^[a-z0-9]{12,40}$/.test(c||"")){ c=(Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)).replace(/[^a-z0-9]/g,"").slice(0,20); localStorage.setItem(AICID,c); } return c; }catch(_){ return "anon"+String(Date.now()).slice(-10); } }
-function aiLeftTxt(){ return aiLeft==null?`每天 ${AI_MAX} 次`:`今天還剩 ${aiLeft} 次`; }
+function aiLeftTxt(){ return aiLeft>=999?"開發者:不限次數":aiLeft==null?`共 ${AI_MAX} 次`:`還剩 ${aiLeft} 次`; }
 function aiLeftShow(){ const el=$("#tk-ai-left"); if(el) el.textContent=aiLeftTxt(); const b=$("#tk-ask"); if(b&&aiLeft===0){ b.disabled=true; } }
-function aiLeftLoad(){ fetch("/api/talk-check?cid="+aiCid(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if(j&&typeof j.left==="number"){ aiLeft=j.left; aiLeftShow(); } else { const b=$("#tk-ask"); if(b) b.hidden=true; } }).catch(()=>{ const b=$("#tk-ask"); if(b) b.hidden=true; }); }
+function aiLeftLoad(){ if(!aiDevKey()&&aiUsedLocal()>=AI_MAX){ aiLeft=0; aiLeftShow(); }
+  fetch("/api/talk-check?cid="+aiCid(),{cache:"no-store",headers:aiHdr()}).then(r=>r.ok?r.json():null).then(j=>{ if(j&&typeof j.left==="number"){ aiLeft=j.left>=999?j.left:Math.min(j.left,Math.max(0,AI_MAX-aiUsedLocal())); aiLeftShow(); } else { const b=$("#tk-ask"); if(b) b.hidden=true; } }).catch(()=>{ const b=$("#tk-ask"); if(b) b.hidden=true; }); }
 const AI_V={ok:["good","AI:這句可以,接得上"],minor:["good","AI:意思對,有小地方可以改"],wrong:["bad","AI:這句有錯"],off_topic:["bad","AI:西文可以,但沒回答到對方"]};
 function aiCheck(it,v,answering){ const box=$("#tk-ai"), b=$("#tk-ask"); if(!box||!b) return;
   b.disabled=true; box.className="tk-ai"; box.textContent="AI 在看…";
-  fetch("/api/talk-check",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({cid:aiCid(),q:it.q,qcn:it.qcn,model:it.a,typed:v,answering:answering})})
+  if(!aiDevKey()&&aiUsedLocal()>=AI_MAX){ aiLeft=0; aiLeftShow(); box.className="tk-ai bad"; box.textContent=`這台瀏覽器的 ${AI_MAX} 次 AI 檢查用完了。這句可以先記下來(不計分、不算錯)。`; return; }
+  fetch("/api/talk-check",{method:"POST",headers:aiHdr(),body:JSON.stringify({cid:aiCid(),q:it.q,qcn:it.qcn,model:it.a,typed:v,answering:answering})})
     .then(r=>r.json().then(j=>[r.status,j])).then(([st,j])=>{
-      if(typeof j.left==="number"){ aiLeft=j.left; aiLeftShow(); }
-      if(st===429){ box.className="tk-ai bad"; box.textContent=j.error==="cid_full"?`今天 ${AI_MAX} 次用完了,明天再來。這句可以先記下來(不計分、不算錯)。`:"今天大家用 AI 的次數滿了,明天再試。"; return; }
+      if(typeof j.left==="number"){ aiLeft=j.left; aiNoteUsed(j.left); aiLeftShow(); }
+      if(st===429){ box.className="tk-ai bad"; box.textContent=j.error==="cid_full"?`這台瀏覽器的 ${AI_MAX} 次 AI 檢查用完了。這句可以先記下來(不計分、不算錯)。`:"今天大家用 AI 的次數滿了,明天再試。"; return; }
       if(st!==200||!AI_V[j.verdict]){ box.className="tk-ai bad"; box.textContent="AI 現在沒有回應,這次不扣次數。"; b.disabled=aiLeft===0; return; }
       const [cls,head]=AI_V[j.verdict], accK=x=>String(x||"").toLowerCase().replace(/[^a-záéíóúüñ]+/g," ").trim(), same=!j.fixed||accK(j.fixed)===accK(v);   /* 重音要算差別:只改重音也要顯示「改成」 */
       box.className="tk-ai "+cls;

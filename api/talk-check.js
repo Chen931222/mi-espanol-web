@@ -1,7 +1,9 @@
 // /api/talk-check — 對話打字「說了跟範例不一樣的話」時,請 Claude Haiku 5.5 看這句西文通不通、接不接得上。
 // 只在本機比對不上時才呼叫(前端決定);這裡負責限次數、呼叫、記用量。
 // 次數(台北日期,伺服器端算,清瀏覽紀錄繞不過 IP 那層):
-//   每個瀏覽器 4 次(cid:前端隨機產生、只存在那台瀏覽器,不跟同步走)/ 每個 IP 20 次 / 全站 300 次。
+//   每個瀏覽器「總共」10 次、不會隔天恢復(cid:前端隨機產生、只存在那台瀏覽器,不跟同步走;2026-11-10 本人定)
+//   / 每個 IP 每天 20 次 / 全站每天 300 次。
+//   開發者:請求帶 x-dev-key 且等於環境變數 DEV_KEY(≥16 字)→ 三層都不擋(仍受 workspace 每月花費上限)。
 //   呼叫失敗不扣該瀏覽器的次數。
 // 金鑰:ANTHROPIC_API_KEY(Mi Español 專用 workspace 的 key,workspace 自己設每月花費上限)。沒設就回 503,前端照舊顯示「本機判斷不了」。
 // 用量:espai:usage:<日期> 記 calls / in / out tokens,算真帳用。
@@ -9,11 +11,12 @@
 // GET ?cid=xxx → { left }(不扣次數)
 // POST { cid, q, qcn, model, typed, answering } → { left, verdict, fixed, note }
 import Anthropic from "@anthropic-ai/sdk";
+import { timingSafeEqual } from "node:crypto";
 
 const BASE = process.env.KV_REST_API_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN;
 const NS = process.env.VERCEL_ENV === "production" ? "espai:" : "espaip:";
-const PER_CID = 4, PER_IP = process.env.VERCEL_ENV === "production" ? 20 : 120, PER_DAY = 300;   // 預覽站(要 Vercel 登入才進得去)IP 上限放寬給測試用;正式站照舊
+const PER_CID = 10, PER_IP = process.env.VERCEL_ENV === "production" ? 20 : 120, PER_DAY = 300;   // 預覽站(要 Vercel 登入才進得去)IP 上限放寬給測試用;正式站照舊
 const MODEL = "claude-haiku-5-5";
 const tpeDay = () => new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
 
@@ -23,7 +26,12 @@ async function kv(cmd) {
   if (j.error) throw new Error(j.error);
   return j.result;
 }
-async function bump(key) { const n = await kv(["INCR", key]); if (n === 1) await kv(["EXPIRE", key, 2 * 86400]); return n; }
+function isDev(req) {
+  const k = process.env.DEV_KEY || "", h = String(req.headers["x-dev-key"] || "");
+  if (k.length < 16 || h.length !== k.length) return false;
+  return timingSafeEqual(Buffer.from(h), Buffer.from(k));
+}
+async function bump(key, ttl) { const n = await kv(["INCR", key]); if (n === 1) await kv(["EXPIRE", key, ttl || 2 * 86400]); return n; }
 
 const SCHEMA = {
   type: "object",
@@ -48,37 +56,9 @@ note:用繁體中文,最多 40 個字,講最重要的一點;ok 時可以說哪�
 
 function clean(s, n) { return String(s == null ? "" : s).replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n); }
 
-export default async function handler(req, res) {
-  res.setHeader("Cache-Control", "no-store");
-  if (!BASE || !TOKEN || !process.env.ANTHROPIC_API_KEY) return res.status(503).json({ error: "not_configured" });
-  const day = tpeDay();
-  try {
-    const src = req.method === "GET" ? (req.query || {}) : (typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {}));
-    const cid = String(src.cid || "");
-    if (!/^[a-z0-9]{12,40}$/.test(cid)) return res.status(400).json({ error: "bad_input" });
-    const ck = `${NS}c:${day}:${cid}`;
-    if (req.method === "GET") { const used = Number(await kv(["GET", ck])) || 0; return res.status(200).json({ left: Math.max(0, PER_CID - used) }); }
-    if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
-
-    const typed = clean(src.typed, 200), q = clean(src.q, 300), qcn = clean(src.qcn, 200), model = clean(src.model, 300);
-    if (!typed || !q || !/\p{L}/u.test(typed)) return res.status(400).json({ error: "bad_input" });
-    // 完全沒有拉丁字母(打中文等):不必問 AI,也不扣次數
-    if (!/[a-záéíóúüñ]/i.test(typed)) {
-      const used = Number(await kv(["GET", ck])) || 0;
-      return res.status(200).json({ left: Math.max(0, PER_CID - used), verdict: "wrong", fixed: typed, note: "這句不是西文,請用西文回答;不會的字可以先看範例句。" });
-    }
-
-    const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
-    // 由窄到寬:瀏覽器 → IP → 全站。被擋下的那層和它之前加過的都退回,一台機器換 cid 狂打也吃不掉全站的額度(2026-11-10 安全審查)
-    const ik = `${NS}ip:${day}:${ip}`, gk = `${NS}g:${day}`;
-    const c = await bump(ck);
-    if (c > PER_CID) { await kv(["DECR", ck]); return res.status(429).json({ error: "cid_full", left: 0 }); }
-    const ipn = await bump(ik);
-    if (ipn > PER_IP) { await kv(["DECR", ik]); await kv(["DECR", ck]); return res.status(429).json({ error: "ip_full", left: PER_CID - c + 1 }); }
-    const g = await bump(gk);
-    if (g > PER_DAY) { await kv(["DECR", gk]); await kv(["DECR", ik]); await kv(["DECR", ck]); return res.status(429).json({ error: "day_full", left: PER_CID - c + 1 }); }
-    const undo = () => Promise.all([kv(["DECR", ck]), kv(["DECR", ik]), kv(["DECR", gk])]);   // 呼叫前就失敗(沒花錢)才三層全退;呼叫後才失敗只退瀏覽器那層,IP 與全站照算
-
+async function askAI(res, o) {
+  const { typed, q, qcn, model, day, dev, c, undo, ck } = o;
+  const leftNow = () => dev ? 999 : PER_CID - c + 1;
     const client = new Anthropic();
     let msg;
     try {
@@ -90,19 +70,58 @@ export default async function handler(req, res) {
         messages: [{ role: "user", content: `對方說:${q}(${qcn})\n範例回答(只供參考,不是標準答案):${model}\n學生回答:${typed}` }],
       });
     } catch (e) {
-      await undo();
-      if (e instanceof Anthropic.RateLimitError) return res.status(503).json({ error: "busy", left: PER_CID - c + 1 });
-      if (e instanceof Anthropic.APIError) { console.error("talk-check api error", e.status, e.message); return res.status(503).json({ error: "ai_error", left: PER_CID - c + 1 }); }
+      if (!dev) await undo();
+      if (e instanceof Anthropic.RateLimitError) return res.status(503).json({ error: "busy", left: leftNow() });
+      if (e instanceof Anthropic.APIError) { console.error("talk-check api error", e.status, e.message); return res.status(503).json({ error: "ai_error", left: leftNow() }); }
       throw e;
     }
     const u = msg.usage || {};
     await kv(["HINCRBY", `${NS}usage:${day}`, "calls", 1]);
     await kv(["HINCRBY", `${NS}usage:${day}`, "in", Number(u.input_tokens) || 0]);
     await kv(["HINCRBY", `${NS}usage:${day}`, "out", Number(u.output_tokens) || 0]);
-    if (msg.stop_reason !== "end_turn") { await kv(["DECR", ck]); return res.status(503).json({ error: "ai_" + msg.stop_reason, left: PER_CID - c + 1 }); }
+    if (msg.stop_reason !== "end_turn") { if (!dev) await kv(["DECR", ck]); return res.status(503).json({ error: "ai_" + msg.stop_reason, left: leftNow() }); }
     const text = (msg.content || []).filter(b => b.type === "text").map(b => b.text).join("");
-    let out; try { out = JSON.parse(text); } catch (_) { await kv(["DECR", ck]); return res.status(503).json({ error: "ai_parse", left: PER_CID - c + 1 }); }
-    return res.status(200).json({ left: PER_CID - c, verdict: out.verdict, fixed: clean(out.fixed, 300), note: clean(out.note, 120) });
+    let out; try { out = JSON.parse(text); } catch (_) { if (!dev) await kv(["DECR", ck]); return res.status(503).json({ error: "ai_parse", left: leftNow() }); }
+  return res.status(200).json({ left: dev ? 999 : PER_CID - c, dev: !!dev, verdict: out.verdict, fixed: clean(out.fixed, 300), note: clean(out.note, 120) });
+}
+
+export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+  if (!BASE || !TOKEN || !process.env.ANTHROPIC_API_KEY) return res.status(503).json({ error: "not_configured" });
+  const day = tpeDay();
+  try {
+    const src = req.method === "GET" ? (req.query || {}) : (typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {}));
+    const cid = String(src.cid || "");
+    if (!/^[a-z0-9]{12,40}$/.test(cid)) return res.status(400).json({ error: "bad_input" });
+    const ck = `${NS}ct:${cid}`;   // 不分日期:總共 PER_CID 次
+    const dev = isDev(req);
+    if (req.method === "GET") {
+      if (dev) return res.status(200).json({ left: 999, dev: true });
+      const used = Number(await kv(["GET", ck])) || 0; return res.status(200).json({ left: Math.max(0, PER_CID - used) });
+    }
+    if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
+
+    const typed = clean(src.typed, 200), q = clean(src.q, 300), qcn = clean(src.qcn, 200), model = clean(src.model, 300);
+    if (!typed || !q || !/\p{L}/u.test(typed)) return res.status(400).json({ error: "bad_input" });
+    // 完全沒有拉丁字母(打中文等):不必問 AI,也不扣次數
+    if (!/[a-záéíóúüñ]/i.test(typed)) {
+      const used = Number(await kv(["GET", ck])) || 0;
+      return res.status(200).json({ left: dev ? 999 : Math.max(0, PER_CID - used), verdict: "wrong", fixed: typed, note: "這句不是西文,請用西文回答;不會的字可以先看範例句。" });
+    }
+
+    const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
+    // 由窄到寬:瀏覽器 → IP → 全站。被擋下的那層和它之前加過的都退回,一台機器換 cid 狂打也吃不掉全站的額度(2026-11-10 安全審查)
+    const ik = `${NS}ip:${day}:${ip}`, gk = `${NS}g:${day}`;
+    if (dev) return await askAI(res, { typed, q, qcn, model, day, dev: true });
+    const c = await bump(ck, 400 * 86400);
+    if (c > PER_CID) { await kv(["DECR", ck]); return res.status(429).json({ error: "cid_full", left: 0 }); }
+    const ipn = await bump(ik);
+    if (ipn > PER_IP) { await kv(["DECR", ik]); await kv(["DECR", ck]); return res.status(429).json({ error: "ip_full", left: PER_CID - c + 1 }); }
+    const g = await bump(gk);
+    if (g > PER_DAY) { await kv(["DECR", gk]); await kv(["DECR", ik]); await kv(["DECR", ck]); return res.status(429).json({ error: "day_full", left: PER_CID - c + 1 }); }
+    const undo = () => Promise.all([kv(["DECR", ck]), kv(["DECR", ik]), kv(["DECR", gk])]);   // 呼叫前就失敗(沒花錢)才三層全退;呼叫後才失敗只退瀏覽器那層,IP 與全站照算
+
+    return await askAI(res, { typed, q, qcn, model, day, c, undo, ck });
   } catch (e) {
     console.error("talk-check error:", e);
     return res.status(500).json({ error: "server_error" });
