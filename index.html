@@ -5023,7 +5023,7 @@ function renderSong(){
     (h=>h+(s.excerpt?excerptHTML(s,h):""))(s.lines.map((ln,li)=>{
       const sp=`<button class="spk lyr-spk" data-li="${li}" aria-label="發音">${svgIcon(ICON.vol,12)}</button>`;
       if(ln && typeof ln==="object") return (ln.gap?'<div class="lyr-gap" aria-hidden="true">⋯</div>':"")+`<div class="lyric-line">${annotate(ln.es||"",merged)} ${sp}</div>`+(ln.cn?`<div class="lyric-cn">${esc(ln.cn)}</div>`:"")+((ln.en||EN[ln.es])?`<div class="lyric-en en-line">${esc(ln.en||EN[ln.es])}</div>`:"")+
-        (ln.pt?`<div class="lyr-pt"><div class="lyr-pt-h">這句學:${esc(ln.pt)}</div><p class="lyr-pt-why">${ln.why}</p><div class="lyr-ex"><span class="lyr-ex-tag">換個情境</span><span class="es" lang="es">${esc(ln.ex)}</span> ${spkHTML(ln.ex)}<span class="lyr-ex-cn">${esc(ln.excn)}</span></div></div>`:"");
+        (ln.pt?`<div class="lyr-pt"><div class="lyr-pt-h">這句學:${esc(ln.pt)}</div><p class="lyr-pt-why">${mine?esc(ln.why):ln.why}</p><div class="lyr-ex"><span class="lyr-ex-tag">換個情境</span><span class="es" lang="es">${esc(ln.ex)}</span> ${spkHTML(ln.ex)}<span class="lyr-ex-cn">${esc(ln.excn)}</span></div></div>`:"");
       return ln.charAt(0)==="〔" ? `<div class="lyric-sec">${esc(ln.replace(/[〔〕]/g,""))}</div>` : `<div class="lyric-line">${annotate(ln,merged)} ${sp}</div>`;
     }).join(""));
   noteBox.innerHTML=`<div class="ph">${svgIcon(ICON.arrowLeft,20)} 點歌詞中<br>有底線的字<br>看解析</div>`;
