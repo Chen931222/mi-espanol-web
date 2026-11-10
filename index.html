@@ -288,10 +288,39 @@ body.rt-bar-on #voz-aviso{bottom:calc(34px + var(--rtbar-h,56px) + env(safe-area
 #verb-list .verb-body-in{padding:0 16px 16px}
 #verb-list .gram-conj{margin-top:0}
 #verb-list .gram-conj table{margin-bottom:10px}
-.gram-jump{position:sticky;top:0;z-index:6;padding:8px 0;margin:0 0 4px;background:color-mix(in srgb,var(--paper) 94%,transparent)}
-@media (max-width:860px){#verb-list .verb-head{display:grid;grid-template-columns:1fr auto;column-gap:12px;row-gap:1px}#verb-list .verb-inf{grid-column:1}#verb-list .verb-mean{grid-column:1;grid-row:2;font-size:.84rem}#verb-list .verb-arrow{grid-column:2;grid-row:1 / span 2;align-self:center}.gram-jump{top:59px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.gram-jump::-webkit-scrollbar{display:none}.gram-jump .chip{flex:0 0 auto}.gram-layer{scroll-margin-top:116px}}
+.gram-jump{position:sticky;top:0;z-index:6;padding:10px 0 0;margin:0 0 6px;background:color-mix(in srgb,var(--paper) 96%,transparent);border-bottom:1.5px solid var(--line-strong);align-items:flex-end;gap:2px 4px}
+.gram-tab{appearance:none;border:0;background:none;font:inherit;font-weight:700;font-size:.95rem;color:var(--ink-soft);padding:10px 14px 11px;min-height:44px;border-bottom:3px solid transparent;margin-bottom:-1.5px;cursor:pointer;white-space:nowrap}
+.gram-tab:hover{color:var(--ink)}
+.gram-tab .t-short{display:none}
+@media (max-width:560px){.gram-tab .t-long{display:none}.gram-tab .t-short{display:inline}}
+.gram-tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--terra)}
+.gram-tab:focus-visible,.gram-basic-btn:focus-visible{outline:2px solid var(--azul);outline-offset:-2px;border-radius:6px}
+.gram-basic-btn{margin-left:auto;align-self:center;appearance:none;font:inherit;font-size:.82rem;font-weight:700;color:var(--ink-soft);background:var(--card);border:1.5px solid var(--line-strong);border-radius:999px;padding:6px 12px;min-height:36px;cursor:pointer;white-space:nowrap}
+.gram-basic-btn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+#verb-list:not(.searching) .gram-layer:not(.on){display:none}
+#verb-list .gram-layer .reveal{transition-delay:0s!important}
+#verb-list.searching .gram-jump .gram-tab{visibility:hidden}
+#verb-list.only-basic .gram-layer:not(#g-conj) .verb:not(.basic){display:none}
+#verb-list.only-basic .gram-layer:not(#g-conj) .gram-group:not(:has(.verb.basic)){display:none}
+.g-basic{font-size:.68rem;font-weight:800;letter-spacing:.04em;color:var(--terra-deep);border:1px solid currentColor;border-radius:999px;padding:0 7px;line-height:1.5;align-self:center}
+.gram-cat-tip{margin:-4px 0 8px;font-size:.84rem;color:var(--ink-soft)}
+/* 顏色層次:標題深色、說明灰、只有西文例句用紅;展開不換底色、例句不加框 */
+#verb-list .verb-inf{color:var(--ink)}
+#verb-list .verb.open{background:transparent}
+#verb-list .verb.open > .verb-head{border-bottom:1px dashed var(--line)}
+#verb-list .verb-head:hover .verb-inf{text-decoration:none}
+#verb-list .verb-head:hover{background:color-mix(in srgb,var(--paper) 40%,var(--card))}
+#verb-list .gk{color:var(--ink);font-family:var(--font-body);font-weight:800;font-size:.98rem}
+#verb-list .gv{color:var(--ink-soft)}
+#verb-list .ej{background:none;border:0;border-radius:0;padding:2px 0 0 14px;margin-top:6px}
+#verb-list .ej .es{color:var(--terra-deep)}
+#verb-list .gpoint{padding:12px 0}
+#verb-list .verb-body-in{padding:4px 16px 14px}
+#verb-list .gram-conj td{color:var(--ink)}
+#verb-list .gram-conj td.pr{color:var(--ink-soft)}
+@media (max-width:860px){#verb-list .verb-head{display:grid;grid-template-columns:auto 1fr auto;column-gap:8px;row-gap:1px}#verb-list .verb-inf{grid-column:1}#verb-list .g-basic{grid-column:2;grid-row:1;justify-self:start}#verb-list .verb-mean{grid-column:1 / span 2;grid-row:2;font-size:.84rem}#verb-list .verb-arrow{grid-column:3;grid-row:1 / span 2;align-self:center}.gram-jump{top:59px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.gram-tab{padding:10px 11px 11px;font-size:.9rem}.gram-jump::-webkit-scrollbar{display:none}.gram-jump .chip{flex:0 0 auto}.gram-layer{scroll-margin-top:116px}}
 
-.gram-layer + .gram-layer{margin-top:44px;padding-top:22px;border-top:1px solid var(--line-strong)}
+.gram-layer-h{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .gram-layer-h{font-family:var(--font-display);font-weight:800;font-size:clamp(1.3rem,1.1rem + .8vw,1.6rem);line-height:1.2;color:var(--ink);margin:22px 0 4px;text-wrap:balance}
 .gram-layer-es{font-style:italic;font-weight:600;font-size:.72em;color:var(--ink-soft)}
 .gram-layer-d{margin:0 0 4px;color:var(--ink-soft);font-size:.92rem;line-height:1.55;max-width:62ch}
@@ -1862,6 +1891,18 @@ const DATA = {
       {k:"Ya es momento de + 原形", v:"現在該是…的時候了", ej:"Ya es momento de cambiar de trabajo.", ejcn:"該是換工作的時候了。"},
       {k:"cambiar de + 名詞", v:"換成另一個同類的(工作、房子、生活)用 cambiar de + 無冠詞名詞;換零件、換東西不加 de(cambiar la bombilla)", ej:"Quiero cambiar de vida.", ejcn:"我想改變生活。"},
       {k:"querer + 原形 = 想要", v:"", ej:"Quiero comer algo dulce.", ejcn:"我想吃點甜的。"} ]},
+    { type:"note", cat:"動詞時態 · Tiempos", title:"簡單過去的常見不規則", mean:"fui、tuve、hice、dije…", tag:"過去式", points:[
+      {k:"ser 和 ir 同一套", v:"fui, fuiste, fue, fuimos, fuisteis, fueron(看上下文分「是」還是「去」)", ej:"Ayer fui al cine. Fue una película muy buena.", ejcn:"昨天我去看電影。那是一部很好看的片。"},
+      {k:"u 組", v:"tener → tuve、estar → estuve、poder → pude、poner → puse、saber → supe;字尾 -e, -iste, -o, -imos, -isteis, -ieron,yo 和 él 沒有重音", ej:"Ayer estuve en casa todo el día.", ejcn:"昨天我整天在家。"},
+      {k:"i 組", v:"hacer → hice(él hizo)、querer → quise、venir → vine", ej:"¿Qué hiciste el fin de semana?", ejcn:"你週末做了什麼?"},
+      {k:"j 組", v:"decir → dije、traer → traje;「他們」是 -eron(dijeron,不是 dijieron)", ej:"Me dijeron que sí.", ejcn:"他們跟我說好。"},
+      {k:"只有「我」改拼字", v:"llegar → llegué、buscar → busqué、jugar → jugué、empezar → empecé(為了保持發音)", ej:"Llegué tarde a clase.", ejcn:"我上課遲到了。"} ]},
+    { type:"note", cat:"動詞時態 · Tiempos", title:"講過去的時間詞", mean:"ayer、hace dos días、de niño…", tag:"過去式", points:[
+      {k:"昨天、昨晚、前天", v:"ayer、anoche、anteayer", ej:"Anoche dormí muy poco.", ejcn:"我昨晚睡很少。"},
+      {k:"上一個…", v:"la semana pasada、el mes pasado、el año pasado、el lunes pasado", ej:"El año pasado viajé a México.", ejcn:"去年我去了墨西哥。"},
+      {k:"多久以前", v:"hace + 時間", ej:"Hace dos días comí paella.", ejcn:"兩天前我吃了燉飯。"},
+      {k:"那時候(配未完成過去)", v:"de niño、antes、en esa época、todos los días", ej:"De niño vivía en Tainan.", ejcn:"我小時候住在台南。"},
+      {k:"一次 vs 常常", v:"una vez、de repente → 簡單過去;a menudo、siempre(指習慣時)→ 未完成過去", ej:"Todos los días iba andando al colegio, pero una vez fui en taxi.", ejcn:"我以前每天走路上學,但有一次搭了計程車。"} ]},
     { type:"note", cat:"動詞時態 · Tiempos", title:"簡單過去 vs 未完成過去", mean:"Pretérito / Imperfecto 怎麼選", tag:"過去式", points:[
       {k:"簡單過去 Pretérito", v:"做完的一次事件,通常有明確時間", ej:"Ayer comí paella.", ejcn:"昨天我吃了燉飯。"},
       {k:"未完成過去 Imperfecto", v:"過去的習慣、背景、描述(那時候常…、那時候是…)", ej:"De niño comía mucho arroz.", ejcn:"我小時候常吃米飯。"},
@@ -3128,7 +3169,12 @@ const DATA = {
     {before:"No puedo, ", after:" que trabajar.", answer:"tengo", inf:"tener que", cn:"不行耶，我得工作。", why:"婉拒常用 No puedo, tengo que + 原形", g:"邀約與拒絕"},
     {before:"Ayer ", after:" paella con mis amigos.", answer:"comí", inf:"comer(過去)", cn:"昨天我跟朋友吃了燉飯。", why:"ayer + 做完的一次事件 → 簡單過去 comí", g:"簡單過去 vs 未完成過去"},
     {before:"De niño ", after:" en Taichung.", answer:"vivía", inf:"vivir(過去)", cn:"我小時候住在台中。", why:"de niño = 那時候的狀態 → 未完成過去 vivía", g:"簡單過去 vs 未完成過去"},
-    {before:"", after:" un libro cuando sonó el teléfono.", answer:"Leía", inf:"leer(過去,我)", cn:"我在看書的時候電話響了。", why:"正在進行的背景 → 未完成過去 leía;插進來的事件 sonó 用簡單過去", g:"簡單過去 vs 未完成過去"}
+    {before:"", after:" un libro cuando sonó el teléfono.", answer:"Leía", inf:"leer(過去,我)", cn:"我在看書的時候電話響了。", why:"正在進行的背景 → 未完成過去 leía;插進來的事件 sonó 用簡單過去", g:"簡單過去 vs 未完成過去"},
+    {before:"Ayer ", after:" al cine con Ana.", answer:"fui", inf:"ir(過去,我)", cn:"昨天我跟 Ana 去看電影。", why:"ir 的簡單過去跟 ser 一樣:fui", g:"簡單過去的常見不規則"},
+    {before:"¿Qué ", after:" el fin de semana?", answer:"hiciste", inf:"hacer(過去,你)", cn:"你週末做了什麼?", why:"hacer 是 i 組:hice, hiciste, hizo…", g:"簡單過去的常見不規則"},
+    {before:"Ayer ", after:" en casa todo el día.", answer:"estuve", inf:"estar(過去,我)", cn:"昨天我整天在家。", why:"estar 是 u 組:estuve,沒有重音", g:"簡單過去的常見不規則"},
+    {before:"", after:" dos días comí paella.", answer:"Hace", inf:"多久以前", cn:"兩天前我吃了燉飯。", why:"「…以前」= hace + 時間", g:"講過去的時間詞"},
+    {before:"El año ", after:" viajé a México.", answer:"pasado", inf:"上一個", cn:"去年我去了墨西哥。", why:"去年 = el año pasado", g:"講過去的時間詞"}
   ],
 };
 
@@ -4873,7 +4919,7 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
     {id:"g-verbos", h:"動詞系統", es:"Verbos", d:"由淺到深:現在式 → 過去 → 未來 → 命令式 → 虛擬式。", subs:[
       ["現在式",["現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","ponerse / quedarse"]],
       ["現在式的延伸",["現在進行式","ir a + 原形","soler + 原形"]],
-      ["過去",["簡單過去 vs 未完成過去","haber + 過去分詞","過去進行式(estaba + 現在分詞)","過去完成式 Pluscuamperfecto(había + 過去分詞)"]],
+      ["過去",["簡單過去 vs 未完成過去","簡單過去的常見不規則","講過去的時間詞","haber + 過去分詞","過去進行式(estaba + 現在分詞)","過去完成式 Pluscuamperfecto(había + 過去分詞)"]],
       ["未來與條件",["未來式 Futuro","條件式 Condicional"]],
       ["命令式",["命令式 Imperativo"]],
       ["虛擬式",["虛擬式 Subjuntivo","虛擬式觸發詞(para que / hasta que…)","如果…就…(Si + hubiera)","como si(彷彿)+ 過去虛擬式"]] ]},
@@ -4886,8 +4932,11 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
       ["動詞片語",["義務:hay que / tener que / deber","打算、會、該是時候","動詞 + 介系詞 + 原形","llevar + 現在分詞","ir + 現在分詞(漸進)","seguir + 形容詞/分詞","使役 hacer + 原形","完成式不定詞(haber + 過去分詞)"]],
       ["連接與句子結構",["por 還是 para","關係代名詞 que / lo que","sino(而是)","sin vs no","條件句 Si(真實條件)","無人稱說法(uno / dicen que)"]],
       ["字詞小知識",["課本裡的易混字","重音辨義(mas / sí / sé…)","歌詞口語縮寫"]] ]},
-    {id:"g-conj", h:"動詞變化表", es:"Conjugaciones", d:"一個動詞一張表:現在式、簡單過去、未完成過去、未來式、現在虛擬式。表格可以左右滑。", subs:[] }
+    {id:"g-conj", h:"動詞變化表", es:"Conjugaciones", d:"50 個常用動詞,分成規則、會變母音、不規則三組。每張表有現在式、簡單過去、未完成過去、未來式、現在虛擬式;手機上表格可以左右滑。", subs:[] }
   ];
+  const BASIC=["現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","現在進行式","ir a + 原形","簡單過去 vs 未完成過去","名詞的陰陽性與單複數","冠詞 un / el","所有格 mi / tu / su","gustar 類動詞","tener 慣用語","現在幾點 ¿Qué hora es?","去哪裡、在哪裡、怎麼去","por 還是 para"];
+  const VGROUP={stem:["pedir","pensar","empezar","cerrar","entender","preferir","dormir","volver","encontrar","jugar","repetir"],
+    irr:["ser","estar","ir","tener","hacer","poder","querer","decir","ver","dar","saber","venir","poner","salir","conocer","traer","oír"]};
   const CONJ_ORDER=["ser","estar","ir","tener","hacer","poder","querer","saber","decir","poner","pedir","preferir","creer","comer","ayudar"];
   const OLDCAT_LAYER={"動詞時態 · Tiempos":0,"語氣 · Modos":0,"代名詞 · Pronombres":1,"詞彙與其他 · Léxico":1,"動詞結構 · Perífrasis":2,"特殊句型 · Estructuras":2};
   /* 既有 33 條依序對應的舊分類(只拿來給沒列進 GRAM_LAYERS 的條目找層) */
@@ -4921,9 +4970,11 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
     return el; }
   const tableHTML=g=>`<table>${g.conj.map((c,i)=>`<tr><td class="pron">${DATA.pronombres[i]}</td><td class="conj">${c}</td></tr>`).join("")}</table>`+ejHTML(g.ej,g.ejcn);
   function noteCard(g,sub){ const gk=gKey(g);
-    return makeCard({title:g.title,mean:g.mean,tag:g.tag,keys:[gk],label:g.title,
+    const el=makeCard({title:g.title,mean:g.mean,tag:g.tag,keys:[gk],label:g.title,
       body:g.type==="table"?tableHTML(g):g.points.map(p=>`<div class="gpoint"><div><span class="gk">${p.k}</span>${p.v?` <span class="gv">— ${p.v}</span>`:""}</div>${ejHTML(p.ej,p.ejcn)}</div>`).join(""),
-      search:[sub,g.title,g.mean||"",g.tag||""].concat((g.points||[]).map(p=>[p.k,p.v,p.ej,p.ejcn].join(" "))).concat(g.type==="table"?[(g.conj||[]).join(" "),g.ej||"",g.ejcn||""]:[]).join(" ")}); }
+      search:[sub,g.title,g.mean||"",g.tag||""].concat((g.points||[]).map(p=>[p.k,p.v,p.ej,p.ejcn].join(" "))).concat(g.type==="table"?[(g.conj||[]).join(" "),g.ej||"",g.ejcn||""]:[]).concat(BASIC.indexOf(g.title)>=0?["基礎"]:[]).join(" ")});
+    if(BASIC.indexOf(g.title)>=0){ el.classList.add("basic"); el.querySelector(".verb-mean").insertAdjacentHTML("beforebegin",'<span class="g-basic">基礎</span>'); }
+    return el; }
   function verbCard(v,full){ const ts=(tables[v]||[]).slice().sort((x,y)=>tenseRank(x.tag)-tenseRank(y.tag));
     if(full){ /* 完整五時態(資料來自動詞練習的 VERBOS);原本零星的表只留例句與練習題 */
       const T=["pres","pret","imp","fut","presubj"], TL={pres:"現在式",pret:"簡單過去",imp:"未完成過去",fut:"未來式",presubj:"現在虛擬式"};
@@ -4936,14 +4987,24 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
     return makeCard({title:v,mean:ts[0].mean,tag:"",keys:ts.map(gKey),label:v,
       body:ts.map(t=>(multi?`<div class="conj-tense">${t.tag}</div>`:"")+tableHTML(t)).join(""),
       search:["動詞變化表 變化 conjugación",v].concat(ts.map(t=>[t.mean,t.tag,(t.conj||[]).join(" "),t.ej||"",t.ejcn||""].join(" "))).join(" ")}); }
-  /* 頂端跳層 */
-  const jump=document.createElement("nav"); jump.className="gram-jump reveal"; jump.setAttribute("aria-label","文法分層");
-  GRAM_LAYERS.forEach(L=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=L.h;
-    b.onclick=()=>{ const t=document.getElementById(L.id); if(t) t.scrollIntoView({block:"start",behavior:"smooth"}); }; jump.appendChild(b); });
+  /* 分頁籤:一次只看一層;記住上次看的那層(只存在這台瀏覽器) */
+  const TABKEY="miEspanol.gramTab";
+  const jump=document.createElement("div"); jump.className="gram-jump reveal"; jump.setAttribute("role","tablist"); jump.setAttribute("aria-label","文法分層");
+  GRAM_LAYERS.forEach(L=>{ const b=document.createElement("button"); b.type="button"; b.className="gram-tab"; b.id=L.id+"-tab"; b.setAttribute("role","tab"); b.setAttribute("aria-controls",L.id); const SH={"g-verbos":"動詞","g-nombres":"名詞","g-frases":"句型","g-conj":"變化表"}; b.innerHTML=`<span class="t-long">${L.h}</span><span class="t-short" aria-hidden="true">${SH[L.id]||L.h}</span>`; b.setAttribute("aria-label",L.h);
+    b.onclick=()=>{ gramTab(L.id); const top=verbList.getBoundingClientRect().top; if(top<0) verbList.scrollIntoView({block:"start"}); }; jump.appendChild(b); });
+  const basicBtn=document.createElement("button"); basicBtn.type="button"; basicBtn.className="gram-basic-btn"; basicBtn.setAttribute("aria-pressed","false"); basicBtn.textContent="只看基礎";
+  basicBtn.onclick=()=>{ const on=!verbList.classList.contains("only-basic"); verbList.classList.toggle("only-basic",on); basicBtn.setAttribute("aria-pressed",on); };
+  jump.appendChild(basicBtn);
   verbList.appendChild(jump);
+  function gramTab(id){ GRAM_LAYERS.forEach(L=>{ const on=L.id===id; const t=document.getElementById(L.id+"-tab"), p=document.getElementById(L.id);
+      if(t){ t.setAttribute("aria-selected",on); t.tabIndex=on?0:-1; } if(p) p.classList.toggle("on",on); });
+    try{ localStorage.setItem(TABKEY,id); }catch(_){} }
+  window.gramTab=gramTab;
+  jump.addEventListener("keydown",e=>{ if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft") return; const tabs=[...jump.querySelectorAll(".gram-tab")], i=tabs.indexOf(document.activeElement); if(i<0) return;
+    const n=tabs[(i+(e.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length]; n.focus(); n.click(); });
   GRAM_LAYERS.forEach((L,li)=>{
-    const layer=document.createElement("div"); layer.className="gram-layer"; layer.id=L.id; layer.setAttribute("role","region"); layer.setAttribute("aria-labelledby",L.id+"-h");
-    layer.innerHTML=`<div class="reveal"><h3 class="gram-layer-h" id="${L.id}-h">${L.h} <span class="gram-layer-es">${L.es}</span></h3><p class="gram-layer-d">${L.d}</p></div>`;
+    const layer=document.createElement("div"); layer.className="gram-layer"; layer.id=L.id; layer.setAttribute("role","tabpanel"); layer.setAttribute("aria-labelledby",L.id+"-tab");
+    layer.innerHTML=`<div class="reveal"><h3 class="gram-layer-h">${L.h} <span class="gram-layer-es">${L.es}</span></h3><p class="gram-layer-d">${L.d}</p></div>`;
     const addGroup=(name,cards)=>{ if(!cards.length)return; const group=document.createElement("div"); group.className="gram-group reveal";
       if(name){ const head=document.createElement("div"); head.className="gram-cat"; head.textContent=name; group.appendChild(head); }
       const wrap=document.createElement("div"); wrap.className="gram-rows"; cards.forEach(c=>wrap.appendChild(c)); group.appendChild(wrap); layer.appendChild(group); };
@@ -4953,12 +5014,17 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
       /* VERBOS 在 script 後段才宣告並補齊時態;等整支 script 跑完再畫 */
       setTimeout(()=>{ const VB={}; (typeof VERBOS!=="undefined"?VERBOS:[]).forEach(x=>VB[x.inf]=x);
         const vs=CONJ_ORDER.filter(v=>VB[v]||tables[v]).concat(Object.keys(VB).filter(v=>CONJ_ORDER.indexOf(v)<0)).concat(Object.keys(tables).filter(v=>CONJ_ORDER.indexOf(v)<0&&!VB[v]));
-        const rows=document.createElement("div"); rows.className="gram-group reveal";
-        const wrap=document.createElement("div"); wrap.className="gram-rows"; vs.forEach(v=>wrap.appendChild(verbCard(v,VB[v]))); rows.appendChild(wrap);
-        holder.appendChild(rows); rows.style.transitionDelay="0s";
+        const grpOf=v=>VGROUP.irr.indexOf(v)>=0?"irr":VGROUP.stem.indexOf(v)>=0?"stem":"reg";
+        [["reg","規則動詞(含拼字變化)","照 -ar / -er / -ir 的字尾變。-car / -gar / -zar 在 yo 的簡單過去和虛擬式改拼字(busqué、llegue);leer、creer 的 él / ellos 簡單過去 i 變 y(leyó)"],["stem","會變母音","e→ie、o→ue、e→i、u→ue;現在式 nosotros / vosotros 不變。-ir 動詞在簡單過去的 él / ellos 和虛擬式 nosotros / vosotros 也會變(durmió、durmamos)"],["irr","不規則","要個別記;常用的幾乎都在這裡"]].forEach(([k,name,tip])=>{
+          const list=vs.filter(v=>grpOf(v)===k); if(!list.length) return;
+          const rows=document.createElement("div"); rows.className="gram-group reveal";
+          rows.innerHTML=`<div class="gram-cat">${name} · ${list.length}</div><p class="gram-cat-tip">${tip}</p>`;
+          const wrap=document.createElement("div"); wrap.className="gram-rows"; list.forEach(v=>wrap.appendChild(verbCard(v,VB[v]))); rows.appendChild(wrap);
+          holder.appendChild(rows); rows.style.transitionDelay="0s"; });
         const gn=$("#gram-n"); if(gn) gn.textContent=document.querySelectorAll("#verb-list .card.verb").length; },0); }
     verbList.appendChild(layer);
   });
+  { let t0=null; try{ t0=localStorage.getItem(TABKEY); }catch(_){} gramTab(GRAM_LAYERS.some(L=>L.id===t0)?t0:GRAM_LAYERS[0].id); }
   /* 文法搜尋:即時過濾(中文/西文/時態名都比對,忽略大小寫與重音);命中 ≤6 筆自動展開 */
   const gInp=document.getElementById("gram-search"), gCnt=document.getElementById("gram-search-count");
   function applyGramSearch(){
@@ -4972,8 +5038,8 @@ function ejHTML(ej,cn){ return ej?`<div class="ej"><div class="es">${ej} ${spkHT
       group.style.display=any?"":"none";
     });
     document.querySelectorAll("#verb-list .gram-layer").forEach(layer=>{
-      layer.style.display=[...layer.querySelectorAll(".gram-group")].some(g=>g.style.display!=="none")?"":"none"; });
-    const jp=document.querySelector("#verb-list .gram-jump"); if(jp) jp.style.display=q?"none":"";
+      layer.style.display=!q?"":[...layer.querySelectorAll(".gram-group")].some(g=>g.style.display!=="none")?"":"none"; });
+    verbList.classList.toggle("searching",!!q);
     if(gCnt) gCnt.textContent=q?(matches.length?("找到 "+matches.length+" 筆"+(autoOpen?"":" · 點標題展開")):"找不到相關文法 😅"):"";
   }
   if(gInp){ gInp.addEventListener("input",applyGramSearch); }
@@ -5994,7 +6060,7 @@ function practiceGram(title,label){
   newRound(false, idx.slice(0,5)); window.scrollTo(0,0); showToast("這一輪練「"+title.replace("|"," · ")+"」"); }
 /* 填空答錯時附「看文法」:跳回文法筆記那一條並展開 */
 function openGram(title){ show("gramatica"); const gi=$("#gram-search"); if(gi){ gi.value=""; gi.dispatchEvent(new Event("input")); }
-  const el=[...$$("#verb-list .verb")].find(c=>c.dataset.title===title||(c.dataset.keys||"").split("\n").indexOf(title)>=0); if(el){ el.classList.add("open"); const h=el.querySelector(".verb-head"); if(h) h.setAttribute("aria-expanded","true"); setTimeout(()=>el.scrollIntoView({block:"start",behavior:"smooth"}),80); } }
+  const el=[...$$("#verb-list .verb")].find(c=>c.dataset.title===title||(c.dataset.keys||"").split("\n").indexOf(title)>=0); if(el){ const ly=el.closest(".gram-layer"); if(ly&&window.gramTab) window.gramTab(ly.id); el.classList.add("open"); const h=el.querySelector(".verb-head"); if(h) h.setAttribute("aria-expanded","true"); setTimeout(()=>el.scrollIntoView({block:"start",behavior:"smooth"}),80); } }
 /* 「檢查全部」只對填了的題;沒填的留著繼續作答 */
 function checkAll(){ round.forEach((_,pos)=>checkOne(pos)); const p=round.findIndex((_,i)=>!res[i]); if(p>=0) $(`.blank[data-i="${p}"]`,exList).focus(); }
 function exFocusNext(pos){
@@ -6112,7 +6178,34 @@ const VERBOS=[
   {inf:"venir",cn:"來",pres:["vengo","vienes","viene","venimos","venís","vienen"],pret:["vine","viniste","vino","vinimos","vinisteis","vinieron"]},
   {inf:"poner",cn:"放",pres:["pongo","pones","pone","ponemos","ponéis","ponen"],pret:["puse","pusiste","puso","pusimos","pusisteis","pusieron"]},
   {inf:"salir",cn:"出去;離開",pres:["salgo","sales","sale","salimos","salís","salen"],pret:["salí","saliste","salió","salimos","salisteis","salieron"]},
-  {inf:"pedir",cn:"點;要求",pres:["pido","pides","pide","pedimos","pedís","piden"],pret:["pedí","pediste","pidió","pedimos","pedisteis","pidieron"]}
+  {inf:"pedir",cn:"點;要求",pres:["pido","pides","pide","pedimos","pedís","piden"],pret:["pedí","pediste","pidió","pedimos","pedisteis","pidieron"]},
+  /* 2026-11-10 加到 50 個:課本與網站內容常見的動詞 */
+  {inf:"escuchar",cn:"聽",pres:["escucho","escuchas","escucha","escuchamos","escucháis","escuchan"],pret:["escuché","escuchaste","escuchó","escuchamos","escuchasteis","escucharon"]},
+  {inf:"mirar",cn:"看;注視",pres:["miro","miras","mira","miramos","miráis","miran"],pret:["miré","miraste","miró","miramos","mirasteis","miraron"]},
+  {inf:"llegar",cn:"到達",pres:["llego","llegas","llega","llegamos","llegáis","llegan"],pret:["llegué","llegaste","llegó","llegamos","llegasteis","llegaron"]},
+  {inf:"llamar",cn:"打電話;叫",pres:["llamo","llamas","llama","llamamos","llamáis","llaman"],pret:["llamé","llamaste","llamó","llamamos","llamasteis","llamaron"]},
+  {inf:"buscar",cn:"找",pres:["busco","buscas","busca","buscamos","buscáis","buscan"],pret:["busqué","buscaste","buscó","buscamos","buscasteis","buscaron"]},
+  {inf:"viajar",cn:"旅行",pres:["viajo","viajas","viaja","viajamos","viajáis","viajan"],pret:["viajé","viajaste","viajó","viajamos","viajasteis","viajaron"]},
+  {inf:"bailar",cn:"跳舞",pres:["bailo","bailas","baila","bailamos","bailáis","bailan"],pret:["bailé","bailaste","bailó","bailamos","bailasteis","bailaron"]},
+  {inf:"cocinar",cn:"煮飯",pres:["cocino","cocinas","cocina","cocinamos","cocináis","cocinan"],pret:["cociné","cocinaste","cocinó","cocinamos","cocinasteis","cocinaron"]},
+  {inf:"ayudar",cn:"幫忙",pres:["ayudo","ayudas","ayuda","ayudamos","ayudáis","ayudan"],pret:["ayudé","ayudaste","ayudó","ayudamos","ayudasteis","ayudaron"]},
+  {inf:"correr",cn:"跑",pres:["corro","corres","corre","corremos","corréis","corren"],pret:["corrí","corriste","corrió","corrimos","corristeis","corrieron"]},
+  {inf:"abrir",cn:"打開",pres:["abro","abres","abre","abrimos","abrís","abren"],pret:["abrí","abriste","abrió","abrimos","abristeis","abrieron"]},
+  {inf:"pensar",cn:"想;打算",pres:["pienso","piensas","piensa","pensamos","pensáis","piensan"],pret:["pensé","pensaste","pensó","pensamos","pensasteis","pensaron"]},
+  {inf:"empezar",cn:"開始",pres:["empiezo","empiezas","empieza","empezamos","empezáis","empiezan"],pret:["empecé","empezaste","empezó","empezamos","empezasteis","empezaron"]},
+  {inf:"cerrar",cn:"關",pres:["cierro","cierras","cierra","cerramos","cerráis","cierran"],pret:["cerré","cerraste","cerró","cerramos","cerrasteis","cerraron"]},
+  {inf:"entender",cn:"聽懂;理解",pres:["entiendo","entiendes","entiende","entendemos","entendéis","entienden"],pret:["entendí","entendiste","entendió","entendimos","entendisteis","entendieron"]},
+  {inf:"preferir",cn:"比較喜歡",pres:["prefiero","prefieres","prefiere","preferimos","preferís","prefieren"],pret:["preferí","preferiste","prefirió","preferimos","preferisteis","prefirieron"]},
+  {inf:"dormir",cn:"睡覺",pres:["duermo","duermes","duerme","dormimos","dormís","duermen"],pret:["dormí","dormiste","durmió","dormimos","dormisteis","durmieron"]},
+  {inf:"volver",cn:"回來",pres:["vuelvo","vuelves","vuelve","volvemos","volvéis","vuelven"],pret:["volví","volviste","volvió","volvimos","volvisteis","volvieron"]},
+  {inf:"encontrar",cn:"找到",pres:["encuentro","encuentras","encuentra","encontramos","encontráis","encuentran"],pret:["encontré","encontraste","encontró","encontramos","encontrasteis","encontraron"]},
+  {inf:"jugar",cn:"玩;打(球)",pres:["juego","juegas","juega","jugamos","jugáis","juegan"],pret:["jugué","jugaste","jugó","jugamos","jugasteis","jugaron"]},
+  {inf:"repetir",cn:"重複",pres:["repito","repites","repite","repetimos","repetís","repiten"],pret:["repetí","repetiste","repitió","repetimos","repetisteis","repitieron"]},
+  {inf:"conocer",cn:"認識",pres:["conozco","conoces","conoce","conocemos","conocéis","conocen"],pret:["conocí","conociste","conoció","conocimos","conocisteis","conocieron"]},
+  {inf:"traer",cn:"帶來",pres:["traigo","traes","trae","traemos","traéis","traen"],pret:["traje","trajiste","trajo","trajimos","trajisteis","trajeron"]},
+  {inf:"oír",cn:"聽見",pres:["oigo","oyes","oye","oímos","oís","oyen"],pret:["oí","oíste","oyó","oímos","oísteis","oyeron"]},
+  {inf:"leer",cn:"閱讀",pres:["leo","lees","lee","leemos","leéis","leen"],pret:["leí","leíste","leyó","leímos","leísteis","leyeron"]},
+  {inf:"creer",cn:"相信;認為",pres:["creo","crees","cree","creemos","creéis","creen"],pret:["creí","creíste","creyó","creímos","creísteis","creyeron"]}
 ];
 let vbTense="pres", vbQ=null, vbScore={ok:0,total:0};
 /* 動詞紀錄:每個「動詞|時態」練過幾次、答對幾次,存起來;出題時錯得多的動詞比較常出 */
@@ -6502,7 +6595,22 @@ const VIRR={
   decir:{fut:"dir",presubj:["diga","digas","diga","digamos","digáis","digan"]},
   venir:{fut:"vendr",presubj:["venga","vengas","venga","vengamos","vengáis","vengan"]},
   poner:{fut:"pondr",presubj:["ponga","pongas","ponga","pongamos","pongáis","pongan"]},
-  salir:{fut:"saldr",presubj:["salga","salgas","salga","salgamos","salgáis","salgan"]}
+  salir:{fut:"saldr",presubj:["salga","salgas","salga","salgamos","salgáis","salgan"]},
+  llegar:{presubj:["llegue","llegues","llegue","lleguemos","lleguéis","lleguen"]},
+  buscar:{presubj:["busque","busques","busque","busquemos","busquéis","busquen"]},
+  pensar:{presubj:["piense","pienses","piense","pensemos","penséis","piensen"]},
+  empezar:{presubj:["empiece","empieces","empiece","empecemos","empecéis","empiecen"]},
+  cerrar:{presubj:["cierre","cierres","cierre","cerremos","cerréis","cierren"]},
+  entender:{presubj:["entienda","entiendas","entienda","entendamos","entendáis","entiendan"]},
+  preferir:{presubj:["prefiera","prefieras","prefiera","prefiramos","prefiráis","prefieran"]},
+  dormir:{presubj:["duerma","duermas","duerma","durmamos","durmáis","duerman"]},
+  volver:{presubj:["vuelva","vuelvas","vuelva","volvamos","volváis","vuelvan"]},
+  encontrar:{presubj:["encuentre","encuentres","encuentre","encontremos","encontréis","encuentren"]},
+  jugar:{presubj:["juegue","juegues","juegue","juguemos","juguéis","jueguen"]},
+  repetir:{presubj:["repita","repitas","repita","repitamos","repitáis","repitan"]},
+  conocer:{presubj:["conozca","conozcas","conozca","conozcamos","conozcáis","conozcan"]},
+  traer:{presubj:["traiga","traigas","traiga","traigamos","traigáis","traigan"]},
+  "oír":{fut:"oir",presubj:["oiga","oigas","oiga","oigamos","oigáis","oigan"]}
 };
 VERBOS.forEach(v=>{ const x=VIRR[v.inf]||{};
   v.imp=x.imp||regImp(v.inf);
