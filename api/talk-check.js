@@ -63,12 +63,15 @@ export default async function handler(req, res) {
     if (!typed || !q || !/\p{L}/u.test(typed)) return res.status(400).json({ error: "bad_input" });
 
     const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
-    const g = await bump(`${NS}g:${day}`);
-    if (g > PER_DAY) return res.status(429).json({ error: "day_full", left: 0 });
-    const ipn = await bump(`${NS}ip:${day}:${ip}`);
-    if (ipn > PER_IP) return res.status(429).json({ error: "ip_full", left: 0 });
+    // 由窄到寬:瀏覽器 → IP → 全站。被擋下的那層和它之前加過的都退回,一台機器換 cid 狂打也吃不掉全站的額度(2026-11-10 安全審查)
+    const ik = `${NS}ip:${day}:${ip}`, gk = `${NS}g:${day}`;
     const c = await bump(ck);
-    if (c > PER_CID) return res.status(429).json({ error: "cid_full", left: 0 });
+    if (c > PER_CID) { await kv(["DECR", ck]); return res.status(429).json({ error: "cid_full", left: 0 }); }
+    const ipn = await bump(ik);
+    if (ipn > PER_IP) { await kv(["DECR", ik]); await kv(["DECR", ck]); return res.status(429).json({ error: "ip_full", left: PER_CID - c + 1 }); }
+    const g = await bump(gk);
+    if (g > PER_DAY) { await kv(["DECR", gk]); await kv(["DECR", ik]); await kv(["DECR", ck]); return res.status(429).json({ error: "day_full", left: PER_CID - c + 1 }); }
+    const undo = () => Promise.all([kv(["DECR", ck]), kv(["DECR", ik]), kv(["DECR", gk])]);   // 呼叫前就失敗(沒花錢)才三層全退;呼叫後才失敗只退瀏覽器那層,IP 與全站照算
 
     const client = new Anthropic();
     let msg;
@@ -81,7 +84,7 @@ export default async function handler(req, res) {
         messages: [{ role: "user", content: `對方說:${q}(${qcn})\n範例回答(只供參考,不是標準答案):${model}\n學生回答:${typed}` }],
       });
     } catch (e) {
-      await kv(["DECR", ck]);
+      await undo();
       if (e instanceof Anthropic.RateLimitError) return res.status(503).json({ error: "busy", left: PER_CID - c + 1 });
       if (e instanceof Anthropic.APIError) { console.error("talk-check api error", e.status, e.message); return res.status(503).json({ error: "ai_error", left: PER_CID - c + 1 }); }
       throw e;
