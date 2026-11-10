@@ -6341,17 +6341,20 @@ function dlOral(){ const box=$("#dl-oral"); if(!box) return; const d=dlD(), st=d
     $("#dl-done").onclick=()=>dlFinish();
     const mic=$("#dl-mic");
     mic.onclick=()=>{ if(dlOn){ dlFinish(); return; }
-      dlOn=true; dlS.t0=Date.now(); $("#dl-done").disabled=false; clearInterval(dlTimer);
-      dlTimer=setInterval(()=>{ if(!dlOn){ clearInterval(dlTimer); return; } dlS.secs=Math.round((Date.now()-dlS.t0)/1000); const c=$("#dl-clk"); if(c) c.textContent=dlMMSS(dlS.secs); if(dlS.secs>=d.max){ showToast("3 分鐘到了。"); dlFinish(); } },500);
-      if(!SR){ mic.disabled=true; mic.textContent="計時中…"; const ta=$("#dl-type"); ta.oninput=e=>{ dlS.txt=e.target.value; }; ta.focus(); return; }
-      mic.classList.add("listening"); mic.innerHTML=svgIcon(ICON.mic,16)+" 正在聽… 講完再按一次";
+      dlOn=true; $("#dl-done").disabled=false; clearInterval(dlTimer);
+      const tick=()=>{ dlS.t0=Date.now(); clearInterval(dlTimer);
+        dlTimer=setInterval(()=>{ if(!dlOn){ clearInterval(dlTimer); return; } dlS.secs=Math.round((Date.now()-dlS.t0)/1000); const c=$("#dl-clk"); if(c) c.textContent=dlMMSS(dlS.secs); if(dlS.secs>=d.max){ showToast("3 分鐘到了。"); dlFinish(); } },500); };
+      if(!SR){ tick(); mic.disabled=true; mic.textContent="計時中…"; const ta=$("#dl-type"); ta.oninput=e=>{ dlS.txt=e.target.value; }; ta.focus(); return; }
+      mic.innerHTML=svgIcon(ICON.mic,16)+" 等麥克風…";
       const v=pickESVoice(), live=$("#dl-live");
+      /* 瀏覽器在問權限時頁面看不到那個視窗:等 4 秒還沒開始聽,就提示去按「允許」 */
+      setTimeout(()=>{ if(dlOn&&!dlS.heard&&live) live.innerHTML=`<b>還沒開始聽。</b>看一下網址列旁邊,有沒有問你「允許使用麥克風」,按允許。沒看到的話,點網址列左邊的圖示,把麥克風改成允許。`; },4000);
       const startRec=()=>{ let rec; try{ rec=new SR(); }catch(_){ showToast("無法啟動語音辨識。"); return; }
         rec.lang=(v&&v.lang)||"es-MX"; rec.continuous=true; rec.interimResults=true; dlRec=rec;
         rec.onresult=ev=>{ let interim="";
           for(let i=ev.resultIndex;i<ev.results.length;i++){ const r=ev.results[i]; if(r.isFinal) dlS.txt=(dlS.txt+" "+r[0].transcript).trim(); else interim+=r[0].transcript; }
           if(live) live.innerHTML=esc(dlS.txt)+(interim?` <i>${esc(interim)}</i>`:""); };
-        rec.onstart=()=>{ if(!dlS.heard){ dlS.heard=1; dlS.t0=Date.now(); } };   /* 從真的開始聽才計時,權限視窗那段不算 */
+        rec.onstart=()=>{ if(!dlS.heard){ dlS.heard=1; tick(); mic.classList.add("listening"); mic.innerHTML=svgIcon(ICON.mic,16)+" 正在聽… 講完再按一次"; if(live) live.innerHTML=`<i>開始講吧。停頓一下沒關係,會繼續聽。</i>`; } };   /* 從真的開始聽才計時、才說「正在聽」,權限視窗那段不算 */
         rec.onerror=e=>{ if(e.error==="not-allowed"||e.error==="service-not-allowed"||e.error==="audio-capture"){
           dlStop(); dlS.secs=0; dlS.heard=0; showToast(e.error==="audio-capture"?"找不到麥克風。":"請允許瀏覽器使用麥克風,再按一次開始講。"); dlOral(); } };
         rec.onend=()=>{ if(dlOn&&dlRec===rec) startRec(); };   /* Chrome 停頓太久會自己停:還在講就接著聽 */
@@ -6386,12 +6389,12 @@ function dlResult(){ const box=$("#dl-oral"), t=dlTema(dlS.t), rec=dlS.rec, d=dl
     <details class="dl-help"><summary>看範例回答</summary>${t.m.map(m=>`<div class="dl-m"><span lang="es">${esc(m[0])}</span> ${spkHTML(m[0])}<span class="cn">${esc(m[1])}</span></div>`).join("")}</details>
     <div class="dl-acts"><button class="btn sec" id="dl-again" type="button">再練一題</button><button class="btn sec" id="dl-same" type="button">同一題再講一次</button></div>`;
   dlBindSpk(box);
-  $("#dl-txt").oninput=e=>{ rec.txt=e.target.value.slice(0,3000); if(rec.txt.trim()&&!dl.log.includes(rec)){ dl.log.unshift(rec); dl.log=dl.log.slice(0,30); } dlSave(); dlLog(); };
+  $("#dl-txt").oninput=e=>{ rec.txt=e.target.value.slice(0,3000); if(rec.txt.trim()&&!dl.log.includes(rec)){ dl.log.unshift(rec); dl.log=dl.log.slice(0,30); } dlSave(); dlLog(); const a=$("#dl-ask"); if(a&&!rec.ai) a.hidden=!rec.txt.trim(); };
   box.querySelectorAll(".dl-chk input").forEach(c=>c.onchange=()=>{ rec.chk=[...box.querySelectorAll(".dl-chk input:checked")].map(x=>+x.dataset.i); dlSave(); dlLog(); });
   $("#dl-again").onclick=()=>{ dlS={st:"pick"}; dlOral(); };
   $("#dl-same").onclick=()=>{ dlS={st:"speak",t:t.id,notes:dlS.notes||"",txt:"",secs:0}; dlOral(); };
   const ask=$("#dl-ask"), out=$("#dl-ai");
-  if(rec.ai) ask.hidden=true;
+  if(rec.ai||!String(rec.txt||"").trim()) ask.hidden=true;
   const locked=()=>!aiDevKey()&&(aiUsedLocal()>=AI_MAX||aiLeft===0);
   if(locked()){ ask.disabled=true; }
   if(aiLeft==null) fetch("/api/talk-check?cid="+aiCid(),{cache:"no-store",headers:aiHdr()}).then(r=>r.ok?r.json():null).then(j=>{ if(j&&typeof j.left==="number"){ aiLeft=j.left>=999?j.left:Math.min(j.left,Math.max(0,AI_MAX-aiUsedLocal())); const l=$("#dl-ai-left"); if(l) l.textContent=aiLeftTxt(); if(aiLeft===0&&ask) ask.disabled=true; } else if(ask) ask.hidden=true; }).catch(()=>{ if(ask) ask.hidden=true; });
