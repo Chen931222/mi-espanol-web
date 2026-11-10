@@ -711,6 +711,15 @@ body.rt-bar-on #toast-box{bottom:92px}
 .vg-end{text-align:center;padding:26px 10px}
 .vg-end .big{font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--terra-deep)}
 
+/* 2026-11-10 對話打字請 AI 看 */
+.tk-ai:empty{display:none}
+.tk-ai{margin:10px 0 4px;padding:10px 12px;border-left:3px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 60%,var(--card))}
+.tk-ai.good{border-left-color:var(--good-deep,#38592A)}
+.tk-ai.bad{border-left-color:var(--terra)}
+.tk-ai-src{font-size:.75rem;color:var(--ink-soft)}
+#tk-ask small{display:block;font-size:.72rem;font-weight:600;opacity:.85}
+#tk-ask[hidden]{display:none}
+.tk-acts .btn.sec{background:var(--card);color:var(--ink);border:1.5px solid var(--line-strong)}
 /* 2026-11-10 文法例句逐字解析;文法頁籤列改不透明(手機上底下的字會透出來) */
 .gram-jump{background:var(--paper)}
 .ej-wb{display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:6px 0;min-height:36px;background:none;border:0;font:inherit;font-size:.8rem;font-weight:700;color:var(--ink-soft);cursor:pointer;letter-spacing:.02em}
@@ -4760,11 +4769,12 @@ const LFKEY="miEspanol.listenFirst"; let listenFirst=!!lsGet(LFKEY,false), tkSho
 function talkCommit(said,cn,kind,pct){
   const it=DATA.dialogos[dScene].items[dTalkStep];
   dTalkLog.push({q:it.q,qcn:it.qcn,said:said,cn:cn,kind:kind,pct:(pct==null?null:pct)});
-  if(kind==="fix" || (kind==="typed" && !(pct!=null && pct>=0.6))) rtNoteWeak(it);
+  const good=kind==="ai" || (kind!=="typed"&&kind!=="aino"&&kind!=="fix") || (kind==="typed"&&pct!=null&&pct>=0.6);
+  if(kind==="fix" || !good) rtNoteWeak(it);
   /* 錯題本:「請對方重說」記成聽力題(重練時先聽對方那句);打字沒對上範例不算答錯(系統判斷不了),
      但記一筆「對話範例」,重練時把範例句排回來 */
   if(kind==="fix") recordMistake("對話聽力", it.qcn, it.q, "");
-  else if(kind==="typed" && !(pct!=null && pct>=0.6)) recordMistake("對話範例", "對方:「"+it.qcn+"」→ 你:「"+it.acn+"」", it.a, said);
+  else if(kind==="aino") recordMistake("對話範例", "對方:「"+it.qcn+"」→ 你:「"+it.acn+"」", it.a, said);   /* 2026-11-10:只有 AI 看過、說有錯的才記;本機判斷不了的不算錯 */
   if(kind==="fix"){
     /* 請對方重說 → 不前進、不計分(不然按著它就能刷分),對方把同一句再說一次。
        這才是這句話在真實對話裡的作用,話題也不會被截斷。 */
@@ -4773,13 +4783,15 @@ function talkCommit(said,cn,kind,pct){
     setTimeout(()=>speak(it.q,null,0.55),260);
     return;
   }
-  dTalkStep++; dTalkFix=0; rtTalkSave(); secLog("talk", kind!=="typed" || (pct!=null && pct>=0.6));
-  if(kind!=="typed" || (pct!=null && pct>=0.6)){ award(1); cnt("dialog"); }
+  dTalkStep++; dTalkFix=0; rtTalkSave(); secLog("talk", good);
+  if(good){ award(1); cnt("dialog"); }
   if(dTalkStep>=DATA.dialogos[dScene].items.length) rtDone("talk",{said:dTalkLog.filter(t=>t.kind!=="fix").length});
   renderDaily(); renderTalk();
 }
 function talkBadge(t){
   if(t.kind==="fix") return '<span class="tk-badge util">請對方重說</span>';
+  if(t.kind==="ai") return '<span class="tk-badge ok">打字 · AI 看過</span>';
+  if(t.kind==="aino") return '<span class="tk-badge warn">打字 · AI 說有錯</span>';
   if(t.kind==="typed") return t.pct!=null && t.pct>=0.6
     ? `<span class="tk-badge ok">打字 · 對上 ${Math.round(t.pct*100)}%</span>`
     : '<span class="tk-badge warn">打字 · 未批改</span>';
@@ -4962,6 +4974,9 @@ function renderTalk(){
       return;
     }
     if(answering && rep.pct>=0.6){ vd.hidden=true; talkCommit(v,"","typed",rep.pct); return; }
+    /* 站上列的另一種回法,打出來也算(2026-11-10:原本只拿唯一那句範例比) */
+    if(answering){ const alt=talkAlts().map(a=>talkAnalyze(v,a.es,true)).find(r=>r.exact||r.accentOnly||r.genderOnlyOk||r.pct>=0.6);
+      if(alt){ vd.hidden=true; talkCommit(v,"","typed",alt.exact||alt.accentOnly||alt.genderOnlyOk?1:alt.pct); return; } }
 
     /* 到這裡就是本機判不到的區域:要嘛你在說別的話,要嘛跟範例句差太多。
        本機能講的都講完了,剩下的老實說不知道,不給分。 */
@@ -4970,12 +4985,16 @@ function renderTalk(){
     vd.innerHTML=`<div class="tk-v-h">${answering?"跟範例句說法不一樣":"你說要講別的,所以沒有拿範例句比對"}</div>
       ${answering?`<div class="tk-v-diff">${rep.diffHtml}</div>`:""}
       ${blocks.join("")}
-      <p class="tk-v-note"><b>整句對不對,這個網站判斷不了</b>,所以這句不計分,也不會隨便算你過。</p>
-      <p class="tk-v-note">這是照劇本走的對話,不是 AI:對方會照劇本問下一句,不會接你這句。</p>
-      <div class="tk-acts"><button class="btn" id="tk-keep">記下來,繼續下一句</button>
-        <button class="tk-link" id="tk-redo">我改一下</button></div>`;
+      <p class="tk-v-note"><b>整句對不對,本機判斷不了</b>。可以請 AI 看一下(每天 ${AI_MAX} 次),或直接記下來:不計分,也不算錯。</p>
+      <p class="tk-v-note">對方是照劇本走的:不管你回什麼,他都會問劇本的下一句。</p>
+      <div class="tk-ai" id="tk-ai"></div>
+      <div class="tk-acts"><button class="btn" id="tk-ask" type="button">請 AI 看這句<small id="tk-ai-left">${aiLeftTxt()}</small></button>
+        <button class="btn sec" id="tk-keep" type="button">記下來,繼續下一句</button>
+        <button class="tk-link" id="tk-redo" type="button">我改一下</button></div>`;
     $("#tk-keep").onclick=()=>talkCommit(v,"","typed",answering?rep.pct:null);
     $("#tk-redo").onclick=()=>{ vd.hidden=true; $("#tk-input").focus(); };
+    $("#tk-ask").onclick=()=>aiCheck(it,v,answering);
+    aiLeftLoad();
   };
   $("#tk-send").onclick=send;
   $("#tk-input").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); send(); } });
@@ -6721,6 +6740,33 @@ document.addEventListener("click",e=>{ const t=e.target; if(!t.closest) return;
     if(!box.innerHTML) box.innerHTML=b.dataset.ej.split("\n").map(ejBreak).join("");
     const open=box.hidden; box.hidden=!open; b.setAttribute("aria-expanded",open); b.textContent=open?"收起解析":"逐字解析"; return; }
   const c=t.closest(".ej-wbx .ejw-c"); if(c){ const w=c.querySelector(".ejw-w"); if(w) speak(w.textContent,c); } });
+
+/* ===== 2026-11-10 對話打字請 AI 看(/api/talk-check,Claude Haiku 5.5)=====
+   只在本機比對不上時出現;每個瀏覽器每天 4 次,次數在伺服器算。cid 是這台瀏覽器隨機產生的編號,
+   key 用 miEsp_ 開頭:同步碼、匯出不帶走(跟 miEsp_ev 同慣例)。AI 的判斷照實標成「AI 判斷,可能出錯」。 */
+const AI_MAX=4, AICID="miEsp_aicid";
+let aiLeft=null;
+function aiCid(){ try{ let c=localStorage.getItem(AICID); if(!/^[a-z0-9]{12,40}$/.test(c||"")){ c=(Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)).replace(/[^a-z0-9]/g,"").slice(0,20); localStorage.setItem(AICID,c); } return c; }catch(_){ return "anon"+String(Date.now()).slice(-10); } }
+function aiLeftTxt(){ return aiLeft==null?`每天 ${AI_MAX} 次`:`今天還剩 ${aiLeft} 次`; }
+function aiLeftShow(){ const el=$("#tk-ai-left"); if(el) el.textContent=aiLeftTxt(); const b=$("#tk-ask"); if(b&&aiLeft===0){ b.disabled=true; } }
+function aiLeftLoad(){ fetch("/api/talk-check?cid="+aiCid(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if(j&&typeof j.left==="number"){ aiLeft=j.left; aiLeftShow(); } else { const b=$("#tk-ask"); if(b) b.hidden=true; } }).catch(()=>{ const b=$("#tk-ask"); if(b) b.hidden=true; }); }
+const AI_V={ok:["good","AI:這句可以,接得上"],minor:["good","AI:意思對,有小地方可以改"],wrong:["bad","AI:這句有錯"],off_topic:["bad","AI:西文可以,但沒回答到對方"]};
+function aiCheck(it,v,answering){ const box=$("#tk-ai"), b=$("#tk-ask"); if(!box||!b) return;
+  b.disabled=true; box.className="tk-ai"; box.textContent="AI 在看…";
+  fetch("/api/talk-check",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({cid:aiCid(),q:it.q,qcn:it.qcn,model:it.a,typed:v,answering:answering})})
+    .then(r=>r.json().then(j=>[r.status,j])).then(([st,j])=>{
+      if(typeof j.left==="number"){ aiLeft=j.left; aiLeftShow(); }
+      if(st===429){ box.className="tk-ai bad"; box.textContent=j.error==="cid_full"?`今天 ${AI_MAX} 次用完了,明天再來。這句可以先記下來(不計分、不算錯)。`:"今天大家用 AI 的次數滿了,明天再試。"; return; }
+      if(st!==200||!AI_V[j.verdict]){ box.className="tk-ai bad"; box.textContent="AI 現在沒有回應,這次不扣次數。"; b.disabled=aiLeft===0; return; }
+      const [cls,head]=AI_V[j.verdict], same=strip(j.fixed)===strip(v);
+      box.className="tk-ai "+cls;
+      box.innerHTML=`<div class="tk-v-h">${head}</div>`+(same?"":`<div class="tk-v-pair">改成:<b lang="es">${esc(j.fixed)}</b> ${spkHTML(j.fixed)}</div>`)+
+        (j.note?`<p class="tk-v-note">${esc(j.note)}</p>`:"")+`<p class="tk-v-note tk-ai-src">AI 判斷,可能出錯。</p>`;
+      box.querySelectorAll(".spk").forEach(s=>s.onclick=e=>{ e.stopPropagation(); speak(s.dataset.t,s); });
+      const keep=$("#tk-keep"); b.hidden=true;
+      if(keep){ if(cls==="good"){ keep.textContent="記下來(算對)"; keep.classList.remove("sec"); keep.onclick=()=>talkCommit(v,"","ai",1); }
+        else { keep.textContent="記下來,繼續下一句"; keep.onclick=()=>talkCommit(v,"","aino",0); } }
+    }).catch(()=>{ box.className="tk-ai bad"; box.textContent="連不上,這次不扣次數。"; b.disabled=false; }); }
 
 /* ===== 2026-11-10 綜合練習:混合一輪 ===== */
 const MX_FIX=[{"t": ["Frank", "está", "ingeniero."], "w": 1, "g": "es", "ok": "Frank es ingeniero.", "why": "職業是身分 → ser,不是 estar"}, {"t": ["Silvia", "es", "maestro", "de", "primaria."], "w": 2, "g": "maestra", "ok": "Silvia es maestra de primaria.", "why": "Silvia 是女生 → maestra"}, {"t": ["Compro", "tres", "yogurs."], "w": 2, "g": "yogures.", "ok": "Compro tres yogures.", "why": "子音結尾的名詞,複數加 -es"}, {"t": ["Vamos", "a el", "supermercado."], "w": 1, "g": "al", "ok": "Vamos al supermercado.", "why": "a + el 一定縮成 al"}, {"t": ["Este", "fin", "de", "semana", "voy", "al", "Taipéi."], "w": 5, "g": "a", "ok": "Este fin de semana voy a Taipéi.", "why": "城市不加冠詞,所以只有 a"}, {"t": ["A", "mis", "padres", "les", "gustan", "la", "fruta."], "w": 4, "g": "gusta", "ok": "A mis padres les gusta la fruta.", "why": "gustar 跟著喜歡的東西變:la fruta 一個 → gusta"}, {"t": ["Ella", "no", "habla", "italiana."], "w": 3, "g": "italiano.", "ok": "Ella no habla italiano.", "why": "語言永遠是陽性"}, {"t": ["Luigi", "es", "italiana."], "w": 2, "g": "italiano.", "ok": "Luigi es italiano.", "why": "國籍跟著人變;Luigi 是男生"}, {"t": ["Soy", "taiwaneso."], "w": 1, "g": "taiwanés.", "ok": "Soy taiwanés.", "why": "陽性是 taiwanés,沒有 -o"}, {"t": ["Mi", "hermana", "ya", "es", "casada."], "w": 3, "g": "está", "ok": "Mi hermana ya está casada.", "why": "婚姻狀態口語用 estar"}, {"t": ["Mi", "clase", "de", "español", "es", "tres", "horas."], "w": 4, "g": "dura", "ok": "Mi clase de español dura tres horas.", "why": "「持續多久」用 durar"}, {"t": ["El", "piso", "tiene", "uno", "sofá."], "w": 3, "g": "un", "ok": "El piso tiene un sofá.", "why": "陽性名詞前 uno 變 un"}, {"t": ["Estes", "son", "mis", "amigos."], "w": 0, "g": "Estos", "ok": "Estos son mis amigos.", "why": "陽性複數是 estos,沒有 estes"}, {"t": ["Todas", "las", "noche", "leo", "un", "poco."], "w": 2, "g": "noches", "ok": "Todas las noches leo un poco.", "why": "las 是複數,名詞也要複數"}, {"t": ["Los", "domingos", "ver", "una", "película."], "w": 2, "g": "veo", "ok": "Los domingos veo una película.", "why": "動詞要依主詞變化:我 → veo"}, {"t": ["Es", "una", "persona", "that", "sabe", "disfrutar."], "w": 3, "g": "que", "ok": "Es una persona que sabe disfrutar.", "why": "英文的 that,西語用 que"}, {"t": ["Me", "interesa", "la", "música", "de", "clásica."], "w": 4, "g": "", "ok": "Me interesa la música clásica.", "why": "種類直接接形容詞,不加 de"}, {"t": ["Esta", "noche", "vemos", "el", "juego", "de", "fútbol."], "w": 4, "g": "partido", "ok": "Esta noche vemos el partido de fútbol.", "why": "球賽是 partido;juego 是遊戲"}, {"t": ["Hay", "que", "por", "practicar", "todos", "los", "días."], "w": 2, "g": "", "ok": "Hay que practicar todos los días.", "why": "hay que 後面直接接原形"}, {"t": ["Hay", "que", "aprender", "cosas", "nueves."], "w": 4, "g": "nuevas.", "ok": "Hay que aprender cosas nuevas.", "why": "cosas 陰性複數 → nuevas"}, {"t": ["Voy", "a", "la", "oficina", "caminanda."], "w": 4, "g": "caminando.", "ok": "Voy a la oficina caminando.", "why": "現在分詞 -ando 不分陰陽"}, {"t": ["Irene", "vive", "en", "Tainan", "por", "cinco", "años."], "w": 4, "g": "desde hace", "ok": "Irene vive en Tainan desde hace cinco años.", "why": "從過去持續到現在:desde hace + 時間"}];
