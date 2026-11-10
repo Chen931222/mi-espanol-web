@@ -6791,7 +6791,7 @@ function tqHist(){ return lsGet(TQKEY,[]); }
 function tqStartView(){ const box=$("#tq-card"); const h=tqHist();
   box.innerHTML=`<div class="mx-start"><h3 class="mx-h">A1 程度測驗 · 20 題</h3><p class="mx-sub">單字 6 題、文法 6 題、動詞 4 題、聽力 4 題,限時 15 分鐘。作答時不給答案,交卷後才看分數、各類答對幾成和詳解,錯的收進錯題本。<br>這不是正式檢定,只是用網站題庫估你目前的掌握度。</p>`+
     `<button class="btn vh-act mx-go" id="tq-go" type="button">開始測驗<small>15 分鐘</small></button>`+
-    (h.length?`<div class="tq-hist"><b>最近的成績</b>`+h.slice(0,3).map(r=>`<div class="tq-hrow"><span>${esc(r.d)}</span><span>${r.ok} / ${r.n}</span><span class="tq-hcat">${Object.keys(r.c).map(k=>TQ_CAT[k]+" "+r.c[k][0]+"/"+r.c[k][1]).join(" · ")}</span></div>`).join("")+`</div>`:"")+`</div>`;
+    (h.length?`<div class="tq-hist"><b>最近的成績</b>`+h.filter(r=>r&&typeof r==="object").slice(0,3).map(r=>{ const c=(r.c&&typeof r.c==="object")?r.c:{}; return `<div class="tq-hrow"><span>${esc(String(r.d||""))}</span><span>${+r.ok||0} / ${+r.n||0}</span><span class="tq-hcat">${Object.keys(c).filter(k=>TQ_CAT[k]&&Array.isArray(c[k])).map(k=>esc(TQ_CAT[k])+" "+(+c[k][0]||0)+"/"+(+c[k][1]||0)).join(" · ")}</span></div>`; }).join("")+`</div>`:"")+`</div>`;
   $("#tq-go").onclick=tqStart; }
 function tqStart(){ const canSpeak=("speechSynthesis" in window); const Q=[];
   const voc=shuffleA(CARDS.filter(w=>w.lv==="A1"&&w.cn&&w.es.split(" ").length<=2).slice());
@@ -7052,13 +7052,13 @@ function errRuleTip(k){
   if(/^verb:/.test(k)){ const v=VERBOS.find(x=>x.inf===k.slice(5)); return v?`<p class="er-tip">現在式 <span lang="es">${v.pres.map(esc).join(" · ")}</span><br>簡單過去 <span lang="es">${v.pret.map(esc).join(" · ")}</span></p>`:""; }
   const g=DATA.gramatica.find(x=>x.title===k.split("|")[0]); if(!g||!g.points) return "";
   return `<ul class="er-pts">`+g.points.slice(0,3).map(p=>`<li><b>${p.k}</b>${p.v?" — "+p.v:""}</li>`).join("")+`</ul>`; }
-function errItem(e,i){ return `<li class="er-item"><div class="er-q">${esc((e.p||"").replace(/^改哪個字\?/,"寫出改正後的字:"))}</div><div class="er-ans"><span class="er-ok" lang="es">${esc(e.a)}</span>${e.m?` <span class="er-mine">你寫 <s lang="es">${esc(e.m)}</s></span>`:""}${(e.n||1)>1?` <span class="er-n">錯 ${e.n} 次</span>`:""}</div><button class="tk-link er-redo" type="button" data-ei="${i}">重做</button></li>`; }
+function errItem(e,i){ return `<li class="er-item"><div class="er-q">${esc((e.p||"").replace(/^改哪個字\?/,"寫出改正後的字:"))}</div><div class="er-ans"><span class="er-ok" lang="es">${esc(e.a)}</span>${e.m?` <span class="er-mine">你寫 <s lang="es">${esc(e.m)}</s></span>`:""}${(+e.n||1)>1?` <span class="er-n">錯 ${+e.n||1} 次</span>`:""}</div><button class="tk-link er-redo" type="button" data-ei="${i}">重做</button></li>`; }
 function errStartDrill(list){ drill={list:list.slice(),i:0,ok:0}; renderDrill(); const dv=$("#err-drill"); if(dv) dv.scrollIntoView({block:"center",behavior:"smooth"}); }
 function renderErr(){
   const box=$("#pg-err"), h=$("#pg-err-h"); if(!box)return;
   h.innerHTML=svgIcon(ICON.edit,15)+' 錯題本 · Mis errores <span class="sub">'+errores.length+' 筆 · 練習答錯自動收進來(口說除外)</span>';
   if(!errores.length){ box.innerHTML='<p class="game-tip" style="margin:0">目前沒有錯題,太強了!之後在練習裡答錯,題目都會自動收進這裡讓你重練。</p><div id="err-drill"></div>'; return; }
-  const groups={}; errores.forEach((e,i)=>{ const k=errRule(e); (groups[k]=groups[k]||{k:k,items:[],n:0}).items.push(i); groups[k].n+=(e.n||1); });
+  const groups={}; errores.forEach((e,i)=>{ const k=errRule(e); (groups[k]=groups[k]||{k:k,items:[],n:0}).items.push(i); groups[k].n+=(+e.n||1); });
   /* ★:同一條文法(或同一個動詞)錯 2 次以上;單字、聽力這類大雜燴只在「同一題錯 2 次以上」才打 ★,不然字一多就全部有星 */
   Object.values(groups).forEach(g=>{ g.star=ERR_SPECIAL[g.k]?g.items.some(i=>(errores[i].n||1)>=2):g.n>=2; });
   const gl=Object.values(groups).sort((x,y)=>(y.star-x.star)||y.n-x.n);
