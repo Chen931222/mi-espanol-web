@@ -4264,7 +4264,7 @@ function ejHTML(ej,cn){ if(!ej) return "";
       ["字詞小知識",["課本裡的易混字","重音辨義(mas / sí / sé…)","歌詞口語縮寫"]] ]},
     {id:"g-conj", h:"動詞變化表", es:"Conjugaciones", d:"50 個常用動詞,分成規則、會變母音、不規則三組。每張表有現在式、簡單過去、未完成過去、未來式、現在虛擬式;手機上表格可以左右滑。", subs:[] }
   ];
-  const BASIC=["現在完成式 he + 過去分詞","不規則過去分詞","現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","現在進行式","ir a + 原形","簡單過去 vs 未完成過去","名詞的陰陽性與單複數","冠詞 un / el","所有格 mi / tu / su","gustar 類動詞","tener 慣用語","現在幾點 ¿Qué hora es?","去哪裡、在哪裡、怎麼去","por 還是 para"];
+  const BASIC=["現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","現在進行式","ir a + 原形","簡單過去 vs 未完成過去","名詞的陰陽性與單複數","冠詞 un / el","所有格 mi / tu / su","gustar 類動詞","tener 慣用語","現在幾點 ¿Qué hora es?","去哪裡、在哪裡、怎麼去","por 還是 para"];
   const VGROUP={stem:["pedir","pensar","empezar","cerrar","entender","preferir","dormir","volver","encontrar","jugar","repetir"],
     irr:["ser","estar","ir","tener","hacer","poder","querer","decir","ver","dar","saber","venir","poner","salir","conocer","traer","oír"]};
   const CONJ_ORDER=["ser","estar","ir","tener","hacer","poder","querer","saber","decir","poner","pedir","preferir","creer","comer","ayudar"];
@@ -4299,12 +4299,12 @@ function ejHTML(ej,cn){ if(!ej) return "";
     hd.onclick=tog; hd.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); tog(); } };
     return el; }
   const tableHTML=g=>`<table>${g.conj.map((c,i)=>`<tr><td class="pron">${DATA.pronombres[i]}</td><td class="conj">${c}</td></tr>`).join("")}</table>`+ejHTML(g.ej,g.ejcn);
-  const GLV_B1=["虛擬式 Subjuntivo","como si(彷彿)+ 過去虛擬式","虛擬式觸發詞(para que / hasta que…)","如果…就…(Si + hubiera)","過去完成式 Pluscuamperfecto(había + 過去分詞)","完成式不定詞(haber + 過去分詞)","se 的六種用法","使役 hacer + 原形","無人稱說法(uno / dicen que)","中性 lo(lo + 形容詞)","歌詞口語縮寫"], GLV_A2=["簡單過去 vs 未完成過去","簡單過去的常見不規則","ir a + 原形","受詞代名詞位置","雙受詞代名詞(te lo / se lo)","比較級與最高級","命令式 Imperativo","義務:hay que / tener que / deber","現在進行式","邀約與拒絕","講過去的時間詞","現在完成式 he + 過去分詞","不規則過去分詞"];   /* 2026-11-10:B1 以上 = DELE A2 範例考卷用不到;A2 常考 = 範例考卷常用 */
+  const GLV_B1=["虛擬式 Subjuntivo","como si(彷彿)+ 過去虛擬式","虛擬式觸發詞(para que / hasta que…)","如果…就…(Si + hubiera)","過去完成式 Pluscuamperfecto(había + 過去分詞)","完成式不定詞(haber + 過去分詞)","使役 hacer + 原形","無人稱說法(uno / dicen que)","中性 lo(lo + 形容詞)","歌詞口語縮寫"], GLV_A2=["簡單過去 vs 未完成過去","簡單過去的常見不規則","ir a + 原形","受詞代名詞位置","雙受詞代名詞(te lo / se lo)","比較級與最高級","命令式 Imperativo","義務:hay que / tener que / deber","現在進行式","邀約與拒絕","講過去的時間詞","現在完成式 he + 過去分詞","不規則過去分詞","條件式 Condicional"];   /* 2026-11-10:GLV_B1 = 2020 年 DELE A2 官方範例考卷沒用到(畫面寫「考卷沒用到」,不寫 B1:只看一份考卷,官方課程大綱當天打不開);GLV_A2 = 範例考卷常用 */
   function noteCard(g,sub){ const gk=gKey(g);
     const el=makeCard({title:g.title,mean:g.mean,tag:g.tag,keys:[gk],label:g.title,
       body:g.type==="table"?tableHTML(g):g.points.map((p,pi)=>`<div class="gpoint"><div><span class="gk">${p.k}</span>${p.v?` <span class="gv">— ${p.v}</span>`:""}</div>${ejHTML(p.ej,p.ejcn)}${gPlusHTML((GPLUS[g.title]||[])[pi])}</div>`).join(""),
       search:[sub,g.title,g.mean||"",g.tag||""].concat((g.points||[]).map((p,pi)=>{ const x=(GPLUS[g.title]||[])[pi]||{}; return [p.k,p.v,p.ej,p.ejcn].concat((x.more||[]).map(m=>m.join(" ")),x.dlg?x.dlg.l.map(l=>l[1]+" "+l[2]):[]).join(" "); })).concat(g.type==="table"?[(g.conj||[]).join(" "),g.ej||"",g.ejcn||""]:[]).concat(BASIC.indexOf(g.title)>=0?["基礎"]:[]).join(" ")});
-    if(GLV_B1.includes(g.title)){ el.classList.add("lv-b1"); el.querySelector(".verb-mean").insertAdjacentHTML("beforebegin",'<span class="g-lv b1">B1 以上</span>'); }
+    if(GLV_B1.includes(g.title)){ el.classList.add("lv-b1"); el.querySelector(".verb-mean").insertAdjacentHTML("beforebegin",'<span class="g-lv b1" title="2020 年 DELE A2 官方範例考卷沒用到;不代表一定是 B1">考卷沒用到</span>'); }
     else if(GLV_A2.includes(g.title)){ el.querySelector(".verb-mean").insertAdjacentHTML("beforebegin",'<span class="g-lv a2">A2 常考</span>'); }
     if(BASIC.indexOf(g.title)>=0){ el.classList.add("basic"); el.querySelector(".verb-mean").insertAdjacentHTML("beforebegin",'<span class="g-basic">基礎</span>'); }
     return el; }
@@ -4328,8 +4328,8 @@ function ejHTML(ej,cn){ if(!ej) return "";
   const basicBtn=document.createElement("button"); basicBtn.type="button"; basicBtn.className="gram-basic-btn"; basicBtn.setAttribute("aria-pressed","false"); basicBtn.textContent="只看基礎";
   basicBtn.onclick=()=>{ const on=!verbList.classList.contains("only-basic"); verbList.classList.toggle("only-basic",on); basicBtn.setAttribute("aria-pressed",on); };
   jump.appendChild(basicBtn);
-  const a2Btn=document.createElement("button"); a2Btn.type="button"; a2Btn.className="gram-basic-btn"; a2Btn.setAttribute("aria-pressed","false"); a2Btn.textContent="藏起 B1 以上";
-  a2Btn.title="考 DELE A2 用不到的(虛擬式、過去完成式等)先藏起來";
+  const a2Btn=document.createElement("button"); a2Btn.type="button"; a2Btn.className="gram-basic-btn"; a2Btn.setAttribute("aria-pressed","false"); a2Btn.textContent="藏起考卷沒用到的";
+  a2Btn.title="2020 年 DELE A2 官方範例考卷沒用到的(虛擬式、過去完成式等)先藏起來;只看一份考卷,不是官方級別表";
   a2Btn.onclick=()=>{ const on=!verbList.classList.contains("only-a2"); verbList.classList.toggle("only-a2",on); a2Btn.setAttribute("aria-pressed",on); };
   jump.appendChild(a2Btn);
   verbList.appendChild(jump);
@@ -6379,7 +6379,7 @@ function dlInfo(){ const d=dlD(), box=$("#dl-info"); if(!box) return;
     `</tbody></table>
     <p class="dl-p">四科各 25 分,滿分 100。及格要 <b>60 分</b>,而且兩組<b>各至少 30 分</b>:閱讀＋寫作一組、<b>聽力＋口說</b>一組。口說考很好也救不了聽力太低。</p>
     <p class="dl-p">${esc(d.info.oral)}</p>`+(dl.lvl==="A2"?`
-    <p class="dl-p"><b>A2 範例考卷最常出現的主題</b>(2020 版官方範例,依出現次數):交通與旅行、購物與價格、工作、租房、休閒活動、家人與聚會、公家手續(護照、預約)、看醫生、餐廳。<b>文法</b>:現在完成式(hoy / esta semana 用 he + 過去分詞)、簡單過去、未完成過去和兩者的對比、ir a + 原形、me gustaría、受詞代名詞;<b>虛擬式不考</b>(B1 才考)。</p>
+    <p class="dl-p"><b>A2 範例考卷最常出現的主題</b>(2020 版官方範例,依出現次數):交通與旅行、購物與價格、工作、租房、休閒活動、家人與聚會、公家手續(護照、預約)、看醫生、餐廳。<b>文法</b>:現在完成式(hoy / esta semana 用 he + 過去分詞)、簡單過去、未完成過去和兩者的對比、ir a + 原形、me gustaría、受詞代名詞;<b>範例考卷沒用到虛擬式</b>(一般認為是 B1)。</p>
     <p class="dl-src">A2 結構以 Instituto Cervantes 2020 年版範例考卷(Modelo 0)為準;A1 整理自備考網站(官方說明 2026-11 改版中打不開)。報名前以官方公告為準。</p>`:`
     <p class="dl-src">A1 結構整理自備考網站(Instituto Cervantes 官方考試說明 2026-11 改版中打不開),時間、題數報名前以官方公告為準。</p>`); }
 function dlDates(){ const d=dlD(), box=$("#dl-dates"); if(!box) return;
