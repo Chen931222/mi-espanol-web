@@ -5827,7 +5827,7 @@ function aiCheck(it,v,answering){ const box=$("#tk-ai"), b=$("#tk-ask"); if(!box
       if(typeof j.left==="number"){ aiLeft=j.left; aiLeftShow(); }
       if(st===429){ box.className="tk-ai bad"; box.textContent=j.error==="cid_full"?`今天 ${AI_MAX} 次用完了,明天再來。這句可以先記下來(不計分、不算錯)。`:"今天大家用 AI 的次數滿了,明天再試。"; return; }
       if(st!==200||!AI_V[j.verdict]){ box.className="tk-ai bad"; box.textContent="AI 現在沒有回應,這次不扣次數。"; b.disabled=aiLeft===0; return; }
-      const [cls,head]=AI_V[j.verdict], same=strip(j.fixed)===strip(v);
+      const [cls,head]=AI_V[j.verdict], accK=x=>String(x||"").toLowerCase().replace(/[^a-záéíóúüñ]+/g," ").trim(), same=!j.fixed||accK(j.fixed)===accK(v);   /* 重音要算差別:只改重音也要顯示「改成」 */
       box.className="tk-ai "+cls;
       box.innerHTML=`<div class="tk-v-h">${head}</div>`+(same?"":`<div class="tk-v-pair">改成:<b lang="es">${esc(j.fixed)}</b> ${spkHTML(j.fixed)}</div>`)+
         (j.note?`<p class="tk-v-note">${esc(j.note)}</p>`:"")+`<p class="tk-v-note tk-ai-src">AI 判斷,可能出錯。</p>`;
