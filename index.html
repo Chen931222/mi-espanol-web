@@ -734,6 +734,27 @@ body.rt-bar-on #toast-box{bottom:92px}
 .g-tbl th{font-size:.72rem;white-space:nowrap}
 .ejw-vf,.ejw-vf2{display:block;font-size:.68rem;line-height:1.3;color:var(--ink-soft);white-space:nowrap;margin-top:2px}
 .ejw-vf2 b{color:var(--terra-deep)}
+/* 2026-11-10 並排 */
+.split{flex:1 1 0;min-width:0;max-width:760px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;border-left:1.5px solid var(--line-strong);background:var(--paper);z-index:5}
+.split[hidden]{display:none}
+.split-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1.5px solid var(--line);background:var(--paper-2)}
+.split-t{flex:1;font-weight:800;font-size:.9rem;color:var(--ink)}
+.split-b{font:inherit;font-size:.8rem;font-weight:700;min-height:36px;min-width:36px;padding:6px 10px;border:1.5px solid var(--line-strong);border-radius:9px;background:var(--card);color:var(--ink);cursor:pointer}
+.split-b:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+.split-b[data-sa="big"]{display:none}
+.split-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:22px 22px 60px;max-width:none;margin:0}
+.split-menu{position:fixed;z-index:200;display:flex;flex-direction:column;min-width:150px;padding:6px;background:var(--card);border:1.5px solid var(--line-strong);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.split-menu[hidden]{display:none}
+.split-menu button{font:inherit;font-size:.88rem;text-align:left;padding:9px 12px;border:0;background:none;border-radius:8px;color:var(--ink);cursor:pointer}
+.split-menu button:hover,.split-menu button:focus-visible{background:var(--paper-2);outline:none}
+.ms-tip{font-size:.78rem;color:var(--ink-soft);margin:-4px 0 8px;grid-column:1/-1}
+@media(max-width:860px){
+  .split{position:fixed;top:auto;max-width:none;left:0;right:0;bottom:calc(60px + env(safe-area-inset-bottom));height:50vh;z-index:55;border-left:0;border-top:2px solid var(--terra);border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.12);overflow:hidden}
+  body.split-big .split{height:calc(100vh - 140px)}
+  .split-b[data-sa="big"]{display:inline-block}
+  body.split-on .main{padding-bottom:50vh}
+  .split-body{padding:16px 16px 40px}
+}
 /* 2026-11-10 依課本查 */
 .vc-les{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:2px 0 10px}
 .vc-les-l{color:var(--ink-soft);font-size:.82rem;font-weight:700}
@@ -3508,9 +3529,10 @@ function mnavSync(id){
   msheet.querySelectorAll("button[data-id]").forEach(b=>{ const on=b.dataset.id===id; b.classList.toggle("on",on); if(on)b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
 }
 function show(id){
+  if(typeof SPLIT_ID!=="undefined"&&SPLIT_ID&&id===SPLIT_ID) splitClose();   /* 主畫面要開的正是側邊那頁:收回主畫面 */
   mnavSync(id);
   $$("button.tab").forEach((b,i)=>b.classList.toggle("active",TABS[i].id===id));
-  $$("section").forEach(s=>s.classList.remove("active","in"));
+  $$("section").forEach(s=>{ if(s.id!==SPLIT_ID) s.classList.remove("active","in"); });
   const el=document.getElementById(id); el.classList.add("active");
   /* 換分頁回到最上面。html 設了 scroll-behavior:smooth,這裡要瞬間跳,不然從長頁底部會慢慢滑上來 */
   try{ window.scrollTo({top:0,left:0,behavior:"instant"}); }catch(_){ window.scrollTo(0,0); }
@@ -5209,7 +5231,7 @@ function practiceGram(title,label){
   if($("#ex-fill").style.display==="none"){ const c=[...$$("#ex-mode .chip")].find(x=>/填空/.test(x.textContent)); if(c)c.click(); }
   newRound(false, idx.slice(0,5)); window.scrollTo(0,0); showToast("這一輪練「"+title.replace("|"," · ")+"」"); }
 /* 填空答錯時附「看文法」:跳回文法筆記那一條並展開 */
-function openGram(title){ show("gramatica"); const gi=$("#gram-search"); if(gi){ gi.value=""; gi.dispatchEvent(new Event("input")); }
+function openGram(title){ if(SPLIT_ID!=="gramatica") show("gramatica"); const gi=$("#gram-search"); if(gi){ gi.value=""; gi.dispatchEvent(new Event("input")); }
   const el=[...$$("#verb-list .verb")].find(c=>c.dataset.title===title||(c.dataset.keys||"").split("\n").indexOf(title)>=0); if(el){ const ly=el.closest(".gram-layer"); if(ly&&window.gramTab) window.gramTab(ly.id); el.classList.add("open"); const h=el.querySelector(".verb-head"); if(h) h.setAttribute("aria-expanded","true"); setTimeout(()=>el.scrollIntoView({block:"start",behavior:"smooth"}),80); } }
 /* 「檢查全部」只對填了的題;沒填的留著繼續作答 */
 function checkAll(){ round.forEach((_,pos)=>checkOne(pos)); const p=round.findIndex((_,i)=>!res[i]); if(p>=0) $(`.blank[data-i="${p}"]`,exList).focus(); }
@@ -6605,9 +6627,9 @@ function hfGo(i){ show("dialogos");
 
 const _showBase=show;
 show=function(id){ _showBase(id); closeNotePop();
-  try{ if(id!=="dialogos"&&$("#dialogos").classList.contains("dlg-open")) dlgPickRender(false);
-       if(id!=="vocabulario"&&$("#vocabulario").classList.contains("vc-open")) vcPickRender(false);
-       if(id!=="canciones"&&$("#canciones").classList.contains("song-open")) songPickRender(false); }catch(_){}
+  try{ if(id!=="dialogos"&&SPLIT_ID!=="dialogos"&&$("#dialogos").classList.contains("dlg-open")) dlgPickRender(false);
+       if(id!=="vocabulario"&&SPLIT_ID!=="vocabulario"&&$("#vocabulario").classList.contains("vc-open")) vcPickRender(false);
+       if(id!=="canciones"&&SPLIT_ID!=="canciones"&&$("#canciones").classList.contains("song-open")) songPickRender(false); }catch(_){}
   if(rtCrumbEl.dataset.sec&&rtCrumbEl.dataset.sec!==id) rtCrumbEl.remove(); document.body.classList.toggle("on-progreso",id==="progreso"); if(id==="progreso"){ renderProgreso(); wlRender(); } if(id==="hoy"){ rtBarHide(); renderHoy(); } };
 
 /* 單字卡頂端 2 顆顯示＋14 顆主題＋4 顆狀態晶片,收成一行「目前的選擇 · 更換」。晶片沒拆,只是收起來 */
@@ -6677,6 +6699,63 @@ vcPickRender(false);
     if((e.key===" "||e.key==="Enter")&&!shownNow&&!tg.closest("button,a,summary")){ e.preventDefault(); fcReveal(); }
     else if(shownNow&&e.key==="1"){ rate(0); } else if(shownNow&&e.key==="2"){ rate(2); } });
   buildVList(); renderDaily();
+})();
+
+/* ===== 2026-11-10 並排(照保險站):桌機右鍵左側分頁「在側邊打開」;手機長按底部分頁或「更多」裡的分頁。
+   一個分頁只有一份畫面,所以把那個 section 搬進側邊,關掉時放回原位。記在 sessionStorage(關分頁就忘)。 ===== */
+var SPLIT_ID=null;
+(function(){
+  const box=document.createElement("aside"); box.id="split"; box.className="split"; box.hidden=true; box.setAttribute("aria-label","並排的分頁");
+  box.innerHTML=`<div class="split-bar"><span class="split-t" id="split-t"></span><button type="button" class="split-b" data-sa="big">放大</button><button type="button" class="split-b" data-sa="swap" title="左右對調">對調</button><button type="button" class="split-b" data-sa="close" aria-label="關閉並排">✕</button></div><div class="split-body wrap" id="split-body"></div>`;
+  $(".app").appendChild(box);
+  const body=$("#split-body"), tEl=$("#split-t"); let ph=null;
+  const cur=()=>{ const x=$$("section.active").find(e=>e.id!==SPLIT_ID); return x?x.id:"hoy"; };
+  const SKEY="miEspanol.split";
+  window.splitClose=function(){ if(!SPLIT_ID) return; const el=document.getElementById(SPLIT_ID);
+    if(ph){ ph.replaceWith(el); ph=null; } el.classList.remove("active","in"); SPLIT_ID=null; box.hidden=true;
+    document.body.classList.remove("split-on","split-big"); try{ sessionStorage.removeItem(SKEY); }catch(_){} };
+  window.splitOpen=function(id){ if(id===cur()){ showToast("這一頁已經在主畫面了。先把主畫面換到別頁，再把它開在側邊。"); return; }
+    splitClose(); const el=document.getElementById(id); if(!el) return;
+    ph=document.createComment("split"); el.before(ph); body.appendChild(el); el.classList.add("active","in");
+    SPLIT_ID=id; tEl.textContent=tabOf(id).cn; box.hidden=false; document.body.classList.add("split-on"); body.scrollTop=0;
+    box.querySelector('[data-sa="big"]').textContent="放大";
+    try{ if(id==="progreso"){ renderProgreso(); wlRender(); } if(id==="hoy") renderHoy(); }catch(_){}
+    try{ sessionStorage.setItem(SKEY,id); }catch(_){} };
+  box.addEventListener("click",e=>{ const b=e.target.closest("[data-sa]"); if(!b) return; const a=b.dataset.sa;
+    if(a==="close") splitClose();
+    else if(a==="big"){ const on=document.body.classList.toggle("split-big"); b.textContent=on?"縮小":"放大"; }
+    else if(a==="swap"){ const sid=SPLIT_ID, m=cur(); splitClose(); show(sid); splitOpen(m); } });
+
+  /* 桌機:左側分頁按右鍵 */
+  const menu=document.createElement("div"); menu.className="split-menu"; menu.hidden=true; menu.setAttribute("role","menu"); document.body.appendChild(menu);
+  const menuClose=()=>{ menu.hidden=true; };
+  function menuOpen(id,x,y){ menu.dataset.id=id;
+    menu.innerHTML=`<button type="button" role="menuitem" data-m="side">在側邊打開</button><button type="button" role="menuitem" data-m="here">在這裡打開</button>`+(SPLIT_ID?`<button type="button" role="menuitem" data-m="close">關閉側邊</button>`:"");
+    menu.hidden=false; const w=menu.offsetWidth, h=menu.offsetHeight;
+    menu.style.left=Math.max(8,Math.min(x,innerWidth-w-8))+"px"; menu.style.top=Math.max(8,Math.min(y,innerHeight-h-8))+"px";
+    menu.querySelector("button").focus({preventScroll:true}); }
+  menu.addEventListener("click",e=>{ const b=e.target.closest("[data-m]"); if(!b) return; const id=menu.dataset.id, m=b.dataset.m; menuClose();
+    if(m==="side") splitOpen(id); else if(m==="close") splitClose(); else show(id); });
+  document.addEventListener("pointerdown",e=>{ if(!menu.hidden&&!menu.contains(e.target)) menuClose(); });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!menu.hidden) menuClose(); });
+  addEventListener("scroll",menuClose,{passive:true});
+  $$("#tabs button.tab").forEach((b,i)=>{ const id=TABS[i]&&TABS[i].id; if(!id) return; b.title="右鍵:在側邊並排打開";
+    b.addEventListener("contextmenu",e=>{ e.preventDefault(); menuOpen(id,e.clientX,e.clientY); }); });
+
+  /* 手機:長按底部分頁或「更多」裡的分頁 */
+  function longPress(btn,id){ let t=null, sx=0, sy=0, fired=false;
+    const clr=()=>{ if(t){ clearTimeout(t); t=null; } };
+    btn.addEventListener("pointerdown",e=>{ fired=false; sx=e.clientX; sy=e.clientY; clr();
+      t=setTimeout(()=>{ t=null; fired=true; try{ navigator.vibrate&&navigator.vibrate(15); }catch(_){} msheetClose(); splitOpen(id); },550); });
+    btn.addEventListener("pointerup",clr); btn.addEventListener("pointercancel",clr); btn.addEventListener("pointerleave",clr);
+    btn.addEventListener("pointermove",e=>{ if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>12) clr(); });
+    btn.addEventListener("click",e=>{ if(fired){ fired=false; e.stopImmediatePropagation(); e.preventDefault(); } },true);
+    btn.addEventListener("contextmenu",e=>e.preventDefault()); }
+  $$("#mnav button[data-id], #msheet button[data-id]").forEach(b=>longPress(b,b.dataset.id));
+  const tip=document.createElement("p"); tip.className="ms-tip"; tip.textContent="長按任一分頁，可以在下方並排打開（例如邊對話邊查文法）。";
+  const h2=msheet.querySelector("h2"); if(h2) h2.after(tip);
+
+  try{ const sv=sessionStorage.getItem(SKEY); if(sv&&document.getElementById(sv)) setTimeout(()=>splitOpen(sv),0); }catch(_){}
 })();
 
 /* ===== 2026-11-10 依課本查:查單字多一個「課本」選單;有對話場景的課給一顆「這課的對話」 ===== */
