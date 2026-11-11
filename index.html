@@ -7,7 +7,7 @@
 <!-- impeccable-disable layout-transition -- 實測（2026-09-29，手機尺寸、CPU 降速 4 倍）：展開文法註最慢一格 5ms、動詞變位表 15ms，都沒有掉格；展開動畫是體驗的一部分，改成只動 transform 會讓下面的內容瞬間跳位 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mi Español · 每天五分鐘的西班牙文</title>
-<meta name="description" content="每天五分鐘學拉美西班牙文：一個文法重點、練 5 題、複習當天的單字。14 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
+<meta name="description" content="每天五分鐘學拉美西班牙文：一個文法重點、練 5 題、認 5 個動詞變化、複習當天的單字。14 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Mi Español · 每天五分鐘的西班牙文">
 <meta property="og:description" content="14 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
@@ -838,6 +838,35 @@ span.ej-vf{display:flex}
 .tm-w:disabled{cursor:default;opacity:.85}
 .tm-w:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
 /* /逐句對話:換著練 */
+/* 看字認動詞 */
+#verbos [hidden]{display:none!important}
+.vb-mode{margin-bottom:6px}
+.vr-card{padding:24px 22px 20px}
+.vr-prog{font-size:.72rem;font-weight:700;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:12px}
+.vr-form{font-family:var(--font-display);font-weight:900;font-size:2.2rem;line-height:1.2;color:var(--terra);display:flex;justify-content:center;align-items:center;gap:12px}
+.vr-ask{text-align:center;color:var(--ink);font-size:.95rem;margin:8px 0 6px}
+.vr-row{margin-top:16px}
+.vr-lbl{font-size:.75rem;font-weight:700;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:7px}
+.vr-opts{display:flex;flex-wrap:wrap;gap:8px}
+.vr-o{min-height:44px}
+.vr-o small{margin-left:7px;font-weight:500;opacity:.75}
+.vr-o.ok{background:var(--card);border-color:var(--good);color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+.vr-o.ok.active{background:var(--good);color:#fff}
+.vr-o.no{background:var(--card);border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.vr-o:disabled{cursor:default;opacity:1}
+.vr-ctrls{margin-top:20px;display:flex;justify-content:center}
+.vr-fb{margin-top:14px;font-size:.92rem;line-height:1.7;text-align:center}
+.vr-fb:empty{display:none}
+.vr-fb p{margin:4px 0}
+.vr-ok{color:var(--good);font-weight:700}
+.vr-no{color:var(--bad)} .vr-no b{color:var(--ink)}
+.vr-alt{color:var(--ink-soft);font-size:.85rem}
+.vr-para{font-family:var(--font-display);font-size:1.02rem;color:var(--ink-soft);margin-top:10px!important}
+.vr-para span{display:block;font-family:var(--font-body);font-size:.75rem;font-weight:700}
+.vr-para b{color:var(--terra-deep)}
+.vr-fb .btn{margin-top:12px}
+.vr-score{text-align:center;font-size:.78rem;color:var(--ink-soft);margin:14px 0 0}
+/* /看字認動詞 */
 /* 字尾規則 */
 /* 卡片打開後放鬆一點;三頁用底線分頁,跟下面的動詞按鈕分得開 */
 .conj-ref.open{padding:22px 26px 30px}
@@ -1519,7 +1548,8 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="verbos">
     <div class="reveal sec-head"><div class="sec-num">6</div>
       <h2 class="sec-h"><span class="sec-title">動詞練習</span> <span class="sec-es">Verbos</span></h2></div>
-    <p class="reveal sec-desc">給你<b>原形 + 人稱 + 時態</b>,你寫出變化。共五種時態可選;沒打重音也算對;按 <b>Enter</b> 檢查,再按一次換下一題。最下面有<b>變位總表</b>可以隨時查,表的下面是<b>字尾規則</b>。</p>
+    <p class="reveal sec-desc">給你<b>原形 + 人稱 + 時態</b>,你寫出變化。也可以反過來按「看字認動詞」:給你一個變化形,選出原形、是誰、什麼時候。共五種時態可選;沒打重音也算對;按 <b>Enter</b> 檢查,再按一次換下一題。最下面有<b>變位總表</b>可以隨時查,表的下面是<b>字尾規則</b>。</p>
+    <div class="filters vb-mode" id="vb-mode" role="group" aria-label="練習方向"></div>
     <div class="filters reveal" id="vb-tense"></div>
     <div class="card vb-card reveal">
       <div class="vb-prompt" id="vb-prompt"></div>
@@ -1528,6 +1558,7 @@ body.np-open .note-pop{transform:translateY(0)}
       <div class="vb-ctrls"><button class="btn" id="vb-check">檢查 · Comprobar</button><button class="btn nav" id="vb-next">下一題 ›</button></div>
       <div class="vb-score" id="vb-score"></div>
     </div>
+    <div class="card vr-card" id="vr-card" hidden></div>
     <div class="card conj-ref reveal">
       <div class="conj-ref-head" id="cr-toggle">變位總表 · Tabla de conjugación <span class="verb-arrow">▾</span></div>
       <div class="conj-ref-body" id="cr-body" style="display:none">
@@ -6313,6 +6344,97 @@ const VTABLE=[{"inf":"ser","cn":"是(本質)","rk":1,"ger":"siendo","par":"sido"
   window.__ceForms=()=>T.map(t=>({k:t.k,f:[0,1,2].map(c=>PN.map((_,i)=>{ const f=form(t,c,i); return f?f.s+f.e:"—"; }))}));   /* 驗收用:拼出來的字要跟 VTABLE 一樣 */
 })();
 /* ===== /字尾規則 ===== */
+/* ===== 看字認動詞(rec_apply.py) =====
+   2026-11-11 本人:「就算我理解意思,可是我會忘記原形長什麼樣子」;AI 看完這兩天的問題,判斷卡在「認」不是「寫」,本人說「那你改」。
+   動詞練習原本只有一個方向(給原形+人稱+時態 → 寫變化形),這裡加反方向:給一個變化形,選原形、是誰、什麼時候。
+   題目和選項全部從變位總表 VTABLE 算出來,沒有新寫西文。時態只考現在、簡單過去、未完成過去、未來(初學者讀到最多的四個),不考 vosotros。
+   同一個字有好幾種讀法的(hablamos 現在 / 簡單過去、comía yo / él、fui ser / ir),任何一種都算對,答完全部列出來。
+   今天的五分鐘第 3 步「認動詞」:5 題,前 2 題先挑剛剛練題句子裡出現過的動詞。進度存在今天的紀錄 verbP。
+   紀錄:miEspanol.vrStats(每個動詞認過幾次、對幾次;錯多的常出)、miEspanol.vbMode(上次停在哪個模式)。 */
+const VR_T=[["pres","現在"],["pret","簡單過去"],["imp","未完成過去"],["fut","未來"]];
+const VR_P=[[0,"yo"],[1,"tú"],[2,"él / ella / usted"],[3,"nosotros"],[5,"ellos / ellas / ustedes"]];
+const VRKEY="miEspanol.vrStats", VMKEY="miEspanol.vbMode";
+let vrStats=lsGet(VRKEY,{}); if(!vrStats||typeof vrStats!=="object"||Array.isArray(vrStats)) vrStats={};
+let vbMode=lsGet(VMKEY,"write")==="rec"?"rec":"write";
+let vrQ=null, vrPick={}, vrDone=false, vrRound=null, VR_IDX=null;
+const vrOkForm=f=>f&&f!=="—"&&!/\s/.test(f);
+function vrIdx(){ if(VR_IDX) return VR_IDX; const I={};
+  VTABLE.forEach(v=>VR_T.forEach(([t])=>VR_P.forEach(([p])=>{ const f=(v[t]||[])[p]; if(!vrOkForm(f)) return; const k=f.toLowerCase(); (I[k]=I[k]||[]).push({inf:v.inf,t:t,p:p}); })));
+  return VR_IDX=I; }
+/* 錯得多的動詞常出;常見的動詞(排名前 30)比後面的常出 */
+function vrWeight(v){ const s=vrStats[v.inf], e=!s||!s.n?2:1+4*(s.n-s.ok)/s.n; return e*(v.rk?(v.rk<=30?3:v.rk<=60?2:1):1); }
+function vrRand(avoid){ const vs=VTABLE.filter(v=>avoid.indexOf(v.inf)<0&&VR_T.some(([t])=>v[t]&&VR_P.some(([p])=>vrOkForm(v[t][p]))));
+  if(!vs.length) return null; let tot=0; const ws=vs.map(v=>{ const w=vrWeight(v); tot+=w; return w; }); let r=Math.random()*tot, i=0; while(i<vs.length-1&&(r-=ws[i])>0) i++;
+  const v=vs[i], TW=[["pres",3],["pret",3],["imp",1.5],["fut",1]].filter(([t])=>v[t]&&VR_P.some(([p])=>vrOkForm(v[t][p])));
+  let rr=Math.random()*TW.reduce((a,x)=>a+x[1],0), t=TW[0][0]; for(const [k,w] of TW){ if((rr-=w)<=0){ t=k; break; } }
+  const ps=VR_P.map(x=>x[0]).filter(p=>vrOkForm(v[t][p])); return [v.inf,t,ps[Math.floor(Math.random()*ps.length)],""]; }
+function vrMake(it){ const v=it&&VTABLE.find(x=>x.inf===it[0]); const form=v&&v[it[1]]&&v[it[1]][it[2]]; if(!vrOkForm(form)) return null;
+  const reads=vrIdx()[form.toLowerCase()]||[{inf:v.inf,t:it[1],p:it[2]}], infs=reads.map(r=>r.inf);
+  const pool=shuffleA(VTABLE.filter(x=>infs.indexOf(x.inf)<0)), end=v.inf.slice(-2), opts=[v.inf];
+  pool.filter(x=>x.inf.slice(-2)===end).concat(pool).forEach(x=>{ if(opts.length<4&&opts.indexOf(x.inf)<0) opts.push(x.inf); });
+  return {v:v,form:form,t:it[1],p:it[2],src:it[3]||"",reads:reads,opts:shuffleA(opts)}; }
+/* 今天那一輪:前 2 題挑剛剛練題(今天這站的題目、今天的重點例句)裡出現的動詞,其餘照權重抽 */
+function vrDaily(r){ const out=[], seen=[], I=vrIdx(), txt=[];
+  try{ const pt=routePoint(r); if(pt&&pt.ej) txt.push(pt.ej); if(r.plan) r.plan.q.forEach(i=>{ const e=POOL[i]; if(e) txt.push(e.before+" "+e.answer+" "+e.after); }); }catch(_){}
+  (txt.join(" ").toLowerCase().match(/[a-záéíóúüñ]+/g)||[]).forEach(w=>{ if(out.length>=2) return; const rs=I[w]; if(!rs) return;
+    if(typeof EJVF_STOP!=="undefined"&&EJVF_STOP.has(w)) return; const x=rs[0]; if(seen.indexOf(x.inf)>=0) return; seen.push(x.inf); out.push([x.inf,x.t,x.p,"route"]); });
+  while(out.length<5){ const it=vrRand(seen); if(!it) break; seen.push(it[0]); out.push(it); }
+  return out; }
+function vrNext(){ vrQ=null;
+  if(vrRound&&vrRound.d===dayStr()&&!rtToday().verb){ while(!vrQ&&vrRound.k<vrRound.q.length){ vrQ=vrMake(vrRound.q[vrRound.k]); if(!vrQ) vrRound.k++; }
+    if(!vrQ&&vrRound.k>=vrRound.q.length){ const R=vrRound; vrRound=null; rtDone("verb",{verbOk:R.ok,verbN:R.q.length}); } }
+  else vrRound=null;
+  if(!vrQ) vrQ=vrMake(vrRand([]));
+  vrRender(); }
+function vrRender(){ const box=$("#vr-card"); if(!box) return; if(!vrQ){ vrNext(); return; } const q=vrQ;
+  const row=(k,label,items)=>`<div class="vr-row" role="group" aria-label="${label}"><div class="vr-lbl">${label}</div><div class="vr-opts">${
+    items.map(([val,txt,sub])=>`<button type="button" class="chip vr-o" data-k="${k}" data-v="${val}" aria-pressed="false">${esc(txt)}${sub?`<small>${esc(sub)}</small>`:""}</button>`).join("")}</div></div>`;
+  const s=Object.keys(vrStats).reduce((a,k)=>{ a.n+=vrStats[k].n|0; a.ok+=vrStats[k].ok|0; return a; },{n:0,ok:0});
+  box.innerHTML=(vrRound?`<div class="vr-prog">今天的五分鐘 · 認動詞 第 ${vrRound.k+1} / ${vrRound.q.length} 題${q.src?" · 剛剛練題裡出現過":""}</div>`:"")+
+    `<div class="vr-form" lang="es">${esc(q.form)} ${spkHTML(q.form)}</div>
+    <p class="vr-ask">這是哪個動詞、誰在做、什麼時候?三排各點一個。</p>
+    ${row("inf","原形",q.opts.map(i=>{ const v=VTABLE.find(x=>x.inf===i); return [i,i,v&&v.cn||""]; }))}
+    ${row("p","是誰",VR_P.map(([p,l])=>[p,l]))}
+    ${row("t","什麼時候",VR_T.map(([t,l])=>[t,l]))}
+    <div class="vr-ctrls"><button class="btn" id="vr-check" disabled>檢查 · Comprobar</button></div>
+    <div class="vr-fb" id="vr-fb" aria-live="polite"></div>
+    <p class="vr-score">${s.n?`認動詞累計 ${s.ok} / ${s.n}`:"還沒練過認動詞"}</p>`;
+  vrPick={}; vrDone=false;
+  $$(".vr-o",box).forEach(b=>b.onclick=()=>{ if(vrDone) return; const k=b.dataset.k; vrPick[k]=b.dataset.v;
+    $$(`.vr-o[data-k="${k}"]`,box).forEach(x=>{ x.classList.toggle("active",x===b); x.setAttribute("aria-pressed",x===b?"true":"false"); });
+    $("#vr-check",box).disabled=!(vrPick.inf&&vrPick.p!=null&&vrPick.t); });
+  $("#vr-check",box).onclick=vrCheck; }
+function vrCheck(){ const box=$("#vr-card"), q=vrQ, P=vrPick; if(vrDone||!q||!(P.inf&&P.p!=null&&P.t)) return; vrDone=true;
+  const TL={}, PL={}; VR_T.forEach(([t,l])=>TL[t]=l); VR_P.forEach(([p,l])=>PL[p]=l);
+  const ok=q.reads.some(r=>r.inf===P.inf&&String(r.p)===P.p&&r.t===P.t);
+  const valid={inf:q.reads.map(r=>r.inf),p:q.reads.map(r=>String(r.p)),t:q.reads.map(r=>r.t)};
+  $$(".vr-o",box).forEach(b=>{ const k=b.dataset.k, v=b.dataset.v; if(valid[k].indexOf(v)>=0) b.classList.add("ok"); else if(P[k]===v) b.classList.add("no"); b.disabled=true; });
+  const rd=q.reads.map(r=>r.inf+" · "+PL[r.p]+" · "+TL[r.t]);
+  const tb=q.v[q.t], para=VR_P.map(([p])=>tb[p]).filter(vrOkForm).map(f=>f===q.form?`<b>${esc(f)}</b>`:esc(f)).join(" · ");
+  $("#vr-fb",box).innerHTML=(ok?`<p class="vr-ok">對了。</p>`:`<p class="vr-no">答案是 <b lang="es">${esc(rd[0])}</b>(${esc(q.v.cn)})</p>`)+
+    (rd.length>1?`<p class="vr-alt">這個字有 ${rd.length} 種讀法,要看句子決定:${rd.map(esc).join(";")}</p>`:"")+
+    `<p class="vr-para" lang="es"><span>${esc(q.v.inf)} 的${esc(TL[q.t])}</span>${para}</p>`;
+  const s=vrStats[q.v.inf]=vrStats[q.v.inf]||{n:0,ok:0}; s.n++; if(ok) s.ok++; try{ localStorage.setItem(VRKEY,JSON.stringify(vrStats)); }catch(_){}
+  $("#vr-check",box).parentNode.hidden=true;
+  const T=Object.keys(vrStats).reduce((a,k)=>{ a.n+=vrStats[k].n|0; a.ok+=vrStats[k].ok|0; return a; },{n:0,ok:0}); $(".vr-score",box).textContent="認動詞累計 "+T.ok+" / "+T.n;
+  secLog("verb",ok); award(ok?2:1);
+  /* 錯題本用「寫出變化形」那種格式記(原形 · 人稱 · 時態 → 變化形),重做時打出這個字;跟寫錯的同一個動詞會歸在一起 */
+  if(!ok) recordMistake("動詞",q.v.inf+"("+q.v.cn+") · "+PRON6[q.p]+" · "+(TLABEL[q.t]||q.t),q.form,"認成 "+P.inf+" · "+PL[P.p]+" · "+TL[P.t]);
+  let last=false; if(vrRound){ vrRound.k++; if(ok) vrRound.ok++; last=vrRound.k>=vrRound.q.length; rtSave(); }
+  const nb=document.createElement("button"); nb.className="btn"; nb.textContent=last?"今天的認動詞做完了 ›":"下一題 ›"; nb.onclick=vrNext;
+  $("#vr-fb",box).appendChild(nb); nb.focus({preventScroll:true}); }
+function vbSetMode(m){ vbMode=m==="rec"?"rec":"write"; try{ localStorage.setItem(VMKEY,JSON.stringify(vbMode)); }catch(_){}
+  $$("#vb-mode .chip").forEach(c=>{ const on=c.dataset.m===vbMode; c.classList.toggle("active",on); c.setAttribute("aria-pressed",on?"true":"false"); });
+  const w=vbMode==="write", vc=$(".vb-card"); $("#vb-tense").hidden=!w; if(vc) vc.hidden=!w; $("#vr-card").hidden=w;
+  if(!w) vrRender(); }
+function vrInit(){ const box=$("#vb-mode"); if(!box) return; box.innerHTML="";
+  [["write","寫出變化形"],["rec","看字認動詞"]].forEach(([m,l])=>{ const c=document.createElement("button"); c.type="button"; c.className="chip"; c.dataset.m=m; c.textContent=l; c.onclick=()=>vbSetMode(m); box.appendChild(c); });
+  vbSetMode(vbMode); }
+/* 今天的五分鐘第 3 步 */
+function rtGoVerb(){ const r=rtToday(); show("verbos");
+  if(!r.verbP||!r.verbP.q.length) r.verbP={q:vrDaily(r),k:0,ok:0};
+  vrRound=r.verbP; vrRound.d=r.d; rtSave(); vbSetMode("rec"); vrNext(); rtScrollTo($("#vr-card")); }
+/* ===== /看字認動詞 ===== */
 
 /* ===== 7. 聽力口說 ===== */
 const DICTPOOL=SENTS.filter(s=>{ const n=s.es.split(/\s+/).length; return n>=2&&n<=12; });
@@ -7140,7 +7262,7 @@ const RTKEY="miEspanol.ritual";
 const RT_SCENES=[6,2,0,7,8,3,9,10,5,11,12,4,13,1].filter(i=>i<DATA.dialogos.length);
 /* 新字從星期、月份、吃的開始,不照資料順序 */
 const RT_CATS=["時間日期","飲食","數字金錢","地點方位","天氣季節","常用片語","情緒個性","運動健身","學業工作","人生情感","動作動詞","身體健康","問候用語","家人朋友","興趣活動","住家","交通","公家手續","國家語言","描述用字","副詞"];
-const RT_STEPS=[{k:"gram",t:"重點"},{k:"drill",t:"練題"},{k:"cards",t:"單字"}];
+const RT_STEPS=[{k:"gram",t:"重點"},{k:"drill",t:"練題"},{k:"verb",t:"認動詞"},{k:"cards",t:"單字"}];   /* 2026-11-11 加認動詞(rec_apply.py) */
 /* ROUTE(route_apply.py) */
 /* ── 文法路線(2026-11-11,本人:每日五分鐘看文法筆記、單字卡、動詞會眼花撩亂,改成每天只學一個點) ──
    10 站,每天一站。只排題庫裡已經有 3 題以上的文法筆記,一題都沒另外寫。
@@ -7262,15 +7384,16 @@ function rtClean(r){ const A=Array.isArray, bad=[];
   const tp=r.talkP; if(tp&&!(Number.isInteger(tp.n)&&tp.n>=0&&A(tp.log)&&tp.log.every(t=>t&&typeof t==="object"))) bad.push("talkP");
   const dp=r.drillP; if(dp&&!(A(dp.q)&&A(dp.res)&&(dp.v==null||A(dp.v)))) bad.push("drillP");
   const cp=r.cardsP; if(cp&&!(A(cp.q)&&cp.q.every(x=>A(x)&&typeof x[0]==="string"))) bad.push("cardsP");
+  const vp=r.verbP; if(vp&&!(A(vp.q)&&vp.q.every(x=>A(x)&&typeof x[0]==="string")&&Number.isInteger(vp.k))) bad.push("verbP");
   bad.forEach(k=>delete r[k]); return bad.length; }
 function rtCatRank(w){ const i=RT_CATS.indexOf(catOf(w)); return i<0?RT_CATS.length:i; }
-const RT_SEC={talk:"dialogos",drill:"ejercicios",cards:"vocabulario"};
+const RT_SEC={talk:"dialogos",drill:"ejercicios",verb:"verbos",cards:"vocabulario"};
 const rtCrumbEl=document.createElement("div"); rtCrumbEl.className="rt-crumb"; rtCrumbEl.id="rt-crumb";
 function rtCrumb(k){ const sec=document.getElementById(RT_SEC[k]); const head=sec&&sec.querySelector(".sec-head"); if(!head){ rtCrumbEl.remove(); return; }
   const i=RT_STEPS.findIndex(s=>s.k===k)+1;
   rtCrumbEl.innerHTML=`今天的五分鐘 · 第 ${i} 步,共 ${RT_STEPS.length} 步 <button class="tk-link" type="button">回今天</button>`;
   rtCrumbEl.dataset.sec=RT_SEC[k]; rtCrumbEl.querySelector("button").onclick=()=>show("hoy"); head.after(rtCrumbEl); }
-function rtGo(k){ rtBarHide(); ({gram:rtGoGram,talk:rtGoTalk,cards:rtGoCards,drill:rtGoDrill})[k](); if(!rtToday()[k]&&RT_SEC[k]&&RT_STEPS.some(s=>s.k===k)) rtCrumb(k); }
+function rtGo(k){ rtBarHide(); ({gram:rtGoGram,talk:rtGoTalk,cards:rtGoCards,drill:rtGoDrill,verb:rtGoVerb})[k](); if(!rtToday()[k]&&RT_SEC[k]&&RT_STEPS.some(s=>s.k===k)) rtCrumb(k); }
 /* 第 1 步就在首頁:重點那塊 */
 function rtGoGram(){ show("hoy"); rtScrollTo($("#rt-point")); }
 /* 換到那一步的分頁後,練習區如果在畫面下半部,直接捲到它 */
@@ -7293,7 +7416,7 @@ function rtGoCards(){ show("vocabulario");
 function rtCardsSave(rated){ if(!rtCards||!rvActive) return; if(rated) rtCardsK++; const r=rtToday(); if(r.cards||r.d!==rtCardsDay) return;
   r.cardsP={n:rtCards,k:rtCardsK,q:rvQueue.map(w=>[w.es,rtWhy[w.es]||"due"])}; rtSave(); }
 /* 某一步做到一半(重新整理後還記著的那種),首頁按鈕寫「繼續」不寫「開始」 */
-function rtStarted(r){ return !!(r.gram || (r.drillP&&(r.drillP.res||[]).some(Boolean)) || (r.cardsP&&r.cardsP.k>0)); }
+function rtStarted(r){ return !!(r.gram || (r.drillP&&(r.drillP.res||[]).some(Boolean)) || (r.verbP&&r.verbP.k>0) || (r.cardsP&&r.cardsP.k>0)); }
 function rtGoDrill(){ show("ejercicios");
   if($("#ex-fill").style.display==="none"){ const m=[...$$("#ex-mode .chip")].find(x=>/填空/.test(x.textContent)); if(m) m.click(); }
   const r=rtToday(); if(r.drillP&&!r.plan) delete r.drillP;   /* 改版前那種隨機 5 題做到一半的,丟掉 */
@@ -7394,10 +7517,11 @@ function renderHoy(){
   const nRev=Math.min(2,Object.keys(routeOk().done).filter(i=>+i!==st).length);
   const desc={gram:`${stLbl} · ${title}`,
     drill:r.drill&&r.stN!=null?`這站 ${r.stOk} / ${r.stN}${r.pass?",過了":",明天這站再練一次"}`:(nRev?`這站 3 題 + 複習 ${nRev} 題`:"這站的題目,沒打重音也算對"),
+    verb:r.verb&&r.verbN!=null?`${r.verbOk} / ${r.verbN}`:"5 個變化形,認出原形、是誰、什麼時候",
     cards:r.cards?`${r.cardsN||0} 張`:rtQueueDesc(rtQueue())};
   const next=RT_STEPS.find(s=>!r[s.k]), doneN=RT_STEPS.filter(s=>r[s.k]).length;
   const list=`<ol class="rt-steps">${RT_STEPS.map((s,i)=>`<li class="rt-step${r[s.k]?" done":""}${s===next?" now":""}"><span class="rt-n">${r[s.k]?svgIcon(ICON.check,18):i+1}</span><span class="rt-t">${s.t}</span><span class="rt-d">${esc(desc[s.k])}</span></li>`).join("")}</ol>`;
-  const meta=`<span class="rt-meta">${ss?`連續 ${ss} 天`:"三步,大約五分鐘"}</span>`;
+  const meta=`<span class="rt-meta">${ss?`連續 ${ss} 天`:"四步,大約五分鐘"}</span>`;
   let head, point="", foot;
   if(next){
     head=`<h2 class="hoy-hi">¡Hola!<span>${doneN?`今天的五分鐘,做完 ${doneN} 步了`:"今天的五分鐘"}</span></h2>`;
@@ -7412,7 +7536,7 @@ function renderHoy(){
     const R=routeOk(), nst=R.st;
     const tmr=r.pass===0?`明天:${title} 再練一次(3 題對 2 題才往下)`:
       nst<ROUTE.length?`明天:第 ${nst+1} 站 · ${ROUTE[nst]}`:"10 站都走完了。之後每天挑最該複習的那站";
-    const sum=[r.stN!=null?`這站 ${r.stOk} / ${r.stN}`:"", r.drillN?`練題 ${r.drillOk} / ${r.drillN}`:"", r.cardsN?`單字 ${r.cardsN} 張`:""].filter(Boolean).join(" · ");
+    const sum=[r.stN!=null?`這站 ${r.stOk} / ${r.stN}`:"", r.drillN?`練題 ${r.drillOk} / ${r.drillN}`:"", r.verbN?`認動詞 ${r.verbOk} / ${r.verbN}`:"", r.cardsN?`單字 ${r.cardsN} 張`:""].filter(Boolean).join(" · ");
     const nAll=POOL.filter(e=>e.g===title).length;
     head=`<h2 class="hoy-hi">¡Listo!<span>今天的五分鐘做完了</span></h2>`;
     foot=`${sum?`<p class="rt-sum">${sum}</p>`:""}<p class="rt-next">${ss?`連續 ${ss} 天。`:""}${esc(tmr)}。</p>`+
@@ -7753,7 +7877,7 @@ renderDlg=function(){ _renderDlgBase(); dlgPickRender(false); };
 dlgPickRender(false);
 checkLogros();
 
-renderDlg(); buildVList(); renderSong(); buildVerbos(); renderDaily(); show("hoy");
+renderDlg(); buildVList(); renderSong(); buildVerbos(); vrInit(); renderDaily(); show("hoy");
 { const gn=$("#gram-n"); if(gn) gn.textContent=document.querySelectorAll("#verb-list .card.verb").length; }
 if("serviceWorker" in navigator){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
 </script>
