@@ -123,7 +123,7 @@ async function askAI(res, o) {
   if (mono) {
     const n03 = x => Math.max(0, Math.min(3, Math.round(Number(x) || 0)));
     return res.status(200).json({ left: dev ? 999 : PER_CID - c, dev: !!dev, mono: true, uso: n03(out.uso), tarea: n03(out.tarea),
-      puntos: (Array.isArray(out.puntos) ? out.puntos : []).slice(0, 8).map(p => ({ ok: !!p.ok, cn: clean(p.cn, 60) })),
+      puntos: (Array.isArray(out.puntos) ? out.puntos : []).slice(0, 12).map(p => ({ ok: !!p.ok, cn: clean(p.cn, 60) })),
       errores: (Array.isArray(out.errores) ? out.errores : []).slice(0, 4).map(e => ({ dijo: clean(e.dijo, 160), mejor: clean(e.mejor, 200), cn: clean(e.cn, 80) })),
       note: clean(out.note, 200) });
   }
@@ -146,7 +146,7 @@ export default async function handler(req, res) {
     }
     if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
 
-    const mono = src.kind === "mono" ? { lvl: src.lvl === "A1" ? "A1" : "A2", pts: (Array.isArray(src.pts) ? src.pts : []).slice(0, 8).map(x => clean(x, 160)).filter(Boolean), secs: Math.max(0, Math.min(900, Math.round(Number(src.secs) || 0))), task: ["tema", "foto", "rol", "escr"].includes(src.task) ? src.task : "tema" } : null;
+    const mono = src.kind === "mono" ? { lvl: src.lvl === "A1" ? "A1" : "A2", pts: (Array.isArray(src.pts) ? src.pts : []).slice(0, 12).map(x => clean(x, 160)).filter(Boolean), secs: Math.max(0, Math.min(900, Math.round(Number(src.secs) || 0))), task: ["tema", "foto", "rol", "escr"].includes(src.task) ? src.task : "tema" } : null;
     if (mono && !mono.pts.length) return res.status(400).json({ error: "bad_input" });
     const typed = clean(src.typed, mono ? 3000 : 200), q = clean(src.q, 300), qcn = clean(src.qcn, 200), model = clean(src.model, 300);
     if (!typed || !q || !/\p{L}/u.test(typed)) return res.status(400).json({ error: "bad_input" });
