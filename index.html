@@ -424,6 +424,7 @@ body.rv-on .vh-fold{display:none}
 .fm-part{margin:8px 0 0;font-size:.82rem;color:var(--ink-soft)}
 .fm-part span{font-family:var(--font-display);color:var(--terra-deep);font-size:.92rem}
 .fm-hitlab{display:block;font-size:.76rem;color:var(--azul);margin-top:2px}
+.g-x{color:var(--bad);font-family:var(--font-display);font-style:italic}
 .vh-empty{padding:16px;color:var(--ink-soft)}
 .vh-more{margin:10px auto 0;display:block}
 .vh-more[hidden]{display:none}
@@ -1963,6 +1964,17 @@ const DATA = {
   /* ---- 2. 文法表 ---- */
   pronombres:["yo","tú","él / ella / Ud.","nosotros","vosotros(西班牙用)","ellos / ellas / Uds."],
   gramatica:[
+    /* 語序(_textbook/gram_orden.py) */
+    {"type":"note","title":"陳述句:主詞 + 動詞 + 其他","mean":"最基本的順序;主詞常常省略","tag":"語序","points":[{"k":"基本順序","v":"(主詞)+ 動詞 + 受詞或補語 + 地點 + 時間","ej":"Mi hermana trabaja en un banco.","ejcn":"我姊姊在銀行工作。"},{"k":"主詞常省略","v":"動詞字尾已經看得出是誰(vivo 一定是「我」),所以 yo、tú 通常不說;要強調或對比才說","ej":"Vivo en Taichung.","ejcn":"我住台中。"},{"k":"跟中文不一樣:地點、時間在動詞後","v":"中文「我每天在家吃飯」,西文通常是「吃 + 在家 + 每天」","ej":"Como en casa todos los días.","ejcn":"我每天在家吃飯。"},{"k":"時間也可以放最前面","v":"兩種都對,放前面是先交代時間","ej":"Mañana voy al médico. / Voy al médico mañana.","ejcn":"我明天去看醫生。"}]},
+    {"type":"note","title":"否定:no 放在動詞前","mean":"no 貼著動詞;前面有代名詞就放代名詞前","tag":"語序","points":[{"k":"no 緊貼動詞前","v":"有 lo、me、se 這類代名詞時,no 放在代名詞前面<br><span class=\"g-x\" lang=\"es\">✗ Lo no sé.</span>","ej":"No lo sé.","ejcn":"我不知道。"},{"k":"完成式:no 放在 haber 前","v":"<span class=\"g-x\" lang=\"es\">✗ He no comido.</span>","ej":"No he comido.","ejcn":"我還沒吃。"},{"k":"雙重否定是對的","v":"nada、nadie、nunca 放在動詞後時,動詞前還要 no(中文會覺得多一個「不」,西文一定要)","ej":"No tengo nada. / No viene nadie.","ejcn":"我什麼都沒有。/ 沒有人來。"},{"k":"nunca、nadie 放動詞前就不用 no","v":"兩種意思一樣","ej":"Nunca como carne. / No como carne nunca.","ejcn":"我從不吃肉。"}]},
+    {"type":"note","title":"是非問句(回答 sí / no)","mean":"句子不用改,語調拉高就是問句","tag":"語序","points":[{"k":"順序不變,語調上揚","v":"寫的時候前面加 ¿、後面加 ?。不用加「嗎」那類的字,也沒有英文 do 那種助動詞","ej":"¿Hablas español?","ejcn":"你會說西班牙文嗎?"},{"k":"主詞可以移到動詞後","v":"兩種都常見","ej":"¿Tu hermano vive aquí? / ¿Vive aquí tu hermano?","ejcn":"你哥哥住這裡嗎?"}]},
+    {"type":"note","title":"疑問詞問句:疑問詞 + 動詞 + 主詞","mean":"疑問詞一定搬到最前面,動詞緊跟在後","tag":"語序","points":[{"k":"疑問詞最前,動詞第二,主詞放動詞後","v":"<span class=\"g-x\" lang=\"es\">✗ ¿Dónde tu hermano vive?</span>","ej":"¿Dónde vive tu hermano?","ejcn":"你哥哥住哪裡?"},{"k":"跟中文不一樣:中文疑問詞留在原位","v":"中文「你讀什麼」的「什麼」在句尾;西文要把 qué 搬到最前面","ej":"¿Qué estudias?","ejcn":"你讀什麼?"},{"k":"介系詞跟著疑問詞一起搬到最前面","v":"de、con、a、para 不能留在句尾<br><span class=\"g-x\" lang=\"es\">✗ ¿Quién vas con?</span>","ej":"¿De dónde eres? / ¿Con quién vas?","ejcn":"你是哪裡人?/ 你跟誰去?"},{"k":"要問的名詞緊跟在 qué、cuánto 後","v":"cuánto 要跟名詞的陰陽性、單複數一致(cuántos años、cuántas horas)","ej":"¿Qué hora es? / ¿Cuántos años tienes?","ejcn":"現在幾點?/ 你幾歲?"},{"k":"疑問詞都有重音","v":"qué、quién、dónde、cuándo、cómo、cuánto、cuál、por qué。沒有重音的 porque 是「因為」","ej":"¿Por qué estudias español? / Porque quiero viajar.","ejcn":"你為什麼學西班牙文?/ 因為我想去旅行。"}]},
+    {"type":"note","title":"代名詞放哪裡 · 總表","mean":"lo、te、se、me 的位置一次看完","tag":"語序","points":[{"k":"已變化的動詞:放前面","v":"","ej":"Lo compro.","ejcn":"我買它。"},{"k":"兩個一起:人在前、東西在後","v":"le / les 後面接 lo、la 時要改成 se<br><span class=\"g-x\" lang=\"es\">✗ Le lo doy.</span>","ej":"Te lo doy. / Se lo doy.","ejcn":"我把它給你。/ 我把它給他。"},{"k":"原形動詞、現在分詞:前面或黏在後面都可以","v":"黏在後面時,現在分詞要補重音(leyéndolo)","ej":"Lo voy a comprar. / Voy a comprarlo.","ejcn":"我要去買它。"},{"k":"命令句:肯定黏後面,否定放前面","v":"","ej":"Cómpralo. / No lo compres.","ejcn":"買它。/ 別買它。"},{"k":"反身的 me、te、se 規則一樣","v":"","ej":"Me levanto a las siete. / Voy a levantarme.","ejcn":"我七點起床。/ 我要起床了。"}]},
+    {"type":"note","title":"gustar 型:喜歡的東西才是主詞","mean":"人放前面當「給誰」,動詞跟著東西變","tag":"語序","points":[{"k":"順序:me / te / le + gusta + 東西","v":"字面是「咖啡讓我喜歡」,所以 café 才是主詞","ej":"Me gusta el café.","ejcn":"我喜歡咖啡。"},{"k":"東西是複數,動詞用 gustan","v":"","ej":"Me gustan los perros.","ejcn":"我喜歡狗。"},{"k":"要說清楚是誰:前面加 a + 人,le 還是要留","v":"<span class=\"g-x\" lang=\"es\">✗ Mi madre gusta bailar.</span>","ej":"A mi madre le gusta bailar.","ejcn":"我媽媽喜歡跳舞。"}]},
+    {"type":"note","title":"形容詞放名詞後","mean":"跟中文相反:「紅色的車」是 coche rojo","tag":"語序","points":[{"k":"描述的形容詞在名詞後","v":"顏色、國籍、形狀、個性都放後面","ej":"un coche rojo","ejcn":"一台紅色的車"},{"k":"數量、這個、我的放在名詞前","v":"","ej":"dos casas / este libro / mi amigo / muchos amigos","ejcn":"兩間房子 / 這本書 / 我的朋友 / 很多朋友"},{"k":"「誰的」用 de,放在名詞後","v":"中文「我奶奶的房子」所有者在前;西文是「房子 de 我奶奶」","ej":"la casa de mi abuela","ejcn":"我奶奶的房子"},{"k":"少數形容詞會放前面","v":"bueno、malo 放前面要縮短(buen、mal);grande 放前面變 gran,意思變成「了不起的」","ej":"Hace buen tiempo. / Es una gran ciudad.","ejcn":"天氣很好。/ 那是一座很棒的城市。"},{"k":"muy 放在形容詞前","v":"","ej":"una casa muy grande","ejcn":"一間很大的房子"}]},
+    {"type":"note","title":"動詞片語不能拆開","mean":"haber + 過去分詞中間不插字","tag":"語序","points":[{"k":"完成式:haber 和過去分詞黏在一起","v":"ya、nunca、no 都放在整組前面<br><span class=\"g-x\" lang=\"es\">✗ He ya comido.</span>","ej":"Ya he comido. / Nunca he estado en España.","ejcn":"我已經吃了。/ 我從沒去過西班牙。"},{"k":"ir a、tener que、estar + 動詞:一組一起用","v":"變化的是第一個動詞,後面的原形或現在分詞不變","ej":"Voy a estudiar. / Tengo que trabajar. / Estoy comiendo.","ejcn":"我要去讀書。/ 我得工作。/ 我正在吃。"}]},
+    {"type":"note","title":"接句子:que 不能省","mean":"英文的 that 可以省,西文的 que 一定要","tag":"語序","points":[{"k":"說、想、覺得 + que + 句子","v":"<span class=\"g-x\" lang=\"es\">✗ Creo es verdad.</span>","ej":"Creo que es verdad. / Dice que viene mañana.","ejcn":"我覺得是真的。/ 他說他明天來。"},{"k":"句子裡的問句:疑問詞照樣在前、照樣有重音","v":"順序一樣是疑問詞 + 動詞 + 主詞","ej":"No sé dónde vive Ana.","ejcn":"我不知道 Ana 住哪裡。"}]},
+    /* /語序 */
     {"type":"note","title":"ser vs estar","mean":"兩個「是」的差別","tag":"概念","points":[{"k":"ser","v":"本質、身分(永久)","ej":"Soy estudiante.","ejcn":"我是學生。"},{"k":"estar","v":"暫時狀態、位置","ej":"Estoy cansado.","ejcn":"我很累。"},{"k":"職業、國籍、出身 → ser","v":"Soy ingeniera. / Es taiwanés. / Somos de Taichung.","ej":"Mi padre es médico.","ejcn":"我爸爸是醫生。"},{"k":"心情、身體狀況 → estar","v":"estar contento / nervioso / enfermo","ej":"Hoy estoy un poco nervioso.","ejcn":"我今天有點緊張。"},{"k":"在哪裡 → estar en","v":"地點、位置一律用 estar","ej":"¿Dónde está la estación?","ejcn":"車站在哪裡？"},{"k":"婚姻狀態","v":"口語多用 estar:estar casado / soltero","ej":"Mi hermana está casada.","ejcn":"我姊姊結婚了。"},{"k":"era","v":"ser 的過去式(描述性質)","ej":"Era muy amable.","ejcn":"他(那時)人很好。"},{"k":"estaba","v":"estar 的過去式(描述狀態)","ej":"Estaba ocupado.","ejcn":"那時我很忙。"}]},
     {"type":"note","title":"sin vs no","mean":"「沒有」vs「不」","tag":"概念","points":[{"k":"sin + 名詞 / 原形","v":"沒有","ej":"café sin azúcar / sin desayunar","ejcn":"不加糖的咖啡／沒吃早餐"},{"k":"no + 動詞","v":"不(否定動詞)","ej":"No como.","ejcn":"我不吃。"}]},
     {"type":"table","title":"comer","mean":"吃","tag":"過去式 · Pretérito","conj":["comí","comiste","comió","comimos","comisteis","comieron"],"ej":"¿Comiste algo rico hoy?","ejcn":"你今天吃了什麼好吃的？"},
@@ -4024,6 +4036,8 @@ function ejHTML(ej,cn){ if(!ej) return "";
   /* 2026-11-10 四層:一、動詞系統(由淺到深)二、名詞與代名詞 三、句型 四、動詞變化表(一個動詞一張卡)。
      新增筆記把標題加進 GRAM_LAYERS 對應小節;沒列到的會依舊 cat 落到該層最後的「其他」,並在 console 警告。 */
   const GRAM_LAYERS=[
+    {id:"g-orden", h:"語序總整理", es:"Orden de la frase", d:"句子的零件放哪裡:主詞、動詞、no、疑問詞、代名詞、形容詞。跟中文不一樣的地方特別標出來;✗ 是常見錯法。", subs:[
+      ["句子的骨架",["陳述句:主詞 + 動詞 + 其他", "否定:no 放在動詞前", "是非問句(回答 sí / no)", "疑問詞問句:疑問詞 + 動詞 + 主詞", "代名詞放哪裡 · 總表", "gustar 型:喜歡的東西才是主詞", "形容詞放名詞後", "動詞片語不能拆開", "接句子:que 不能省"]]]},
     {id:"g-verbos", h:"動詞系統", es:"Verbos", d:"由淺到深:現在式 → 過去 → 未來 → 命令式 → 虛擬式。", subs:[
       ["現在式",["現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","ponerse / quedarse"]],
       ["現在式的延伸",["現在進行式","ir a + 原形","soler + 原形"]],
@@ -4042,7 +4056,7 @@ function ejHTML(ej,cn){ if(!ej) return "";
       ["字詞小知識",["課本裡的易混字","重音辨義(mas / sí / sé…)","歌詞口語縮寫"]] ]},
     {id:"g-conj", h:"動詞變化表", es:"Conjugaciones", d:"50 個常用動詞,分成規則、會變母音、不規則三組。每張表有現在式、簡單過去、未完成過去、未來式、現在虛擬式;手機上表格可以左右滑。", subs:[] }
   ];
-  const BASIC=["數字 Números","現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","現在進行式","ir a + 原形","簡單過去 vs 未完成過去","名詞的陰陽性與單複數","冠詞 un / el","所有格 mi / tu / su","gustar 類動詞","tener 慣用語","現在幾點 ¿Qué hora es?","去哪裡、在哪裡、怎麼去","por 還是 para"];
+  const BASIC=["陳述句:主詞 + 動詞 + 其他","否定:no 放在動詞前","是非問句(回答 sí / no)","疑問詞問句:疑問詞 + 動詞 + 主詞","gustar 型:喜歡的東西才是主詞","形容詞放名詞後","數字 Números","現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","現在進行式","ir a + 原形","簡單過去 vs 未完成過去","名詞的陰陽性與單複數","冠詞 un / el","所有格 mi / tu / su","gustar 類動詞","tener 慣用語","現在幾點 ¿Qué hora es?","去哪裡、在哪裡、怎麼去","por 還是 para"];
   const VGROUP={stem:["pedir","pensar","empezar","cerrar","entender","preferir","dormir","volver","encontrar","jugar","repetir"],
     irr:["ser","estar","ir","tener","hacer","poder","querer","decir","ver","dar","saber","venir","poner","salir","conocer","traer","oír"]};
   const CONJ_ORDER=["ser","estar","ir","tener","hacer","poder","querer","saber","decir","poner","pedir","preferir","creer","comer","ayudar"];
@@ -4058,7 +4072,8 @@ function ejHTML(ej,cn){ if(!ej) return "";
     const w=where[g.title];
     if(w){ bins[w[0]][w[1]].push([w[2],g]); return; }
     if(g.type==="table"){ (tables[g.title]=tables[g.title]||[]).push(g); return; }
-    const li=OLDCAT_LAYER[g.cat||GRAMCAT_OLD[i]]; extra[li==null?2:li].push(g);
+    const NO=DATA.gramatica.filter(x=>x.tag==="語序").length, oi=OLDCAT_LAYER[g.cat||GRAMCAT_OLD[i-NO]], LID=["g-verbos","g-nombres","g-frases"];
+    const li=GRAM_LAYERS.findIndex(L=>L.id===LID[oi==null?2:oi]); extra[li].push(g);
     console.warn("文法筆記沒排進四層:",g.title);
   });
   const tenseRank=t=>/現在/.test(t)?0:/Pretérito/.test(t)?1:/Imperfecto/.test(t)?2:3;
@@ -4101,7 +4116,7 @@ function ejHTML(ej,cn){ if(!ej) return "";
   /* 分頁籤:一次只看一層;記住上次看的那層(只存在這台瀏覽器) */
   const TABKEY="miEspanol.gramTab";
   const jump=document.createElement("div"); jump.className="gram-jump reveal"; jump.setAttribute("role","tablist"); jump.setAttribute("aria-label","文法分層");
-  GRAM_LAYERS.forEach(L=>{ const b=document.createElement("button"); b.type="button"; b.className="gram-tab"; b.id=L.id+"-tab"; b.setAttribute("role","tab"); b.setAttribute("aria-controls",L.id); const SH={"g-verbos":"動詞","g-nombres":"名詞","g-frases":"句型","g-conj":"變化表"}; b.innerHTML=`<span class="t-long">${L.h}</span><span class="t-short" aria-hidden="true">${SH[L.id]||L.h}</span>`; b.setAttribute("aria-label",L.h);
+  GRAM_LAYERS.forEach(L=>{ const b=document.createElement("button"); b.type="button"; b.className="gram-tab"; b.id=L.id+"-tab"; b.setAttribute("role","tab"); b.setAttribute("aria-controls",L.id); const SH={"g-orden":"語序","g-verbos":"動詞","g-nombres":"名詞","g-frases":"句型","g-conj":"變化表"}; b.innerHTML=`<span class="t-long">${L.h}</span><span class="t-short" aria-hidden="true">${SH[L.id]||L.h}</span>`; b.setAttribute("aria-label",L.h);
     b.onclick=()=>{ gramTab(L.id); const top=verbList.getBoundingClientRect().top; if(top<0) verbList.scrollIntoView({block:"start"}); }; jump.appendChild(b); });
   const basicBtn=document.createElement("button"); basicBtn.type="button"; basicBtn.className="gram-basic-btn"; basicBtn.setAttribute("aria-pressed","false"); basicBtn.textContent="只看基礎";
   basicBtn.onclick=()=>{ const on=!verbList.classList.contains("only-basic"); verbList.classList.toggle("only-basic",on); basicBtn.setAttribute("aria-pressed",on); };
