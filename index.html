@@ -7,7 +7,7 @@
 <!-- impeccable-disable layout-transition -- 實測（2026-09-29，手機尺寸、CPU 降速 4 倍）：展開文法註最慢一格 5ms、動詞變位表 15ms，都沒有掉格；展開動畫是體驗的一部分，改成只動 transform 會讓下面的內容瞬間跳位 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mi Español · 每天五分鐘的西班牙文</title>
-<meta name="description" content="每天五分鐘學拉美西班牙文：聊一段對話、填 5 題空、複習當天卡住的字。14 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
+<meta name="description" content="每天五分鐘學拉美西班牙文：一個文法重點、練 5 題、複習當天的單字。14 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Mi Español · 每天五分鐘的西班牙文">
 <meta property="og:description" content="14 個對話場景、362 張單字卡、62 條文法、15 首歌的文法註解，加上聽寫、句子重組和錯題複習。">
@@ -635,6 +635,20 @@ body:not(.on-progreso) footer{margin-top:34px}
 .rt-meta{font-size:.9rem;font-weight:700;color:var(--ink-soft)}
 .rt-sum{margin-top:14px;font-family:var(--font-display);font-weight:600;font-size:1.12rem;color:var(--ink)}
 .rt-next{margin-top:4px;color:var(--ink-soft);font-weight:700}
+/* 第 1 步「今天的重點」直接放首頁:一條規則、一個例句,下面就是去練題的按鈕(2026-11-11) */
+.rt-point{margin-top:16px;padding:16px 18px;border:1.5px solid var(--line-strong);border-radius:14px;background:var(--card)}
+.rt-pt-st{margin:0;font-size:.8rem;font-weight:800;letter-spacing:.04em;color:var(--ink-soft)}
+.rt-pt-title{margin:4px 0 0;font-weight:800;color:var(--ink)}
+.rt-pt-k{margin:10px 0 0;font-family:var(--font-display);font-weight:900;font-size:1.2rem;line-height:1.35;color:var(--terra-deep)}
+.rt-pt-v{margin:4px 0 0;color:var(--ink);line-height:1.6}
+.rt-pt-ej{margin:12px 0 0;font-family:var(--font-display);font-weight:600;font-size:1.1rem;color:var(--ink)}
+.rt-pt-cn{margin:2px 0 0;color:var(--ink-soft);font-size:.92rem}
+.rt-point .hoy-cta{margin-top:16px}
+.ex-tag{font-size:.75rem;font-weight:800;color:var(--ink-soft);margin-bottom:6px}
+.rt-more{margin-top:16px;padding-top:14px;border-top:1.5px dashed var(--line-strong)}
+.rt-more-h{margin:0;font-weight:800;color:var(--ink)}
+.rt-more-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.rt-more-row .chip{min-height:40px}
 .wtp{margin-top:16px;padding:14px 16px;border:1.5px dashed var(--line-strong);border-radius:14px;background:var(--paper-2)}
 .wtp-q{margin:0;font-weight:700;color:var(--ink)}
 .wtp-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -6870,16 +6884,73 @@ function renderSecStats(){
     return `<span class="sr-n">${name}</span><span class="sr-c">${s.ok} / ${s.n}</span><span class="sr-bar"><i style="width:${pct}%"></i></span><span class="sr-p">${pct}%</span>`+(sub?`<span class="sr-sub">${sub}</span>`:""); }).join("");
   box.innerHTML=`<div class="pg-h">${svgIcon(ICON.check,15)} 各區練習 · Por sección <span class="sub">答對 / 練過</span></div><div class="sec-rows">${rows}</div>`; }
 /* ===== 今天的五分鐘 =====
-   每天固定三步:聊一段對話 → 填空 5 題 → 單字卡。三步都做完,首頁才說「做完了」。
-   單字卡放最後,吃前兩步的結果:對話卡住那句的字、填空錯的字先複習,再來是到期的卡和今天對話裡的字。
+   每天固定三步(2026-11-11 改):今天的重點 → 練題(文法路線這站 3 題 + 複習 2 題)→ 單字 8 張。三步都做完,首頁才說「做完了」。
+   單字卡放最後,吃前兩步的結果:填空錯的字先複習,再來是今天例句的字、到期的卡,新字照字頻。
+   「聊一段」移到「還想多練」:它跟當天的文法點無關;做完一樣記在今天的紀錄(talk),場景照樣輪替。
    每一步都是站上原本的練習,這裡只負責排順序、記今天做了哪幾步、做完一步時帶你去下一步。
-   完成點:對話把一個場景談完(talkCommit)、單字卡佇列清空(endReview)、填空一輪 5 題都有結果(exScore)。 */
+   完成點:首頁按「看懂了」(gram)、單字卡佇列清空(endReview)、今天路線那輪填空都有結果(exScore)。 */
 const RTKEY="miEspanol.ritual";
 /* 對話場景輪替:自我介紹先,14 天不重複。index 1「買衣服」排在最後一天。 */
 const RT_SCENES=[6,2,0,7,8,3,9,10,5,11,12,4,13,1].filter(i=>i<DATA.dialogos.length);
 /* 新字從星期、月份、吃的開始,不照資料順序 */
 const RT_CATS=["時間日期","飲食","數字金錢","地點方位","天氣季節","常用片語","情緒個性","運動健身","學業工作","人生情感","動作動詞","身體健康","問候用語","家人朋友","興趣活動","住家","交通","公家手續","國家語言","描述用字","副詞"];
-const RT_STEPS=[{k:"talk",t:"聊一段"},{k:"drill",t:"填空"},{k:"cards",t:"單字卡"}];
+const RT_STEPS=[{k:"gram",t:"重點"},{k:"drill",t:"練題"},{k:"cards",t:"單字"}];
+/* ROUTE(route_apply.py) */
+/* ── 文法路線(2026-11-11,本人:每日五分鐘看文法筆記、單字卡、動詞會眼花撩亂,改成每天只學一個點) ──
+   10 站,每天一站。只排題庫裡已經有 3 題以上的文法筆記,一題都沒另外寫。
+   這一站 3 題答對 2 題,隔天換下一站;沒過,隔天同一站再練(重點換這張筆記的下一條)。
+   過了的站排進複習:隔 1、3、7、14 天各抽 1 題,答錯從 1 天重來。10 站走完,每天挑最該複習的那站。
+   紀錄在 miEspanol.route(跟著同步碼、匯出走):{st:走到第幾站, tries:{站:練過幾次}, done:{站:{lvl,due:日號}}} */
+const ROUTE=["冠詞 un / el","名詞的陰陽性與單複數","ser vs estar","現在式不規則類型","tener 慣用語","gustar 類動詞","去哪裡、在哪裡、怎麼去","數字 Números","現在幾點 ¿Qué hora es?","ir a + 原形"]
+  .filter(t=>DATA.gramatica.some(g=>g.title===t)&&POOL.filter(e=>e.g===t).length>=3);
+const RTROUTE="miEspanol.route", RT_GAP=[1,3,7,14];
+const dnum=s=>{ const a=String(s).split("-").map(Number); return Math.round(Date.UTC(a[0],a[1]-1,a[2])/864e5); };   /* dayStr 沒補零,不能拿字串比大小 */
+let route=lsGet(RTROUTE,{});
+function routeOk(){ const o=x=>x&&typeof x==="object"&&!Array.isArray(x);
+  if(!o(route)) route={}; if(!Number.isInteger(route.st)||route.st<0) route.st=0;
+  if(!o(route.tries)) route.tries={}; if(!o(route.done)) route.done={};
+  Object.keys(route.done).forEach(k=>{ const d=route.done[k]; if(!o(d)||!ROUTE[k]||!Number.isFinite(d.due)) delete route.done[k]; else d.lvl=Math.max(0,Math.min(RT_GAP.length-1,d.lvl|0)); });
+  return route; }
+function routeSave(){ try{ localStorage.setItem(RTROUTE,JSON.stringify(route)); }catch(_){} }
+const routeFin=()=>routeOk().st>=ROUTE.length;
+/* 今天是哪一站(一天之內固定):路線還沒走完是 route.st;走完了挑複習到期最早的那站 */
+function routeToday(r){ routeOk();
+  if(Number.isInteger(r.st)&&ROUTE[r.st]) return r.st;
+  let st=route.st;
+  if(st>=ROUTE.length){ const ks=Object.keys(route.done).map(Number).sort((a,b)=>route.done[a].due-route.done[b].due); st=ks.length?ks[0]:0; }
+  r.st=st; r.ti=route.tries[st]||0; rtSave(); return st; }
+/* 今天的重點:這站筆記挑一條(第幾次練就輪到第幾條),附一個例句 */
+function routePoint(r){ const st=routeToday(r), g=DATA.gramatica.find(x=>x.title===ROUTE[st]); if(!g) return null;
+  if(g.type==="table") return {k:g.mean||g.title, v:(g.conj||[]).join(" · "), ej:g.ej||"", ejcn:g.ejcn||""};
+  const ps=(g.points||[]).filter(p=>p.ej||p.v); return ps.length?ps[(r.ti||0)%ps.length]:null; }
+/* 今天這輪:這站 3 題,加複習 2 題(過了的站、到期最早的先,每站 1 題)。還沒有站可以複習時用這站剩下的題補 */
+function routeDrill(r){ if(r.plan&&Array.isArray(r.plan.q)&&r.plan.q.length&&r.plan.q.every(i=>POOL[i])) return r.plan;
+  const st=routeToday(r), of=t=>shuffleA([...POOL.keys()].filter(i=>POOL[i].g===t));
+  const mine=of(ROUTE[st]), q=mine.slice(0,3), rev=[];
+  const past=Object.keys(routeOk().done).map(Number).filter(i=>i!==st).sort((a,b)=>route.done[a].due-route.done[b].due);
+  for(const i of past){ if(rev.length>=2) break; const x=of(ROUTE[i])[0]; if(x!=null){ q.push(x); rev.push(i); } }
+  mine.slice(3).forEach(x=>{ if(q.length<5) q.push(x); });
+  r.plan={st,q,n:Math.min(3,mine.length),rev}; rtSave(); return r.plan; }
+/* 每題上面標一行:今天這站,還是複習第幾站 */
+function routeTags(p){ $$(".card.ex",exList).forEach((c,i)=>{ if(c.querySelector(".ex-tag")) return;
+  const rv=i>=p.n&&i-p.n<p.rev.length, s=rv?p.rev[i-p.n]:p.st, t=document.createElement("div"); t.className="ex-tag";
+  t.textContent=(rv?`複習 · 第 ${s+1} 站 · `:"今天這站 · ")+ROUTE[s]; c.prepend(t); }); }
+const routeLvl=(d,ok,today)=>{ d.lvl=ok?Math.min(d.lvl+1,RT_GAP.length-1):0; d.due=today+(ok?RT_GAP[d.lvl]:1); };
+/* 這輪每題都有結果之後:這站過了沒、複習那幾站答對沒。只算今天路線那一輪 */
+function routeResult(r){ if(r.routed||!r.plan) return; const p=r.plan, ok=i=>res[i]==="ok", today=dnum(r.d), st=p.st;
+  routeOk(); route.tries[st]=(route.tries[st]||0)+1;
+  const stOk=p.q.slice(0,p.n).filter((_,i)=>ok(i)).length, pass=stOk>=Math.min(2,p.n);
+  if(pass){ if(route.done[st]) routeLvl(route.done[st],true,today); else route.done[st]={lvl:0,due:today+RT_GAP[0]}; if(route.st===st) route.st=st+1; }
+  else if(route.done[st]) routeLvl(route.done[st],false,today);
+  p.rev.forEach((s,k)=>{ if(route.done[s]) routeLvl(route.done[s],ok(p.n+k),today); });
+  r.routed=1; r.stOk=stOk; r.stN=p.n; r.pass=pass?1:0; routeSave(); rtSave(); }
+const routeIsToday=r=>roundA1&&r.plan&&round.join()===r.plan.q.join();
+/* 今天例句和題目裡出現的字(單字卡優先排) */
+function routeWords(r){ const out=[], add=w=>{ if(w&&out.indexOf(w)<0) out.push(w); }, pt=routePoint(r);
+  [pt&&pt.ej].concat(r.plan?r.plan.q.map(i=>POOL[i].before+POOL[i].answer+POOL[i].after):[]).filter(Boolean)
+    .forEach(x=>String(x).split(" / ").forEach(s=>itemCards({q:s}).forEach(add)));
+  return out; }
+/* /ROUTE */
 /* ── 把句子裡的字對到單字卡 ──
    卡片原字比對不分大小寫和重音;動詞另外查一張常見變化表(只收這站用得到的現在式,保留重音,esta≠está)。 */
 const rtNorm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[¿?¡!.,;:"()«»]/g,"").trim();
@@ -6906,9 +6977,10 @@ function sceneCards(i){ const sc=DATA.dialogos[i]; const out=[]; if(sc) sc.items
 function exCard(e){ const m=/^([a-záéíóúñ]+)/i.exec(e.inf||""); return (m&&cardOf(m[1]))||cardOf(e.answer); }
 function rtNoteWeak(it){ const r=rtToday(); r.weak=r.weak||[]; itemCards(it).slice(0,4).forEach(w=>{ if(r.weak.indexOf(w.es)<0) r.weak.push(w.es); }); rtSave(); }
 function rtNoteMiss(es){ const r=rtToday(); r.miss=r.miss||[]; if(r.miss.indexOf(es)<0){ r.miss.push(es); rtSave(); } }
-/* 今天的單字卡佇列(最多 10 張,不足 5 張補新字):
-   1 對話卡住那句的字 → 2 填空錯的字 → 3 今天對話裡還沒學過的字(最多 3) → 4 到期的卡 → 5 新字(基本字先,每天夾 1 張 A2) */
-const RT_MAX=10, RT_MIN=5;
+/* 今天的單字卡佇列(8 張,不足的補新字):
+   1 對話卡住那句的字(有去聊的話) → 2 填空錯的字 → 3 今天重點和題目裡還沒學過的字(最多 3) → 4 到期的卡
+   → 5 新字:字幕字頻排名(fr)小的先,沒排名的照原本主題順序;每天夾 1 張 A2 */
+const RT_MAX=8, RT_MIN=8;
 function rtQueue(){
   const r=rtToday(), out=[], why={};
   /* 這輪單字卡評到一半(重新整理過、或中途按了結束複習):照原本那一輪剩下的卡,不重排 */
@@ -6918,19 +6990,20 @@ function rtQueue(){
   const push=(w,k)=>{ if(w && !why[w.es] && out.length<RT_MAX){ why[w.es]=k; out.push(w); } };
   (r.weak||[]).forEach(es=>push(CARD_BY[rtNorm(es)],"talk"));
   (r.miss||[]).forEach(es=>push(CARD_BY[rtNorm(es)],"miss"));
-  sceneCards(r.scene).filter(w=>!cardStatus(w.es)).slice(0,3).forEach(w=>push(w,"scene"));
+  routeWords(r).filter(w=>!cardStatus(w.es)).slice(0,3).forEach(w=>push(w,"scene"));
   CARDS.filter(w=>isDue(w.es)).sort((a,b)=>cardDue(a.es)-cardDue(b.es)).forEach(w=>push(w,"due"));
   if(out.length<RT_MIN){
     const fresh=CARDS.filter(w=>!cardStatus(w.es) && !why[w.es]);
-    const a2=fresh.filter(w=>w.lv==="A2");
-    const basic=fresh.filter(w=>w.lv==="A1").concat(fresh.filter(w=>!w.lv).sort((a,b)=>rtCatRank(a)-rtCatRank(b)));
+    const a2=fresh.filter(w=>w.lv==="A2"&&!w.fr);
+    const byFr=fresh.filter(w=>w.fr).sort((a,b)=>a.fr-b.fr), rest=fresh.filter(w=>!w.fr);
+    const basic=byFr.concat(rest.filter(w=>w.lv==="A1"), rest.filter(w=>!w.lv).sort((a,b)=>rtCatRank(a)-rtCatRank(b)));
     if(a2.length && RT_MIN-out.length>=2) push(a2[0],"fresh");
     for(const w of basic){ if(out.length>=RT_MIN) break; push(w,"fresh"); }
   }
   rtWhy=why; return out; }
 /* 首頁那行說明:這輪幾張、各從哪來 */
 function rtQueueDesc(q){ const c={}; q.forEach(w=>{ const k=rtWhy[w.es]; c[k]=(c[k]||0)+1; });
-  const parts=[["talk","對話卡住"],["miss","填空錯的"],["scene","對話裡的字"],["due","到期"],["fresh","新字"]].filter(([k])=>c[k]).map(([k,t])=>`${t} ${c[k]}`);
+  const parts=[["talk","對話卡住"],["miss","填空錯的"],["scene","今天例句的字"],["due","到期"],["fresh","新字"]].filter(([k])=>c[k]).map(([k,t])=>`${t} ${c[k]}`);
   return q.length?`${q.length} 張:${parts.join("、")}`:"今天沒有要複習的卡"; }
 let rt=lsGet(RTKEY,{}), rtCards=0, rtCardsDay="", rtCardsK=0;   // rtCardsK:這輪已經評了幾張(按「忘了」張數不會少,要另外記)
 function rtSave(){ try{ localStorage.setItem(RTKEY,JSON.stringify(rt)); }catch(_){} }
@@ -6951,7 +7024,9 @@ function rtCrumb(k){ const sec=document.getElementById(RT_SEC[k]); const head=se
   const i=RT_STEPS.findIndex(s=>s.k===k)+1;
   rtCrumbEl.innerHTML=`今天的五分鐘 · 第 ${i} 步,共 ${RT_STEPS.length} 步 <button class="tk-link" type="button">回今天</button>`;
   rtCrumbEl.dataset.sec=RT_SEC[k]; rtCrumbEl.querySelector("button").onclick=()=>show("hoy"); head.after(rtCrumbEl); }
-function rtGo(k){ rtBarHide(); ({talk:rtGoTalk,cards:rtGoCards,drill:rtGoDrill})[k](); if(!rtToday()[k]) rtCrumb(k); }
+function rtGo(k){ rtBarHide(); ({gram:rtGoGram,talk:rtGoTalk,cards:rtGoCards,drill:rtGoDrill})[k](); if(!rtToday()[k]&&RT_SEC[k]&&RT_STEPS.some(s=>s.k===k)) rtCrumb(k); }
+/* 第 1 步就在首頁:重點那塊 */
+function rtGoGram(){ show("hoy"); rtScrollTo($("#rt-point")); }
 /* 換到那一步的分頁後,練習區如果在畫面下半部,直接捲到它 */
 function rtScrollTo(el){ if(!el)return; const top=el.getBoundingClientRect().top;
   /* 手機的頂列是 sticky,要扣掉它的高度,不然會蓋住第一行(2026-10-28 驗收:360×640 上「第 1 / 5 句 · 場景」被蓋住) */
@@ -6972,14 +7047,21 @@ function rtGoCards(){ show("vocabulario");
 function rtCardsSave(rated){ if(!rtCards||!rvActive) return; if(rated) rtCardsK++; const r=rtToday(); if(r.cards||r.d!==rtCardsDay) return;
   r.cardsP={n:rtCards,k:rtCardsK,q:rvQueue.map(w=>[w.es,rtWhy[w.es]||"due"])}; rtSave(); }
 /* 某一步做到一半(重新整理後還記著的那種),首頁按鈕寫「繼續」不寫「開始」 */
-function rtStarted(r){ return !!((r.talkP&&(r.talkP.n||r.talkP.f)) || (r.drillP&&(r.drillP.res||[]).some(Boolean)) || (r.cardsP&&r.cardsP.k>0)); }
+function rtStarted(r){ return !!(r.gram || (r.drillP&&(r.drillP.res||[]).some(Boolean)) || (r.cardsP&&r.cardsP.k>0)); }
 function rtGoDrill(){ show("ejercicios");
   if($("#ex-fill").style.display==="none"){ const m=[...$$("#ex-mode .chip")].find(x=>/填空/.test(x.textContent)); if(m) m.click(); }
-  if(roundLogged||!roundA1) newRound(true);
+  const r=rtToday(); if(r.drillP&&!r.plan) delete r.drillP;   /* 改版前那種隨機 5 題做到一半的,丟掉 */
+  const p=routeDrill(r);
+  if(roundLogged||!routeIsToday(r)||exDay!==r.d) newRound(true,p.q);
+  routeTags(p);
   rtScrollTo(exList);
   if(matchMedia("(pointer:fine)").matches){ const p=Math.max(0,round.findIndex((_,i)=>!res[i])); const inp=$(`.blank[data-i="${p}"]`,exList); if(inp) inp.focus({preventScroll:true}); } }
 /* 記下今天完成了哪一步;還有下一步就在下面浮一條「下一步」,三步都做完就請你回首頁看收尾 */
 function rtDone(k,info){ const r=rtToday(); if(r[k])return;
+  /* 不在三步裡的(聊一段):照樣記今天做過、場景往下輪,不浮「下一步」 */
+  if(!RT_STEPS.some(s=>s.k===k)){ r[k]=1; delete r[k+"P"]; if(k==="talk") r.nTalk=(r.nTalk||0)+1; Object.assign(r,info||{}); rtSave(); rtCrumbEl.remove(); return; }
+  /* 練題只算今天路線那一輪;自己在練習區按「換一組」、或從文法筆記按「練這條」的不算 */
+  if(k==="drill"){ if(!routeIsToday(r)) return; routeResult(r); }
   r[k]=1; delete r[k+"P"]; if(k==="talk") r.nTalk=(r.nTalk||0)+1; Object.assign(r,info||{}); rtSave(); rtCrumbEl.remove();
   const left=RT_STEPS.filter(s=>!r[s.k]);
   if(!left.length){ addXP(10); evAct("done"); rtBar("今天的五分鐘做完了,+10 XP。","回今天看看",()=>show("hoy")); }
@@ -7060,32 +7142,55 @@ function wlRender(){ const box=$("#pg-set-wl"); if(!box) return; let em=null; tr
 function renderHoy(){
   const box=$("#hoy-hero"); if(!box)return;
   const r=rtToday(), sc=DATA.dialogos[r.scene]||DATA.dialogos[0];
-  const due=CARDS.filter(w=>isDue(w.es)).length, ss=curStreak();
+  const ss=curStreak(), st=routeToday(r), title=ROUTE[st]||"", fin=routeFin(), pt=routePoint(r);
   const lines=dailyLines(), ln=lines.length?lines[dayIndex()%lines.length]:null;
-  const desc={talk:`${sc.scene} · ${sc.items.length} 句,照範例句回`, cards:r.cards?`${r.cardsN||0} 張`:rtQueueDesc(rtQueue()), drill:"5 題,沒打重音也算對"};
+  const stLbl=fin?`複習 · 第 ${st+1} 站`:`第 ${st+1} / ${ROUTE.length} 站`;
+  const nRev=Math.min(2,Object.keys(routeOk().done).filter(i=>+i!==st).length);
+  const desc={gram:`${stLbl} · ${title}`,
+    drill:r.drill&&r.stN!=null?`這站 ${r.stOk} / ${r.stN}${r.pass?",過了":",明天這站再練一次"}`:(nRev?`這站 3 題 + 複習 ${nRev} 題`:"這站的題目,沒打重音也算對"),
+    cards:r.cards?`${r.cardsN||0} 張`:rtQueueDesc(rtQueue())};
   const next=RT_STEPS.find(s=>!r[s.k]), doneN=RT_STEPS.filter(s=>r[s.k]).length;
   const list=`<ol class="rt-steps">${RT_STEPS.map((s,i)=>`<li class="rt-step${r[s.k]?" done":""}${s===next?" now":""}"><span class="rt-n">${r[s.k]?svgIcon(ICON.check,18):i+1}</span><span class="rt-t">${s.t}</span><span class="rt-d">${esc(desc[s.k])}</span></li>`).join("")}</ol>`;
-  let head, foot;
+  const meta=`<span class="rt-meta">${ss?`連續 ${ss} 天`:"三步,大約五分鐘"}</span>`;
+  let head, point="", foot;
   if(next){
     head=`<h2 class="hoy-hi">¡Hola!<span>${doneN?`今天的五分鐘,做完 ${doneN} 步了`:"今天的五分鐘"}</span></h2>`;
-    foot=`<div class="hoy-cta"><button class="btn rt-go" id="rt-start">${(doneN||rtStarted(r))?"繼續:"+next.t:"開始今天的五分鐘"} ›</button><span class="rt-meta">${ss?`連續 ${ss} 天`:"三步,大約五分鐘"}</span></div>`;
+    if(next.k==="gram"){
+      /* 第 1 步直接攤在首頁:一條規則、一個例句。v 跟文法筆記同一份資料(裡面可能有 ✗ 錯例的標記),照原樣放 */
+      point=`<div class="rt-point" id="rt-point"><p class="rt-pt-st">今天的重點 · ${esc(stLbl)}</p><p class="rt-pt-title">${esc(title)}</p>`+
+        (pt?`<p class="rt-pt-k">${pt.k}</p><p class="rt-pt-v">${pt.v}</p>`+(pt.ej?`<p class="rt-pt-ej" lang="es">${esc(pt.ej)} ${spkHTML(pt.ej)}</p><p class="rt-pt-cn">${esc(pt.ejcn||"")}</p>`:""):"")+
+        `<div class="hoy-cta"><button class="btn rt-go" id="rt-start">看懂了,去練題 ›</button><button class="tk-link" type="button" id="rt-note">看完整筆記</button>${meta}</div></div>`;
+      foot="";
+    } else foot=`<div class="hoy-cta"><button class="btn rt-go" id="rt-start">繼續:${next.t} ›</button>${meta}</div>`;
   } else {
-    const tomorrow=DATA.dialogos[RT_SCENES[(r.nTalk||0)%RT_SCENES.length]]||sc;
-    const sum=[r.said!=null?`回了 ${r.said} 句`:"", r.cardsN?`單字 ${r.cardsN} 張`:"", r.drillN?`填空 ${r.drillOk} / ${r.drillN}`:""].filter(Boolean).join(" · ");
+    const R=routeOk(), nst=R.st;
+    const tmr=r.pass===0?`明天:${title} 再練一次(3 題對 2 題才往下)`:
+      nst<ROUTE.length?`明天:第 ${nst+1} 站 · ${ROUTE[nst]}`:"10 站都走完了。之後每天挑最該複習的那站";
+    const sum=[r.stN!=null?`這站 ${r.stOk} / ${r.stN}`:"", r.drillN?`練題 ${r.drillOk} / ${r.drillN}`:"", r.cardsN?`單字 ${r.cardsN} 張`:""].filter(Boolean).join(" · ");
+    const nAll=POOL.filter(e=>e.g===title).length;
     head=`<h2 class="hoy-hi">¡Listo!<span>今天的五分鐘做完了</span></h2>`;
-    foot=`${sum?`<p class="rt-sum">${sum}</p>`:""}<p class="rt-next">${ss?`連續 ${ss} 天。`:""}明天聊:${esc(tomorrow.scene)}。</p>`+wtpHTML();
+    foot=`${sum?`<p class="rt-sum">${sum}</p>`:""}<p class="rt-next">${ss?`連續 ${ss} 天。`:""}${esc(tmr)}。</p>`+
+      `<div class="rt-more"><p class="rt-more-h">再練十分鐘</p><div class="rt-more-row">`+
+      `<button class="chip" type="button" data-more="note">看完整筆記:${esc(title)}</button>`+
+      (nAll>(r.drillN||0)?`<button class="chip" type="button" data-more="all">這站全部 ${nAll} 題</button>`:"")+
+      `<button class="chip" type="button" data-more="verbs">動詞變化練習</button>`+
+      `<button class="chip" type="button" data-more="talk">聊一段:${esc(sc.scene)}</button></div></div>`+wtpHTML();
   }
-  box.innerHTML=head+list+foot+
+  box.innerHTML=head+point+list+foot+
     (ln?`<div class="daily-line"><span class="daily-tag">今日一句</span><span class="daily-es">${esc(ln.es)}</span> ${spkHTML(ln.es)}<div class="daily-cn">${esc(ln.cn)}</div></div>`:"");
-  const st=$("#rt-start"); if(st) st.onclick=()=>{ evAct("start"); rtGo(next.k); };
+  const go=$("#rt-start");
+  if(go) go.onclick=()=>{ evAct("start"); if(next.k==="gram"){ r.gram=1; rtSave(); rtGo("drill"); } else rtGo(next.k); };
+  const nb=$("#rt-note"); if(nb) nb.onclick=()=>openGram(title);
+  $$("#hoy-hero [data-more]").forEach(b=>b.onclick=()=>({note:()=>openGram(title),all:()=>practiceGram(title),verbs:()=>show("verbos"),talk:()=>rtGo("talk")})[b.dataset.more]());
   $$("#wtp [data-wtp]").forEach(b=>b.onclick=()=>wtpAnswer(b.dataset.wtp));
   $("#hoy-quick").innerHTML=`<div class="hoy-quick-h">${svgIcon(ICON.game,17)} 還想多練 · Más</div><div class="hoy-grid">
+    <button class="hoy-card" data-talk="1">${svgIcon(ICON.chat,22)}<b>聊一段</b><span>${esc(sc.scene)}</span></button>
     <button class="hoy-card" data-go="vocabulario">${svgIcon(ICON.game,22)}<b>配對小遊戲</b><span>三分鐘熱身</span></button>
     <button class="hoy-card" data-go="escucha">${svgIcon(ICON.ear,22)}<b>聽寫一句</b><span>練耳朵</span></button>
     <button class="hoy-card" data-go="verbos">${svgIcon(ICON.verb,22)}<b>動詞變化</b><span>練手感</span></button>
     <button class="hoy-card" data-go="canciones">${svgIcon(ICON.music,22)}<b>聽歌學歌詞</b><span>放鬆學</span></button>
   </div>`;
-  $$("#hoy-quick .hoy-card").forEach(b=>b.onclick=()=>show(b.dataset.go));
+  $$("#hoy-quick .hoy-card").forEach(b=>b.onclick=()=>b.dataset.talk?rtGo("talk"):show(b.dataset.go));
   try{ renderHoyFrom(hfLive); }catch(e){ console.warn(e); } renderHoyVideo();
   reflow("hoy");
 }
