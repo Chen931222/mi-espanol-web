@@ -810,6 +810,38 @@ body.rt-bar-on #toast-box{bottom:92px}
 #cr-table th.pr,#cr-table td.pr{position:sticky;left:0;background:var(--card);z-index:1}
 .cr-info{font-size:.82rem;color:var(--ink-soft);line-height:1.7;margin:8px 0 0}
 .cr-info b{color:var(--terra-deep);font-family:var(--font-display)}
+/* 字尾規則 */
+.ce{margin-top:24px;padding-top:4px}
+.ce-h{font-family:var(--font-display);font-weight:900;font-size:1rem;color:var(--terra-deep);margin:22px 0 4px;padding-top:16px;border-top:2px solid var(--line-strong)}
+.ce-h span{font-weight:600;font-size:.8em;color:var(--ink-soft);margin-left:6px}
+.ce-lead{font-size:.84rem;color:var(--ink-soft);line-height:1.65;margin:0 0 14px;max-width:62ch}
+.ce-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,350px),1fr));gap:22px 32px}
+.ce-t{min-width:0;overflow-x:auto}
+.ce-t h4{font-family:var(--font-display);font-weight:800;font-size:.95rem;color:var(--ink);margin:0}
+.ce-t p{font-size:.78rem;color:var(--ink-soft);line-height:1.5;margin:2px 0 6px;min-height:2.4em}
+.ce table{border-collapse:collapse;width:100%;font-size:.88rem}
+.ce th{font-size:.76rem;color:var(--ink-soft);text-align:left;padding:5px 6px;border-bottom:2px solid var(--line-strong);white-space:nowrap}
+.ce td{padding:5px 6px;border-bottom:1px dashed var(--line);font-family:var(--font-display);color:var(--ink);white-space:nowrap}
+.ce td b{color:var(--terra-deep);font-weight:800}
+.ce td.pr{font-family:var(--font-body);color:var(--ink-soft);font-weight:700;font-size:.78rem}
+.ce-notes{margin:20px 0 0;font-size:.84rem;line-height:1.7;max-width:70ch}
+.ce-notes dt{font-weight:700;color:var(--ink);margin-top:10px}
+.ce-notes dd{margin:0;color:var(--ink-soft)}
+.ce-notes dd b{color:var(--terra-deep);font-family:var(--font-display)}
+.ce-rev{overflow-x:auto}
+.ce-rev td{white-space:normal;vertical-align:top}
+.ce-rev td.ce-end{font-weight:800;color:var(--terra-deep);white-space:nowrap}
+.ce-rev td.ce-mean{font-family:var(--font-body);font-size:.84rem;line-height:1.55;min-width:15em}
+.ce-notes dd b{white-space:nowrap}
+@media(max-width:560px){
+  .ce table{font-size:.8rem}
+  .ce th,.ce td{padding:5px 3px}
+  .ce td.pr{font-size:.7rem;padding-left:0}
+  .ce-t p{min-height:0}
+  .ce-rev td.ce-end{white-space:normal;min-width:5.2em}
+  .ce-rev td.ce-mean{min-width:8.5em;font-size:.78rem}
+}
+/* /字尾規則 */
 /* 2026-11-10 並排拖曳調大小 */
 .split{position:sticky}
 .split-grip{position:absolute;left:-8px;top:0;bottom:0;width:16px;cursor:col-resize;z-index:6;touch-action:none}
@@ -1441,7 +1473,7 @@ body.np-open .note-pop{transform:translateY(0)}
   <section id="verbos">
     <div class="reveal sec-head"><div class="sec-num">6</div>
       <h2 class="sec-h"><span class="sec-title">動詞練習</span> <span class="sec-es">Verbos</span></h2></div>
-    <p class="reveal sec-desc">給你<b>原形 + 人稱 + 時態</b>,你寫出變化。共五種時態可選;沒打重音也算對;按 <b>Enter</b> 檢查,再按一次換下一題。最下面有<b>變位總表</b>可以隨時查。</p>
+    <p class="reveal sec-desc">給你<b>原形 + 人稱 + 時態</b>,你寫出變化。共五種時態可選;沒打重音也算對;按 <b>Enter</b> 檢查,再按一次換下一題。最下面有<b>變位總表</b>可以隨時查,表的下面是<b>字尾規則</b>。</p>
     <div class="filters reveal" id="vb-tense"></div>
     <div class="card vb-card reveal">
       <div class="vb-prompt" id="vb-prompt"></div>
@@ -6074,6 +6106,69 @@ const VTABLE=[{"inf":"ser","cn":"是(本質)","rk":1,"ger":"siendo","par":"sido"
   const info=document.createElement("p"); info.className="cr-info"; info.id="cr-info"; $("#cr-table").after(info);
   paint();
 })();
+
+/* ===== 字尾規則(ends_apply.py) =====
+   2026-11-11 本人:動詞總表下面要把字尾怎麼變列出來。放在變位總表那張卡裡、表格下面。
+   兩塊:①規則動詞 -ar / -er / -ir 各時態的字尾(用 hablar、comer、vivir 示範,字是字根+字尾拼出來的)
+        ②反過來查:看到某個字尾,是誰、什麼時態。 */
+(function(){
+  const body=$("#cr-body"); if(!body||$("#ce")) return;
+  const S=["habl","com","viv"], INF=["hablar","comer","vivir"], PN=["yo","tú","él","nosotros","vosotros","ellos"];
+  const ER=["í","iste","ió","imos","isteis","ieron"], IA=["ía","ías","ía","íamos","íais","ían"], FU=["é","ás","á","emos","éis","án"];
+  const T=[
+    {k:"pres",t:"現在式",how:"去掉 -ar / -er / -ir,換上字尾。",e:[["o","as","a","amos","áis","an"],["o","es","e","emos","éis","en"],["o","es","e","imos","ís","en"]]},
+    {k:"pret",t:"簡單過去",how:"去掉字尾再換。-er 和 -ir 完全一樣。",e:[["é","aste","ó","amos","asteis","aron"],ER,ER]},
+    {k:"imp",t:"未完成過去",how:"-ar 是 -aba 那組,-er 和 -ir 是 -ía 那組。",e:[["aba","abas","aba","ábamos","abais","aban"],IA,IA]},
+    {k:"fut",t:"未來式",how:"原形不去字尾,直接接在後面。三種都一樣。",full:1,e:[FU,FU,FU]},
+    {k:"cond",t:"條件式",how:"也是接在整個原形後面。三種都一樣。",full:1,e:[IA,IA,IA]},
+    {k:"presubj",t:"現在虛擬式",how:"母音對調:-ar 用 e,-er 和 -ir 用 a。",e:[["e","es","e","emos","éis","en"],["a","as","a","amos","áis","an"],["a","as","a","amos","áis","an"]]},
+    {k:"impv",t:"命令式",how:"沒有 yo。tú 跟現在式的 él 同形;usted、nosotros、ustedes 跟虛擬式同形。",e:[["","a","e","emos","ad","en"],["","e","a","amos","ed","an"],["","e","a","amos","id","an"]]}
+  ];
+  const form=(t,c,i)=>t.e[c][i]?{s:t.full?INF[c]:S[c],e:t.e[c][i]}:null;
+  const cell=f=>f?`${f.s}<b>${f.e}</b>`:"—";
+  const tbl=t=>`<div class="ce-t"><h4>${t.t}</h4><p>${t.how}</p><table><tr><th></th><th>-ar</th><th>-er</th><th>-ir</th></tr>`+
+    PN.map((p,i)=>`<tr><td class="pr">${t.k==="impv"&&i===2?"usted":t.k==="impv"&&i===5?"ustedes":p}</td>${[0,1,2].map(c=>`<td>${cell(form(t,c,i))}</td>`).join("")}</tr>`).join("")+`</table></div>`;
+  const REV=[
+    ["-o","yo · 現在式","hablo、como、vivo"],
+    ["-as","tú · 現在式(-ar 動詞)。-er / -ir 動詞的 -as 是虛擬式","hablas / comas"],
+    ["-es","tú · 現在式(-er / -ir 動詞)。-ar 動詞的 -es 是虛擬式","comes / hables"],
+    ["-a","él · 現在式(-ar 動詞),也是對 tú 的命令。-er / -ir 動詞的 -a 是虛擬式","habla / coma"],
+    ["-e","él · 現在式(-er / -ir 動詞),也是對 tú 的命令。-ar 動詞的 -e 是虛擬式","come / hable"],
+    ["-amos · -emos · -imos","nosotros。-amos、-imos 的現在式和簡單過去同形,看上下文","hablamos、comemos、vivimos"],
+    ["-áis · -éis · -ís","vosotros · 現在式(西班牙用)","habláis、coméis、vivís"],
+    ["-an · -en","ellos · 現在式","hablan、comen"],
+    ["-é · -í","yo · 簡單過去","hablé、comí"],
+    ["-aste · -iste","tú · 簡單過去","hablaste、comiste"],
+    ["-ó · -ió","él · 簡單過去。重音在最後;沒有重音的 hablo 是「我說」","habló、comió"],
+    ["-asteis · -isteis","vosotros · 簡單過去","hablasteis、comisteis"],
+    ["-aron · -ieron","ellos · 簡單過去","hablaron、comieron"],
+    ["-aba · -abas · -ábamos · -aban","未完成過去(-ar 動詞):以前常常、那時候正在","hablaba"],
+    ["-ía · -ías · -íamos · -ían","接在字根後面是未完成過去(-er / -ir 動詞);接在整個原形後面是條件式","comía / comería"],
+    ["原形 + -é · -ás · -á · -emos · -éis · -án","未來式","hablaré、comerás"],
+    ["-ando · -iendo","現在分詞,前面配 estar:正在做","estoy hablando"],
+    ["-ado · -ido","過去分詞,前面配 haber:做過了","he comido"],
+    ["-ad · -ed · -id","對 vosotros 的命令(西班牙用)","hablad、comed、vivid"],
+    ["-ar · -er · -ir","原形,字典上查得到的樣子","hablar、comer、vivir"]
+  ];
+  const NOTE=[
+    ["兩個合成的時態","現在進行式 = estar 的現在式 + 現在分詞(-ar → <b>-ando</b>,-er / -ir → <b>-iendo</b>):estoy habl<b>ando</b>。現在完成式 = he、has、ha、hemos、habéis、han + 過去分詞(-ar → <b>-ado</b>,-er / -ir → <b>-ido</b>):he com<b>ido</b>。"],
+    ["不規則動詞","大部分只有字根變,字尾照上面的表:tener → teng<b>o</b>、tien<b>es</b>、tien<b>e</b>。"],
+    ["過去式字根整個換掉的","tuve、pude、hice、vine、quise、supe、puse、estuve 這類,字尾是 -e、-iste、-o、-imos、-isteis、-ieron,都沒有重音:tuv<b>e</b>、tuv<b>o</b>。字根用 j 結尾的(dije、traje)ellos 是 -eron:dij<b>eron</b>。"],
+    ["-car、-gar、-zar","為了維持發音,yo 的簡單過去和整組虛擬式要改拼字:buscar → bus<b>qué</b>,llegar → lle<b>gué</b>,empezar → empe<b>cé</b>。"],
+    ["字根用母音結尾","-ió、-ieron 寫成 -yó、-yeron:leer → le<b>yó</b>、le<b>yeron</b>。"]
+  ];
+  const el=document.createElement("div"); el.id="ce"; el.className="ce";
+  el.innerHTML=`<h3 class="ce-h">字尾規則 <span>Terminaciones</span></h3>
+    <p class="ce-lead">規則動詞只有三種字尾。下面用 hablar(說)、comer(吃)、vivir(住)示範,粗體是換上去的部分。</p>
+    <div class="ce-grid">${T.map(tbl).join("")}</div>
+    <dl class="ce-notes">${NOTE.map(n=>`<dt>${n[0]}</dt><dd>${n[1]}</dd>`).join("")}</dl>
+    <h3 class="ce-h">看到字尾,反過來查 <span>¿Quién y cuándo?</span></h3>
+    <p class="ce-lead">讀句子時看到一個動詞,從字尾猜是誰、什麼時候。同一個字尾有兩種可能時,先看這個動詞原形是 -ar 還是 -er / -ir。</p>
+    <div class="ce-rev"><table><tr><th>字尾</th><th>是誰、什麼時態</th><th>例子</th></tr>${REV.map(r=>`<tr><td class="ce-end">${r[0]}</td><td class="ce-mean">${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table></div>`;
+  body.appendChild(el);
+  window.__ceForms=()=>T.map(t=>({k:t.k,f:[0,1,2].map(c=>PN.map((_,i)=>{ const f=form(t,c,i); return f?f.s+f.e:"—"; }))}));   /* 驗收用:拼出來的字要跟 VTABLE 一樣 */
+})();
+/* ===== /字尾規則 ===== */
 
 /* ===== 7. 聽力口說 ===== */
 const DICTPOOL=SENTS.filter(s=>{ const n=s.es.split(/\s+/).length; return n>=2&&n<=12; });
