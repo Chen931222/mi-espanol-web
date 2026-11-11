@@ -810,6 +810,10 @@ body.rt-bar-on #toast-box{bottom:92px}
 #cr-table th.pr,#cr-table td.pr{position:sticky;left:0;background:var(--card);z-index:1}
 .cr-info{font-size:.82rem;color:var(--ink-soft);line-height:1.7;margin:8px 0 0}
 .cr-info b{color:var(--terra-deep);font-family:var(--font-display)}
+/* 對話:回上一句、另一種說法底線 */
+.tk-cue.alt .w{position:relative;z-index:1}
+.tk-done .tk-acts{display:flex;gap:10px;flex-wrap:wrap}
+/* /對話:回上一句、另一種說法底線 */
 /* 對話動詞標註 */
 .tk-row .ej-vf,.tk-cue .ej-vf{margin-top:3px}
 span.ej-vf{display:flex}
@@ -3966,6 +3970,14 @@ function talkDrillWire(it,mode,wrap){ const fb=$("#tm-fb",wrap);
 function talkMixBadge(t){ return t.kind==="blank"?'<span class="tk-badge ok">填空 · 對</span>':t.kind==="order"?'<span class="tk-badge ok">排順序 · 對</span>'
   :t.kind==="recall"?'<span class="tk-badge ok">看中文說 · 自己評</span>':t.kind==="miss"?'<span class="tk-badge warn">這句沒過,已記到錯題本</span>':""; }
 /* ===== /逐句對話:換著練 ===== */
+/* 回上一句(2026-11-11 本人:「加一個可以回到上一段回覆的」):把你最後說的那一句拿掉,回到對方那句重選。
+   只倒回對話,不收回已經給的 XP、不刪錯題本那一筆(收回會讓人按來按去刷分或洗紀錄)。 */
+function talkUndo(){ const t=dTalkLog.pop(); if(!t) return;
+  if(t.kind==="fix") dTalkFix=Math.max(0,dTalkFix-1);
+  else { dTalkStep=Math.max(0,dTalkStep-1); const q=(DATA.dialogos[dScene].items[dTalkStep]||{}).q; dTalkFix=0;
+    for(let i=dTalkLog.length-1;i>=0&&dTalkLog[i].kind==="fix"&&dTalkLog[i].q===q;i--) dTalkFix++; }
+  tmOrder=null; tkShown=""; rtTalkSave(); renderTalk();
+  const c=$(".tk-card"); if(c) rtScrollTo($(".tk-prog",c)); }
 function talkBadge(t){
   const mb=talkMixBadge(t); if(mb) return mb;
   if(t.kind==="fix") return '<span class="tk-badge util">請對方重說</span>';
@@ -3993,18 +4005,19 @@ function renderTalk(){
     wrap.innerHTML=`${log?`<div class="tk-log">${log}</div>`:""}
       <div class="tk-done"><div class="tk-done-h">這個場景的 ${N} 句都談完了。</div>
         <p class="tk-cn">上面是你這一輪談過的內容。想換個主題,點上面的場景標籤。</p>
-        <div class="tk-acts"><button class="btn" id="tk-again">再談一次</button></div></div>`;
+        <div class="tk-acts"><button class="btn" id="tk-again">再談一次</button><button class="btn" id="tk-undo">‹ 回上一句</button></div></div>`;
     dlgList.appendChild(wrap);
     $("#tk-again").onclick=()=>{ talkReset(); renderTalk(); };
+    $("#tk-undo").onclick=talkUndo;
     reflow("dialogos"); return;
   }
-  const it=items[dTalkStep], mode=talkMode();
+  const it=items[dTalkStep], mode=talkMode(), tkOwn=(it.notes||[]).length, tkN=(it.notes||[]).concat(typeof GLOSS!=="undefined"?GLOSS:[]);
   const tkKey=dScene+":"+dTalkStep+":"+dTalkFix, hideQ=listenFirst&&tkShown!==tkKey;
   wrap.innerHTML=`${log?`<div class="tk-log">${log}</div>`:""}
     <div class="tk-prog">第 ${dTalkStep+1} / ${N} 句 · ${esc(sc.scene)}</div>
     <div class="tk-lbl">對方說</div>
     ${hideQ?`<div class="tk-ask tk-hid">先聽,聽懂了再看字 <button class="btn" id="tk-reveal">顯示對方說的字</button></div>`
-      :`<div class="tk-ask">${annotate(it.q,it.notes)}</div>
+      :`<div class="tk-ask">${annotate(it.q,tkN)}</div>
     <div class="tk-cn">${esc(it.qcn)}</div><div class="ej-vf" data-ej="${esc(it.q)}"></div>`}
     <div class="tk-tools">
       <button class="btn" id="tk-play">${svgIcon(ICON.vol,13)} 播放</button>
@@ -4016,7 +4029,7 @@ function renderTalk(){
       <span class="tk-turn-h">換你說</span>
       ${mode!=="read"?talkDrillHTML(it,mode):`<div class="tk-cue">
         <div class="tk-cue-tag">範例句${/Chen/.test(it.a)?" · Chen 換成你的名字":""}</div>
-        <div class="tk-cue-es">${annotate(it.a,it.notes)} ${spkHTML(it.a)}</div>
+        <div class="tk-cue-es">${annotate(it.a,tkN)} ${spkHTML(it.a)}</div>
         <div class="tk-cue-cn">${esc(it.acn)}</div><div class="ej-vf" data-ej="${esc(it.a)}"></div>
         <div class="tk-acts"><button class="btn" id="tk-say">我唸完這句了 ›</button></div>
       </div>
@@ -4024,12 +4037,13 @@ function renderTalk(){
       <div class="tk-cue alt" data-alt="${i}">
         <button class="tk-alt-pick" type="button" aria-label="我唸了這句:${esc(alt.es)}">
           <span class="tk-cue-tag">另一種說法 · 唸完點這裡</span>
-          <span class="tk-cue-es" lang="es">${esc(alt.es)}</span>
+          <span class="tk-cue-es" lang="es">${annotate(alt.es,tkN)}</span>
           <span class="tk-cue-cn">${esc(alt.cn)}</span><span class="ej-vf" data-ej="${esc(alt.es)}"></span>
         </button>
         ${spkHTML(alt.es)}
       </div>`).join("")}`}
       <div class="tk-more">
+        ${dTalkLog.length?'<button class="tk-link" id="tk-undo">‹ 回上一句</button><span class="tk-sep">·</span>':""}
         <button class="tk-link" id="tk-fixtoggle">沒聽懂</button><span class="tk-sep">·</span>
         <button class="tk-link" id="tk-toggle">想說別的,打字</button><span class="tk-sep">·</span>
         <button class="tk-link" id="tk-reptoggle">回報錯誤</button>
@@ -4074,8 +4088,9 @@ function renderTalk(){
   /* 「另一種說法」:點卡片任何地方都算選這句(卡片裡那顆按鈕給鍵盤和螢幕閱讀器用);點小喇叭只播音不選 */
   wrap.querySelectorAll("[data-alt]").forEach(card=>{
     const pick=()=>{ const a=alts[+card.dataset.alt]; talkCommit(a.es,a.cn,"alt"); };
-    card.onclick=e=>{ if(e.target.closest(".spk"))return; pick(); };
+    card.onclick=e=>{ if(e.target.closest(".spk")||e.target.closest(".w"))return; pick(); };   /* 點底線字是看解釋,不算選這句 */
   });
+  if($("#tk-undo")) $("#tk-undo").onclick=talkUndo;
   $("#tk-fixtoggle").onclick=()=>{ const u=$("#tk-utils"); u.hidden=!u.hidden; };
   $("#tk-reptoggle").onclick=()=>{ const u=$("#tk-report"); u.hidden=!u.hidden; };
   wrap.querySelectorAll("[data-rep]").forEach(b=>b.onclick=()=>{ const [f,r]=b.dataset.rep.split("|");
@@ -4180,10 +4195,12 @@ function renderTalk(){
   $("#tk-send").onclick=send;
   $("#tk-input").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); send(); } });
   const gnote=$("#tk-gnote");
+  /* 小字典的字畫淡的底線,這句自己的註解維持紅色(跟歌詞頁一樣) */
+  wrap.querySelectorAll(".w").forEach(span=>{ if(+span.dataset.k>=tkOwn) span.classList.add("g"); });
   wrap.querySelectorAll(".w").forEach(span=>span.onclick=e=>{
-    e.stopPropagation();
+    e.stopPropagation(); e.preventDefault();
     wrap.querySelectorAll(".w").forEach(s=>s.classList.remove("sel")); span.classList.add("sel");
-    gnote.innerHTML=noteHTML(it.notes[+span.dataset.k]); gnote.classList.add("show");
+    gnote.innerHTML=noteHTML(tkN[+span.dataset.k]); gnote.classList.add("show");
     /* 說明插在被點的那句正下方(手機上原本排在整張卡最底,點了像沒反應),還是在畫面外就捲進來 */
     const host=span.closest(".tk-cue,.tk-ask"); if(host && host.nextElementSibling!==gnote) host.after(gnote);
     requestAnimationFrame(()=>{ const r=gnote.getBoundingClientRect(); if(r.bottom>innerHeight-90||r.top<0) gnote.scrollIntoView({block:"nearest",behavior:"smooth"}); });
