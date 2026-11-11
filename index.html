@@ -811,35 +811,53 @@ body.rt-bar-on #toast-box{bottom:92px}
 .cr-info{font-size:.82rem;color:var(--ink-soft);line-height:1.7;margin:8px 0 0}
 .cr-info b{color:var(--terra-deep);font-family:var(--font-display)}
 /* 字尾規則 */
-.ce{margin-top:24px;padding-top:4px}
-.ce-h{font-family:var(--font-display);font-weight:900;font-size:1rem;color:var(--terra-deep);margin:22px 0 4px;padding-top:16px;border-top:2px solid var(--line-strong)}
-.ce-h span{font-weight:600;font-size:.8em;color:var(--ink-soft);margin-left:6px}
-.ce-lead{font-size:.84rem;color:var(--ink-soft);line-height:1.65;margin:0 0 14px;max-width:62ch}
-.ce-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,350px),1fr));gap:22px 32px}
-.ce-t{min-width:0;overflow-x:auto}
-.ce-t h4{font-family:var(--font-display);font-weight:800;font-size:.95rem;color:var(--ink);margin:0}
-.ce-t p{font-size:.78rem;color:var(--ink-soft);line-height:1.5;margin:2px 0 6px;min-height:2.4em}
-.ce table{border-collapse:collapse;width:100%;font-size:.88rem}
-.ce th{font-size:.76rem;color:var(--ink-soft);text-align:left;padding:5px 6px;border-bottom:2px solid var(--line-strong);white-space:nowrap}
-.ce td{padding:5px 6px;border-bottom:1px dashed var(--line);font-family:var(--font-display);color:var(--ink);white-space:nowrap}
+/* 卡片打開後放鬆一點;三頁用底線分頁,跟下面的動詞按鈕分得開 */
+.conj-ref.open{padding:22px 26px 30px}
+.cr-nav{display:flex;gap:4px 26px;flex-wrap:wrap;margin:18px 0 26px;border-bottom:1px solid var(--line-strong)}
+.cr-nav button{font:inherit;font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--ink-soft);background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;padding:10px 2px;min-height:44px;cursor:pointer}
+.cr-nav button:hover{color:var(--ink)}
+.cr-nav button[aria-selected="true"]{color:var(--terra-deep);border-bottom-color:var(--terra)}
+.cr-nav button:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+.cr-pane[hidden]{display:none}
+#cr-p-verb .cr-note{margin:0 0 14px;max-width:68ch}
+#cr-p-verb .cr-q{margin-bottom:14px}
+#cr-p-verb #cr-verbs{max-height:168px;gap:8px;padding:4px 2px 8px}
+#cr-p-verb .cr-info{margin:34px 0 0;font-size:.84rem;line-height:1.75}
+#cr-p-verb .cr-info b:first-child{font-size:1.9rem;line-height:1.1;font-weight:900;margin-right:4px}
+#cr-p-verb .cr-scroll{margin-top:14px}
+#cr-p-verb .cr-scroll th{padding:9px 14px 9px 10px}
+#cr-p-verb .cr-scroll td{padding:10px 14px 10px 10px}
+.ce-lead{font-size:.88rem;color:var(--ink-soft);line-height:1.7;margin:0 0 18px;max-width:62ch}
+.ce-how{font-size:.9rem;color:var(--ink);line-height:1.6;margin:22px 0 10px;max-width:60ch}
+.ce-t{overflow-x:auto;max-width:620px}
+.ce table{border-collapse:collapse;width:100%;font-size:1.02rem}
+.ce th{font-size:.8rem;color:var(--ink-soft);text-align:left;padding:8px 10px;border-bottom:2px solid var(--line-strong);white-space:nowrap}
+.ce th span{font-family:var(--font-display);font-weight:600;font-style:italic;margin-left:8px;opacity:.8}
+.ce td{padding:10px;border-bottom:1px dashed var(--line);font-family:var(--font-display);color:var(--ink);white-space:nowrap}
 .ce td b{color:var(--terra-deep);font-weight:800}
-.ce td.pr{font-family:var(--font-body);color:var(--ink-soft);font-weight:700;font-size:.78rem}
-.ce-notes{margin:20px 0 0;font-size:.84rem;line-height:1.7;max-width:70ch}
-.ce-notes dt{font-weight:700;color:var(--ink);margin-top:10px}
+.ce td.pr{font-family:var(--font-body);color:var(--ink-soft);font-weight:700;font-size:.8rem;width:6.5em}
+.ce-notes{margin:44px 0 0;padding-top:22px;border-top:1px solid var(--line-strong);font-size:.86rem;line-height:1.7;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px 40px}
+.ce-notes dt{font-weight:700;color:var(--ink);margin-bottom:2px}
 .ce-notes dd{margin:0;color:var(--ink-soft)}
-.ce-notes dd b{color:var(--terra-deep);font-family:var(--font-display)}
+.ce-notes dd b{color:var(--terra-deep);font-family:var(--font-display);white-space:nowrap}
 .ce-rev{overflow-x:auto}
+.ce-rev table{font-size:.95rem}
 .ce-rev td{white-space:normal;vertical-align:top}
-.ce-rev td.ce-end{font-weight:800;color:var(--terra-deep);white-space:nowrap}
-.ce-rev td.ce-mean{font-family:var(--font-body);font-size:.84rem;line-height:1.55;min-width:15em}
-.ce-notes dd b{white-space:nowrap}
+.ce-rev td.ce-end{font-weight:800;color:var(--terra-deep);white-space:nowrap;padding-right:22px;width:1%}
+.ce-rev td:last-child{width:26%}
+.ce-rev td.ce-mean{font-family:var(--font-body);font-size:.86rem;line-height:1.6;min-width:15em;padding-right:22px}
 @media(max-width:560px){
-  .ce table{font-size:.8rem}
-  .ce th,.ce td{padding:5px 3px}
-  .ce td.pr{font-size:.7rem;padding-left:0}
-  .ce-t p{min-height:0}
-  .ce-rev td.ce-end{white-space:normal;min-width:5.2em}
-  .ce-rev td.ce-mean{min-width:8.5em;font-size:.78rem}
+  .conj-ref.open{padding:18px 16px 24px}
+  .cr-nav{gap:0 18px;margin:12px 0 20px}
+  .cr-nav button{font-size:.92rem}
+  .ce table{font-size:.82rem}
+  .ce th,.ce td{padding:9px 3px}
+  .ce td.pr{font-size:.72rem;padding-left:0;width:auto}
+  .ce th span{display:none}
+  .ce-rev table{font-size:.84rem}
+  .ce-rev td.ce-end{white-space:normal;min-width:5.2em;padding-right:8px}
+  .ce-rev td.ce-mean{min-width:8.5em;font-size:.78rem;padding-right:8px}
+  #cr-p-verb .cr-info b:first-child{font-size:1.6rem}
 }
 /* /字尾規則 */
 /* 2026-11-10 並排拖曳調大小 */
@@ -6109,8 +6127,10 @@ const VTABLE=[{"inf":"ser","cn":"是(本質)","rk":1,"ger":"siendo","par":"sido"
 
 /* ===== 字尾規則(ends_apply.py) =====
    2026-11-11 本人:動詞總表下面要把字尾怎麼變列出來。放在變位總表那張卡裡、表格下面。
-   兩塊:①規則動詞 -ar / -er / -ir 各時態的字尾(用 hablar、comer、vivir 示範,字是字根+字尾拼出來的)
-        ②反過來查:看到某個字尾,是誰、什麼時態。 */
+   2026-11-11 本人看完:「不要只有這種一頁式的感覺,稍微有點變化,這樣太緊」→ 卡片裡分三頁,一次只看一塊:
+        ①查一個動詞(原本的總表,動詞名字改成表格上面的標題)
+        ②字尾規則:規則動詞 -ar / -er / -ir 的字尾,按時態切換,一次一張(用 hablar、comer、vivir 示範,字是字根+字尾拼出來的)
+        ③從字尾反查:看到某個字尾,是誰、什麼時態。 */
 (function(){
   const body=$("#cr-body"); if(!body||$("#ce")) return;
   const S=["habl","com","viv"], INF=["hablar","comer","vivir"], PN=["yo","tú","él","nosotros","vosotros","ellos"];
@@ -6126,7 +6146,7 @@ const VTABLE=[{"inf":"ser","cn":"是(本質)","rk":1,"ger":"siendo","par":"sido"
   ];
   const form=(t,c,i)=>t.e[c][i]?{s:t.full?INF[c]:S[c],e:t.e[c][i]}:null;
   const cell=f=>f?`${f.s}<b>${f.e}</b>`:"—";
-  const tbl=t=>`<div class="ce-t"><h4>${t.t}</h4><p>${t.how}</p><table><tr><th></th><th>-ar</th><th>-er</th><th>-ir</th></tr>`+
+  const tbl=t=>`<p class="ce-how">${t.how}</p><div class="ce-t"><table><tr><th></th>${INF.map(v=>`<th>-${v.slice(-2)}<span>${v}</span></th>`).join("")}</tr>`+
     PN.map((p,i)=>`<tr><td class="pr">${t.k==="impv"&&i===2?"usted":t.k==="impv"&&i===5?"ustedes":p}</td>${[0,1,2].map(c=>`<td>${cell(form(t,c,i))}</td>`).join("")}</tr>`).join("")+`</table></div>`;
   const REV=[
     ["-o","yo · 現在式","hablo、como、vivo"],
@@ -6157,15 +6177,29 @@ const VTABLE=[{"inf":"ser","cn":"是(本質)","rk":1,"ger":"siendo","par":"sido"
     ["-car、-gar、-zar","為了維持發音,yo 的簡單過去和整組虛擬式要改拼字:buscar → bus<b>qué</b>,llegar → lle<b>gué</b>,empezar → empe<b>cé</b>。"],
     ["字根用母音結尾","-ió、-ieron 寫成 -yó、-yeron:leer → le<b>yó</b>、le<b>yeron</b>。"]
   ];
-  const el=document.createElement("div"); el.id="ce"; el.className="ce";
-  el.innerHTML=`<h3 class="ce-h">字尾規則 <span>Terminaciones</span></h3>
-    <p class="ce-lead">規則動詞只有三種字尾。下面用 hablar(說)、comer(吃)、vivir(住)示範,粗體是換上去的部分。</p>
-    <div class="ce-grid">${T.map(tbl).join("")}</div>
-    <dl class="ce-notes">${NOTE.map(n=>`<dt>${n[0]}</dt><dd>${n[1]}</dd>`).join("")}</dl>
-    <h3 class="ce-h">看到字尾,反過來查 <span>¿Quién y cuándo?</span></h3>
-    <p class="ce-lead">讀句子時看到一個動詞,從字尾猜是誰、什麼時候。同一個字尾有兩種可能時,先看這個動詞原形是 -ar 還是 -er / -ir。</p>
+  /* 原本的總表整包收進第一頁;動詞名字移到表格上面當標題 */
+  const pv=document.createElement("div"); pv.className="cr-pane"; pv.id="cr-p-verb";
+  while(body.firstChild) pv.appendChild(body.firstChild);
+  const info=$("#cr-info",pv), tb=$("#cr-table",pv); if(info&&tb) pv.insertBefore(info,tb);
+  const pe=document.createElement("div"); pe.className="cr-pane ce"; pe.id="ce"; pe.hidden=true;
+  pe.innerHTML=`<p class="ce-lead">規則動詞只有三種字尾。用 hablar(說)、comer(吃)、vivir(住)示範,粗體是換上去的部分。</p>
+    <div class="filters" id="ce-tense"></div>
+    <div id="ce-one"></div>
+    <dl class="ce-notes">${NOTE.map(n=>`<div><dt>${n[0]}</dt><dd>${n[1]}</dd></div>`).join("")}</dl>`;
+  const pr=document.createElement("div"); pr.className="cr-pane ce"; pr.id="cr-p-rev"; pr.hidden=true;
+  pr.innerHTML=`<p class="ce-lead">讀句子時看到一個動詞,從字尾猜是誰、什麼時候。同一個字尾有兩種可能時,先看這個動詞原形是 -ar 還是 -er / -ir。</p>
     <div class="ce-rev"><table><tr><th>字尾</th><th>是誰、什麼時態</th><th>例子</th></tr>${REV.map(r=>`<tr><td class="ce-end">${r[0]}</td><td class="ce-mean">${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table></div>`;
-  body.appendChild(el);
+  const PANES=[["verb","查一個動詞",pv],["ends","字尾規則",pe],["rev","從字尾反查",pr]];
+  const nav=document.createElement("div"); nav.className="cr-nav"; nav.setAttribute("role","tablist"); nav.setAttribute("aria-label","變位總表的內容");
+  const tabs=PANES.map((x,i)=>{ const b=document.createElement("button"); b.type="button"; b.textContent=x[1]; b.setAttribute("role","tab"); b.id="cr-tab-"+x[0];
+    x[2].setAttribute("role","tabpanel"); x[2].setAttribute("aria-labelledby",b.id);
+    b.onclick=()=>show(i);
+    b.onkeydown=e=>{ const d=e.key==="ArrowRight"?1:e.key==="ArrowLeft"?-1:0; if(!d) return; e.preventDefault(); const n=(i+d+PANES.length)%PANES.length; show(n); tabs[n].focus(); };
+    nav.appendChild(b); return b; });
+  function show(n){ PANES.forEach((x,i)=>{ x[2].hidden=i!==n; tabs[i].setAttribute("aria-selected",i===n?"true":"false"); tabs[i].tabIndex=i===n?0:-1; }); }
+  body.appendChild(nav); PANES.forEach(x=>body.appendChild(x[2]));
+  buildChips($("#ce-tense",pe),T.map(t=>[t.k,t.t]),T[0].k,k=>{ $("#ce-one",pe).innerHTML=tbl(T.find(t=>t.k===k)); });
+  $("#ce-one",pe).innerHTML=tbl(T[0]); show(0);
   window.__ceForms=()=>T.map(t=>({k:t.k,f:[0,1,2].map(c=>PN.map((_,i)=>{ const f=form(t,c,i); return f?f.s+f.e:"—"; }))}));   /* 驗收用:拼出來的字要跟 VTABLE 一樣 */
 })();
 /* ===== /字尾規則 ===== */
