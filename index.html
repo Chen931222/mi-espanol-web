@@ -124,14 +124,16 @@ section.in .reveal{opacity:1;transform:none}
 .qa .q-cn{color:var(--ink-soft);font-size:.9rem;margin-top:2px}
 .toggle{flex:0 0 auto;font-size:.78rem;font-weight:700;color:var(--terra);border:1.4px solid var(--terra);border-radius:999px;padding:4px 11px;white-space:nowrap;transition:.2s}
 .qa.open .toggle{background:var(--terra);color:#fff}
-.ans{max-height:0;overflow:hidden;transition:max-height .45s ease,opacity .45s ease,margin .45s ease;opacity:0}
-.qa.open .ans{max-height:400px;opacity:1;margin-top:14px}
+.ans{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s ease,opacity .45s ease,margin .45s ease;opacity:0}
+.ans>.ans-inner{min-height:0;overflow:hidden}
+.qa:not(.open) .ans-inner{padding-top:0;border-top-width:0}
+.qa.open .ans{grid-template-rows:1fr;opacity:1;margin-top:14px}
 .ans-inner{border-top:1.5px dashed var(--line-strong);padding-top:13px}
 .ans .a-es{font-family:var(--font-display);font-weight:600;font-size:1.08rem;color:var(--terra-deep);line-height:1.75}
 .ans .a-cn{color:var(--ink-soft);font-size:.92rem;margin-top:4px}
 .q-es{line-height:1.7}
 .gnote{max-height:0;overflow:hidden;opacity:0;padding:0 16px;transition:max-height .4s ease,opacity .3s ease,margin .3s ease,padding .3s ease}
-.gnote.show{max-height:360px;opacity:1;margin-top:14px;padding:14px 16px;background:var(--paper-2);border-left:4px solid var(--azul);border-radius:0 12px 12px 0}
+.gnote.show{max-height:none;opacity:1;margin-top:14px;padding:14px 16px;background:var(--paper-2);border-left:4px solid var(--azul);border-radius:0 12px 12px 0}
 
 .note-word{font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:var(--terra);line-height:1.15}
 .note-pos{display:inline-block;font-size:.76rem;font-weight:700;color:#fff;background:var(--azul);border-radius:999px;padding:3px 10px;margin:8px 0 10px}
@@ -147,8 +149,11 @@ section.in .reveal{opacity:1;transform:none}
 .verb-tag{margin-left:auto;font-size:.72rem;font-weight:700;color:var(--azul);background:#E5EEF1;border-radius:999px;padding:3px 10px;white-space:nowrap}
 .verb-arrow{transition:.3s;color:var(--ink-soft);font-weight:900}
 .verb.open .verb-arrow{transform:rotate(180deg)}
-.verb-body{max-height:0;overflow:hidden;transition:max-height .5s ease}
-.verb.open .verb-body{max-height:1600px}
+/* 2026-11-11:原本用 max-height:1600px 展開,補充+逐字解析全打開時會超過而被切掉、下一張卡壓在上面;改成 grid 0fr→1fr,高度不設上限 */
+.verb-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s ease}
+.verb-body>.verb-body-in{min-height:0;overflow:hidden}
+.verb:not(.open) .verb-body-in{padding-top:0 !important;padding-bottom:0 !important}
+.verb.open .verb-body{grid-template-rows:1fr}
 .verb-body-in{padding:0 20px 20px}
 table{width:100%;border-collapse:collapse;margin-bottom:14px}
 td{padding:9px 6px;border-bottom:1px solid var(--line)}
