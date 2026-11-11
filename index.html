@@ -810,6 +810,29 @@ body.rt-bar-on #toast-box{bottom:92px}
 #cr-table th.pr,#cr-table td.pr{position:sticky;left:0;background:var(--card);z-index:1}
 .cr-info{font-size:.82rem;color:var(--ink-soft);line-height:1.7;margin:8px 0 0}
 .cr-info b{color:var(--terra-deep);font-family:var(--font-display)}
+/* 逐句對話:換著練 */
+.tm .tk-cue-es{line-height:1.9}
+.tm-gap{display:inline-block;min-width:3.5em;border-bottom:2px solid var(--ink-soft);color:transparent;line-height:1.1;text-align:center;letter-spacing:.02em}
+.tm-gap.ok,.tm-gap.no{color:var(--terra-deep);border-bottom-color:var(--terra)}
+.tm-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.tm-in{font:inherit;font-family:var(--font-display);font-size:1.05rem;flex:1 1 180px;max-width:280px;min-height:44px;padding:8px 12px;border:1.5px solid var(--line-strong);border-radius:10px;background:var(--paper-2);color:var(--ink)}
+.tm-in:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+.tm-fb{font-size:.86rem;line-height:1.7;color:var(--ink-soft);margin-top:10px}
+.tm-fb:empty{display:none}
+.tm-fb .btn{display:block;margin-top:10px}
+.tm-fb .tm-row .btn{display:inline-flex;margin-top:0}
+.tm-ok{color:var(--azul)} .tm-no{color:var(--wine)}
+.tm-cn{font-family:var(--font-display);font-weight:600;font-size:1.15rem;line-height:1.5;color:var(--ink)}
+.tm-self{margin-top:8px}
+.tm-line{min-height:48px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0 10px;border-bottom:1.5px dashed var(--line-strong);margin-bottom:6px}
+.tm-bank{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tm-ph{font-size:.82rem;color:var(--ink-soft)}
+.tm-w{font:inherit;font-family:var(--font-display);font-weight:600;font-size:1rem;min-height:40px;padding:6px 12px;border:1.5px solid var(--line-strong);border-radius:10px;background:var(--paper-2);color:var(--ink);cursor:pointer}
+.tm-w:hover{border-color:var(--ink-soft)}
+.tm-w.on{background:var(--card);border-color:var(--terra);color:var(--terra-deep)}
+.tm-w:disabled{cursor:default;opacity:.85}
+.tm-w:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+/* /逐句對話:換著練 */
 /* 字尾規則 */
 /* 卡片打開後放鬆一點;三頁用底線分頁,跟下面的動詞按鈕分得開 */
 .conj-ref.open{padding:22px 26px 30px}
@@ -3809,7 +3832,7 @@ const LFKEY="miEspanol.listenFirst"; let listenFirst=!!lsGet(LFKEY,false), tkSho
 function talkCommit(said,cn,kind,pct){
   const it=DATA.dialogos[dScene].items[dTalkStep];
   dTalkLog.push({q:it.q,qcn:it.qcn,said:said,cn:cn,kind:kind,pct:(pct==null?null:pct)});
-  const good=kind==="ai" || (kind!=="typed"&&kind!=="aino"&&kind!=="fix") || (kind==="typed"&&pct!=null&&pct>=0.6);
+  const good=kind==="ai" || (kind!=="typed"&&kind!=="aino"&&kind!=="fix"&&kind!=="miss") || (kind==="typed"&&pct!=null&&pct>=0.6);
   if(kind==="fix" || !good) rtNoteWeak(it);
   /* 錯題本:「請對方重說」記成聽力題(重練時先聽對方那句);打字沒對上範例不算答錯(系統判斷不了),
      但記一筆「對話範例」,重練時把範例句排回來 */
@@ -3825,10 +3848,90 @@ function talkCommit(said,cn,kind,pct){
   }
   dTalkStep++; dTalkFix=0; rtTalkSave(); secLog("talk", good);
   if(good){ award(1); cnt("dialog"); }
+  if(dTalkStep>=DATA.dialogos[dScene].items.length) talkRoundUp();
   if(dTalkStep>=DATA.dialogos[dScene].items.length) rtDone("talk",{said:dTalkLog.filter(t=>t.kind!=="fix").length});
   renderDaily(); renderTalk();
 }
+/* ===== 逐句對話:換著練(talkmix_apply.py) =====
+   2026-11-11 本人:「對話練習可以有更多的東西,更多的多樣性與變化」→ 選了「同一句有不同練法」。
+   「換你說」那一句輪流用四種方式練,句子全部是原本的範例句,一句西文都沒新寫:
+     read   照著唸(原本的樣子)
+     blank  範例句挖一個字,打出來
+     order  範例句的字打散,點回正確順序
+     recall 只給中文,自己先說出西文再看答案(自己評)
+   第一次談這個場景只出 read / blank / order(句子還沒看過,不考回想);談完一輪以後才加 recall。
+   談完幾輪記在 miEspanol.talkRounds(跟著同步碼走);開關記在 miEspanol.talkMix。 */
+const TMKEY="miEspanol.talkMix", TRKEY="miEspanol.talkRounds";
+let talkMix=lsGet(TMKEY,true)!==false, talkRounds=lsGet(TRKEY,{});
+if(!talkRounds||typeof talkRounds!=="object"||Array.isArray(talkRounds)) talkRounds={};
+function talkRoundUp(){ talkRounds[dScene]=(talkRounds[dScene]|0)+1; try{ localStorage.setItem(TRKEY,JSON.stringify(talkRounds)); }catch(_){} }
+const tmWords=s=>String(s).split(/\s+/).filter(Boolean);
+const tmBare=w=>w.replace(/^[¿¡"'(«]+|[.,;:!?"')»…]+$/g,"");
+/* 可以挖的字:4 個字母以上、不是名字;先挑筆記裡有解釋的字 */
+function tmBlankAt(it,seed){ const ws=tmWords(it.a), ok=[], noted=[];
+  ws.forEach((w,i)=>{ const b=tmBare(w); if(b.length<4||/^[A-ZÁÉÍÓÚÑ]/.test(b)&&i>0||/Chen/.test(b)||/\d/.test(b)) return; ok.push(i);
+    if((it.notes||[]).some(n=>strip(n.t).split(/\s+/).indexOf(strip(b))>=0)) noted.push(i); });
+  const pool=noted.length?noted:ok; return pool.length?pool[seed%pool.length]:-1; }
+function talkMode(){ if(!talkMix) return "read";
+  const it=DATA.dialogos[dScene].items[dTalkStep]; if(!it) return "read";
+  const rd=talkRounds[dScene]|0, seq=rd===0?["read","blank","read","order"]:["recall","blank","order","read"];
+  let m=seq[(dTalkStep+rd)%seq.length]; const n=tmWords(it.a).length;
+  if(m==="order"&&(n<3||n>9)) m=rd===0?"blank":"recall";
+  if(m==="blank"&&tmBlankAt(it,dTalkStep+rd)<0) m="read";
+  return m; }
+let tmOrder=null;   /* 排順序那一題打散後的順序,重畫時不要再洗一次 */
+function talkDrillHTML(it,mode){ const rd=talkRounds[dScene]|0, key=dScene+":"+dTalkStep+":"+rd;
+  if(mode==="blank"){ const k=tmBlankAt(it,dTalkStep+rd), ws=tmWords(it.a), b=tmBare(ws[k]);
+    const html=ws.map((w,i)=>i===k?esc(w).replace(esc(b),`<span class="tm-gap" id="tm-gap">${"_".repeat(Math.max(4,b.length))}</span>`):esc(w)).join(" ");
+    return `<div class="tk-cue tm" data-ans="${esc(b)}">
+      <div class="tk-cue-tag">填一個字</div>
+      <div class="tk-cue-es" lang="es">${html}</div>
+      <div class="tk-cue-cn">${esc(it.acn)}</div>
+      <div class="tm-row"><input id="tm-in" class="tm-in" lang="es" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="缺的那個字…" aria-label="缺的那個字"><button class="btn" id="tm-check">檢查</button></div>
+      <div class="tm-fb" id="tm-fb" aria-live="polite"></div></div>`; }
+  if(mode==="order"){ const ws=tmWords(it.a);
+    if(!tmOrder||tmOrder.key!==key){ let o=shuffleA(ws.map((_,i)=>i)); if(o.every((x,i)=>x===i)) o.reverse(); tmOrder={key:key,o:o,pick:[]}; }
+    return `<div class="tk-cue tm">
+      <div class="tk-cue-tag">把字排回順序 · 一個一個點</div>
+      <div class="tm-line" id="tm-line" lang="es"></div>
+      <div class="tk-cue-cn">${esc(it.acn)}</div>
+      <div class="tm-bank" id="tm-bank" lang="es"></div>
+      <div class="tm-fb" id="tm-fb" aria-live="polite"></div></div>`; }
+  return `<div class="tk-cue tm">
+      <div class="tk-cue-tag">看中文,自己先說出西文</div>
+      <div class="tm-cn">${esc(it.acn)}</div>
+      <div class="tm-row" id="tm-row"><button class="btn" id="tm-show">說完了,看答案</button></div>
+      <div class="tm-fb" id="tm-fb" aria-live="polite"></div></div>`; }
+function talkDrillWire(it,mode,wrap){ const fb=$("#tm-fb",wrap);
+  const answer=`<div class="tk-cue-es" lang="es">${annotate(it.a,it.notes)} ${spkHTML(it.a)}</div>`;
+  const next=(kind,label)=>{ const b=document.createElement("button"); b.className="btn"; b.textContent=label||"下一句 ›"; b.onclick=()=>talkCommit(it.a,it.acn,kind); return b; };
+  const miss=()=>recordMistake("對話範例","對方:「"+it.qcn+"」→ 你:「"+it.acn+"」",it.a,"");
+  if(mode==="blank"){ const card=$(".tm",wrap), ans=card.dataset.ans, inp=$("#tm-in",wrap); let done=false;
+    const check=()=>{ if(done) return; const v=inp.value.trim(); if(!v){ fb.textContent="先打一個字再檢查。"; return; }
+      done=true; inp.disabled=true; $("#tm-check",wrap).disabled=true; const ok=strip(v)===strip(ans);
+      $("#tm-gap",wrap).textContent=ans; $("#tm-gap",wrap).classList.add(ok?"ok":"no");
+      fb.innerHTML=(ok?`<b class="tm-ok">對了。</b>`+(v!==ans&&strip(v)===strip(ans)?` 完整寫法是 <b lang="es">${esc(ans)}</b>。`:""):`<b class="tm-no">不是 ${esc(v)}</b>,是 <b lang="es">${esc(ans)}</b>。`)+" 整句唸一次再往下。 "+spkHTML(it.a);
+      if(!ok) miss(); const n=next(ok?"blank":"miss"); fb.appendChild(n); n.focus(); };
+    $("#tm-check",wrap).onclick=check;
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); check(); } }); return; }
+  if(mode==="order"){ const ws=tmWords(it.a), st=tmOrder, line=$("#tm-line",wrap), bank=$("#tm-bank",wrap); let done=false;
+    const paint=()=>{ line.innerHTML=st.pick.length?st.pick.map((i,k)=>`<button type="button" class="tm-w on" data-k="${k}">${esc(ws[i])}</button>`).join(" "):`<span class="tm-ph">點下面的字</span>`;
+      bank.innerHTML=st.o.filter(i=>st.pick.indexOf(i)<0).map(i=>`<button type="button" class="tm-w" data-i="${i}">${esc(ws[i])}</button>`).join(" ");
+      if(done) return;
+      $$(".tm-w",bank).forEach(b=>b.onclick=()=>{ st.pick.push(+b.dataset.i); paint(); if(st.pick.length===ws.length) finish(); });
+      $$(".tm-w",line).forEach(b=>b.onclick=()=>{ st.pick.splice(+b.dataset.k,1); paint(); }); };
+    const finish=()=>{ done=true; const ok=st.pick.map(i=>ws[i]).join(" ")===ws.join(" "); paint(); $$(".tm-w",line).forEach(b=>b.disabled=true);
+      fb.innerHTML=ok?`<b class="tm-ok">順序對了。</b> 唸一次再往下。 ${spkHTML(it.a)}`:`<b class="tm-no">順序不對。</b> 正確的是:${answer}`;
+      if(!ok) miss(); const n=next(ok?"order":"miss"); fb.appendChild(n); n.focus(); };
+    paint(); return; }
+  $("#tm-show",wrap).onclick=()=>{ $("#tm-row",wrap).remove(); fb.innerHTML=answer+`<div class="tm-self">你剛剛說的跟這句意思一樣嗎?</div>`;
+    const row=document.createElement("div"); row.className="tm-row"; const y=next("recall","有說出來 ›"), n=next("miss","沒說出來");
+    n.onclick=()=>{ miss(); talkCommit(it.a,it.acn,"miss"); }; row.appendChild(y); row.appendChild(n); fb.appendChild(row); y.focus(); }; }
+function talkMixBadge(t){ return t.kind==="blank"?'<span class="tk-badge ok">填空 · 對</span>':t.kind==="order"?'<span class="tk-badge ok">排順序 · 對</span>'
+  :t.kind==="recall"?'<span class="tk-badge ok">看中文說 · 自己評</span>':t.kind==="miss"?'<span class="tk-badge warn">這句沒過,已記到錯題本</span>':""; }
+/* ===== /逐句對話:換著練 ===== */
 function talkBadge(t){
+  const mb=talkMixBadge(t); if(mb) return mb;
   if(t.kind==="fix") return '<span class="tk-badge util">請對方重說</span>';
   if(t.kind==="ai") return '<span class="tk-badge ok">打字 · AI 看過</span>';
   if(t.kind==="aino") return '<span class="tk-badge warn">打字 · AI 說有錯</span>';
@@ -3859,7 +3962,7 @@ function renderTalk(){
     $("#tk-again").onclick=()=>{ talkReset(); renderTalk(); };
     reflow("dialogos"); return;
   }
-  const it=items[dTalkStep];
+  const it=items[dTalkStep], mode=talkMode();
   const tkKey=dScene+":"+dTalkStep+":"+dTalkFix, hideQ=listenFirst&&tkShown!==tkKey;
   wrap.innerHTML=`${log?`<div class="tk-log">${log}</div>`:""}
     <div class="tk-prog">第 ${dTalkStep+1} / ${N} 句 · ${esc(sc.scene)}</div>
@@ -3871,10 +3974,11 @@ function renderTalk(){
       <button class="btn" id="tk-play">${svgIcon(ICON.vol,13)} 播放</button>
       <button class="btn" id="tk-slow">${svgIcon(ICON.vol,13)} 慢速</button>
       <button class="chip tk-lf${listenFirst?" active":""}" id="tk-lf" aria-pressed="${listenFirst}">先聽再看字</button>
+      <button class="chip${talkMix?" active":""}" id="tk-mix" aria-pressed="${talkMix}">換著練</button>
     </div>
     <div class="tk-turn">
       <span class="tk-turn-h">換你說</span>
-      <div class="tk-cue">
+      ${mode!=="read"?talkDrillHTML(it,mode):`<div class="tk-cue">
         <div class="tk-cue-tag">範例句${/Chen/.test(it.a)?" · Chen 換成你的名字":""}</div>
         <div class="tk-cue-es">${annotate(it.a,it.notes)} ${spkHTML(it.a)}</div>
         <div class="tk-cue-cn">${esc(it.acn)}</div>
@@ -3888,7 +3992,7 @@ function renderTalk(){
           <span class="tk-cue-cn">${esc(alt.cn)}</span>
         </button>
         ${spkHTML(alt.es)}
-      </div>`).join("")}
+      </div>`).join("")}`}
       <div class="tk-more">
         <button class="tk-link" id="tk-fixtoggle">沒聽懂</button><span class="tk-sep">·</span>
         <button class="tk-link" id="tk-toggle">想說別的,打字</button><span class="tk-sep">·</span>
@@ -3928,7 +4032,8 @@ function renderTalk(){
   if(hideQ){ $("#tk-reveal").onclick=()=>{ tkShown=tkKey; renderTalk(); };
     if(tkSpoken!==tkKey){ tkSpoken=tkKey; setTimeout(()=>speak(it.q,null),300); } }
   $("#tk-slow").onclick=()=>speak(it.q,null,0.55);
-  $("#tk-say").onclick=()=>talkCommit(it.a,it.acn,"model");
+  $("#tk-mix").onclick=()=>{ talkMix=!talkMix; try{localStorage.setItem(TMKEY,JSON.stringify(talkMix));}catch(_){} renderTalk(); };
+  if(mode!=="read") talkDrillWire(it,mode,wrap); else $("#tk-say").onclick=()=>talkCommit(it.a,it.acn,"model");
   const alts=talkAlts();
   /* 「另一種說法」:點卡片任何地方都算選這句(卡片裡那顆按鈕給鍵盤和螢幕閱讀器用);點小喇叭只播音不選 */
   wrap.querySelectorAll("[data-alt]").forEach(card=>{
