@@ -1982,6 +1982,7 @@ const DATA = {
     {"type":"note","title":"動詞片語不能拆開","mean":"haber + 過去分詞中間不插字","tag":"語序","points":[{"k":"完成式:haber 和過去分詞黏在一起","v":"ya、nunca、no 都放在整組前面<br><span class=\"g-x\" lang=\"es\">✗ He ya comido.</span>","ej":"Ya he comido. / Nunca he estado en España.","ejcn":"我已經吃了。/ 我從沒去過西班牙。"},{"k":"ir a、tener que、estar + 動詞:一組一起用","v":"變化的是第一個動詞,後面的原形或現在分詞不變","ej":"Voy a estudiar. / Tengo que trabajar. / Estoy comiendo.","ejcn":"我要去讀書。/ 我得工作。/ 我正在吃。"}]},
     {"type":"note","title":"接句子:que 不能省","mean":"英文的 that 可以省,西文的 que 一定要","tag":"語序","points":[{"k":"說、想、覺得 + que + 句子","v":"<span class=\"g-x\" lang=\"es\">✗ Creo es verdad.</span>","ej":"Creo que es verdad. / Dice que viene mañana.","ejcn":"我覺得是真的。/ 他說他明天來。"},{"k":"句子裡的問句:疑問詞照樣在前、照樣有重音","v":"順序一樣是疑問詞 + 動詞 + 主詞","ej":"No sé dónde vive Ana.","ejcn":"我不知道 Ana 住哪裡。"}]},
     /* /語序 */
+    {"type":"note","title":"cuando vs cuándo","mean":"沒重音是「…的時候」,有重音是「什麼時候?」","tag":"連接詞","points":[{"k":"cuándo(有重音)= 什麼時候","v":"用在問句,問時間","ej":"¿Cuándo llegas?","ejcn":"你什麼時候到?"},{"k":"句子裡的問題也要重音","v":"沒有問號,但還是在問「什麼時候」,所以照樣寫 cuándo","ej":"No sé cuándo empieza la clase.","ejcn":"我不知道什麼時候開始上課。"},{"k":"cuando(沒重音)= …的時候","v":"把兩個句子接起來,講「在某件事發生的時候」","ej":"Cuando llueve, me quedo en casa.","ejcn":"下雨的時候,我待在家。"},{"k":"怎麼判斷","v":"中文能換成「什麼時候」→ cuándo;能換成「…的時候」→ cuando。兩個讀音幾乎一樣,差在寫法","ej":"","ejcn":""},{"k":"cuando 後面:習慣、過去 → 一般時態","v":"每次都這樣(現在式),或是過去的事(過去式)","ej":"Cuando tengo tiempo, leo. / Cuando era niño, vivía en Tainan.","ejcn":"我有空的時候會看書。/ 我小時候住台南。"},{"k":"cuando 後面:還沒發生的未來 → 虛擬式","v":"講以後的事,cuando 後面不能用未來式<br><span class=\"g-x\" lang=\"es\">✗ Cuando llegarás, llámame.</span>","ej":"Cuando llegues, llámame.","ejcn":"你到的時候打給我。"},{"k":"cuándo 問句不用虛擬式","v":"問句照一般時態","ej":"¿Cuándo vas a volver?","ejcn":"你什麼時候要回來?"},{"k":"兩個常見片語","v":"de vez en cuando(偶爾)沒重音;desde cuándo(從什麼時候)是問句,有重音","ej":"Voy al cine de vez en cuando. / ¿Desde cuándo estudias español?","ejcn":"我偶爾去看電影。/ 你從什麼時候開始學西班牙文?"},{"k":"同一個規則的其他字","v":"dónde / donde、cómo / como、qué / que、cuánto / cuanto:問的時候有重音,接句子的時候沒有","ej":"¿Dónde trabajas? / Vivo cerca de donde trabajo.","ejcn":"你在哪裡工作?/ 我住在工作的地方附近。"}]},  /* gram_cuando.py */
     {"type":"note","title":"ser vs estar","mean":"兩個「是」的差別","tag":"概念","points":[{"k":"ser","v":"本質、身分(永久)","ej":"Soy estudiante.","ejcn":"我是學生。"},{"k":"estar","v":"暫時狀態、位置","ej":"Estoy cansado.","ejcn":"我很累。"},{"k":"職業、國籍、出身 → ser","v":"Soy ingeniera. / Es taiwanés. / Somos de Taichung.","ej":"Mi padre es médico.","ejcn":"我爸爸是醫生。"},{"k":"心情、身體狀況 → estar","v":"estar contento / nervioso / enfermo","ej":"Hoy estoy un poco nervioso.","ejcn":"我今天有點緊張。"},{"k":"在哪裡 → estar en","v":"地點、位置一律用 estar","ej":"¿Dónde está la estación?","ejcn":"車站在哪裡？"},{"k":"婚姻狀態","v":"口語多用 estar:estar casado / soltero","ej":"Mi hermana está casada.","ejcn":"我姊姊結婚了。"},{"k":"era","v":"ser 的過去式(描述性質)","ej":"Era muy amable.","ejcn":"他(那時)人很好。"},{"k":"estaba","v":"estar 的過去式(描述狀態)","ej":"Estaba ocupado.","ejcn":"那時我很忙。"}]},
     {"type":"note","title":"sin vs no","mean":"「沒有」vs「不」","tag":"概念","points":[{"k":"sin + 名詞 / 原形","v":"沒有","ej":"café sin azúcar / sin desayunar","ejcn":"不加糖的咖啡／沒吃早餐"},{"k":"no + 動詞","v":"不(否定動詞)","ej":"No como.","ejcn":"我不吃。"}]},
     {"type":"table","title":"comer","mean":"吃","tag":"過去式 · Pretérito","conj":["comí","comiste","comió","comimos","comisteis","comieron"],"ej":"¿Comiste algo rico hoy?","ejcn":"你今天吃了什麼好吃的？"},
@@ -4059,11 +4060,11 @@ function ejHTML(ej,cn){ if(!ej) return "";
     {id:"g-frases", h:"句型", es:"Estructuras", d:"拿來就能說的說法,和把句子接起來的方法。", subs:[
       ["日常表達",["gustar 類動詞","tener 慣用語","Me da + 名詞","¡Qué + 形容詞!","比較級與最高級","現在幾點 ¿Qué hora es?","日期與星期","天氣:hace…","去哪裡、在哪裡、怎麼去","國籍與語言","頻率說法","邀約與拒絕"]],
       ["動詞片語",["義務:hay que / tener que / deber","打算、會、該是時候","動詞 + 介系詞 + 原形","做了多久:llevar / desde hace / durar","ir + 現在分詞(漸進)","seguir + 形容詞/分詞","使役 hacer + 原形","完成式不定詞(haber + 過去分詞)"]],
-      ["連接與句子結構",["por 還是 para","關係代名詞 que / lo que / quien","sino(而是)","sin vs no","條件句 Si(真實條件)","無人稱說法(uno / dicen que)"]],
+      ["連接與句子結構",["cuando vs cuándo","por 還是 para","關係代名詞 que / lo que / quien","sino(而是)","sin vs no","條件句 Si(真實條件)","無人稱說法(uno / dicen que)"]],
       ["字詞小知識",["課本裡的易混字","重音辨義(mas / sí / sé…)","歌詞口語縮寫"]] ]},
     {id:"g-conj", h:"動詞變化表", es:"Conjugaciones", d:"50 個常用動詞,分成規則、會變母音、不規則三組。每張表有現在式、簡單過去、未完成過去、未來式、現在虛擬式;手機上表格可以左右滑。", subs:[] }
   ];
-  const BASIC=["陳述句:主詞 + 動詞 + 其他","否定:no 放在動詞前","是非問句(回答 sí / no)","疑問詞問句:疑問詞 + 動詞 + 主詞","gustar 型:喜歡的東西才是主詞","形容詞放名詞後","數字 Números","現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","現在進行式","ir a + 原形","簡單過去 vs 未完成過去","名詞的陰陽性與單複數","冠詞 un / el","所有格 mi / tu / su","gustar 類動詞","tener 慣用語","現在幾點 ¿Qué hora es?","去哪裡、在哪裡、怎麼去","por 還是 para"];
+  const BASIC=["cuando vs cuándo","陳述句:主詞 + 動詞 + 其他","否定:no 放在動詞前","是非問句(回答 sí / no)","疑問詞問句:疑問詞 + 動詞 + 主詞","gustar 型:喜歡的東西才是主詞","形容詞放名詞後","數字 Números","現在式不規則類型","ser vs estar","反身動詞 Verbos reflexivos","現在進行式","ir a + 原形","簡單過去 vs 未完成過去","名詞的陰陽性與單複數","冠詞 un / el","所有格 mi / tu / su","gustar 類動詞","tener 慣用語","現在幾點 ¿Qué hora es?","去哪裡、在哪裡、怎麼去","por 還是 para"];
   const VGROUP={stem:["pedir","pensar","empezar","cerrar","entender","preferir","dormir","volver","encontrar","jugar","repetir"],
     irr:["ser","estar","ir","tener","hacer","poder","querer","decir","ver","dar","saber","venir","poner","salir","conocer","traer","oír"]};
   const CONJ_ORDER=["ser","estar","ir","tener","hacer","poder","querer","saber","decir","poner","pedir","preferir","creer","comer","ayudar"];
@@ -4079,7 +4080,7 @@ function ejHTML(ej,cn){ if(!ej) return "";
     const w=where[g.title];
     if(w){ bins[w[0]][w[1]].push([w[2],g]); return; }
     if(g.type==="table"){ (tables[g.title]=tables[g.title]||[]).push(g); return; }
-    const NO=DATA.gramatica.filter(x=>x.tag==="語序").length, oi=OLDCAT_LAYER[g.cat||GRAMCAT_OLD[i-NO]], LID=["g-verbos","g-nombres","g-frases"];
+    const NO=DATA.gramatica.filter(x=>x.tag==="語序"||x.title==="cuando vs cuándo").length, oi=OLDCAT_LAYER[g.cat||GRAMCAT_OLD[i-NO]], LID=["g-verbos","g-nombres","g-frases"];
     const li=GRAM_LAYERS.findIndex(L=>L.id===LID[oi==null?2:oi]); extra[li].push(g);
     console.warn("文法筆記沒排進四層:",g.title);
   });
