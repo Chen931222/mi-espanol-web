@@ -810,6 +810,11 @@ body.rt-bar-on #toast-box{bottom:92px}
 #cr-table th.pr,#cr-table td.pr{position:sticky;left:0;background:var(--card);z-index:1}
 .cr-info{font-size:.82rem;color:var(--ink-soft);line-height:1.7;margin:8px 0 0}
 .cr-info b{color:var(--terra-deep);font-family:var(--font-display)}
+/* 對話動詞標註 */
+.tk-row .ej-vf,.tk-cue .ej-vf{margin-top:3px}
+span.ej-vf{display:flex}
+.tm-fb .ej-vf{margin-top:6px}
+/* /對話動詞標註 */
 /* 逐句對話:換著練 */
 .tm .tk-cue-es{line-height:1.9}
 .tm-gap{display:inline-block;min-width:3.5em;border-bottom:2px solid var(--ink-soft);color:transparent;line-height:1.1;text-align:center;letter-spacing:.02em}
@@ -3903,14 +3908,14 @@ function talkDrillHTML(it,mode){ const rd=talkRounds[dScene]|0, key=dScene+":"+d
       <div class="tm-row" id="tm-row"><button class="btn" id="tm-show">說完了,看答案</button></div>
       <div class="tm-fb" id="tm-fb" aria-live="polite"></div></div>`; }
 function talkDrillWire(it,mode,wrap){ const fb=$("#tm-fb",wrap);
-  const answer=`<div class="tk-cue-es" lang="es">${annotate(it.a,it.notes)} ${spkHTML(it.a)}</div>`;
+  const answer=`<div class="tk-cue-es" lang="es">${annotate(it.a,it.notes)} ${spkHTML(it.a)}</div><div class="ej-vf" data-ej="${esc(it.a)}"></div>`;
   const next=(kind,label)=>{ const b=document.createElement("button"); b.className="btn"; b.textContent=label||"下一句 ›"; b.onclick=()=>talkCommit(it.a,it.acn,kind); return b; };
   const miss=()=>recordMistake("對話範例","對方:「"+it.qcn+"」→ 你:「"+it.acn+"」",it.a,"");
   if(mode==="blank"){ const card=$(".tm",wrap), ans=card.dataset.ans, inp=$("#tm-in",wrap); let done=false;
     const check=()=>{ if(done) return; const v=inp.value.trim(); if(!v){ fb.textContent="先打一個字再檢查。"; return; }
       done=true; inp.disabled=true; $("#tm-check",wrap).disabled=true; const ok=strip(v)===strip(ans);
       $("#tm-gap",wrap).textContent=ans; $("#tm-gap",wrap).classList.add(ok?"ok":"no");
-      fb.innerHTML=(ok?`<b class="tm-ok">對了。</b>`+(v!==ans&&strip(v)===strip(ans)?` 完整寫法是 <b lang="es">${esc(ans)}</b>。`:""):`<b class="tm-no">不是 ${esc(v)}</b>,是 <b lang="es">${esc(ans)}</b>。`)+" 整句唸一次再往下。 "+spkHTML(it.a);
+      fb.innerHTML=(ok?`<b class="tm-ok">對了。</b>`+(v!==ans&&strip(v)===strip(ans)?` 完整寫法是 <b lang="es">${esc(ans)}</b>。`:""):`<b class="tm-no">不是 ${esc(v)}</b>,是 <b lang="es">${esc(ans)}</b>。`)+" 整句唸一次再往下。 "+spkHTML(it.a)+`<div class="ej-vf" data-ej="${esc(it.a)}"></div>`;
       if(!ok) miss(); const n=next(ok?"blank":"miss"); fb.appendChild(n); n.focus(); };
     $("#tm-check",wrap).onclick=check;
     inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); check(); } }); return; }
@@ -3921,7 +3926,7 @@ function talkDrillWire(it,mode,wrap){ const fb=$("#tm-fb",wrap);
       $$(".tm-w",bank).forEach(b=>b.onclick=()=>{ st.pick.push(+b.dataset.i); paint(); if(st.pick.length===ws.length) finish(); });
       $$(".tm-w",line).forEach(b=>b.onclick=()=>{ st.pick.splice(+b.dataset.k,1); paint(); }); };
     const finish=()=>{ done=true; const ok=st.pick.map(i=>ws[i]).join(" ")===ws.join(" "); paint(); $$(".tm-w",line).forEach(b=>b.disabled=true);
-      fb.innerHTML=ok?`<b class="tm-ok">順序對了。</b> 唸一次再往下。 ${spkHTML(it.a)}`:`<b class="tm-no">順序不對。</b> 正確的是:${answer}`;
+      fb.innerHTML=ok?`<b class="tm-ok">順序對了。</b> 唸一次再往下。 ${spkHTML(it.a)}<div class="ej-vf" data-ej="${esc(it.a)}"></div>`:`<b class="tm-no">順序不對。</b> 正確的是:${answer}`;
       if(!ok) miss(); const n=next(ok?"order":"miss"); fb.appendChild(n); n.focus(); };
     paint(); return; }
   $("#tm-show",wrap).onclick=()=>{ $("#tm-row",wrap).remove(); fb.innerHTML=answer+`<div class="tm-self">你剛剛說的跟這句意思一樣嗎?</div>`;
@@ -3949,9 +3954,9 @@ function renderTalk(){
   const log=dTalkLog.map((t,i)=>{
     const again = i>0 && dTalkLog[i-1].q===t.q;
     return `<div class="tk-row"><div class="tk-who">對方${again?'<span class="tk-badge util">再說一次</span>':''}</div>
-       <div class="tk-line">${esc(t.q)}</div><div class="tk-cn">${esc(t.qcn)}</div></div>
+       <div class="tk-line">${esc(t.q)}</div><div class="tk-cn">${esc(t.qcn)}</div><div class="ej-vf" data-ej="${esc(t.q)}"></div></div>
      <div class="tk-row me"><div class="tk-who">Tú · 你${talkBadge(t)}</div>
-       <div class="tk-line">${esc(t.said)}</div>${t.cn?`<div class="tk-cn">${esc(t.cn)}</div>`:""}</div>`;
+       <div class="tk-line">${esc(t.said)}</div>${t.cn?`<div class="tk-cn">${esc(t.cn)}</div>`:""}<div class="ej-vf" data-ej="${esc(t.said)}"></div></div>`;
   }).join("");
   if(dTalkStep>=N){
     wrap.innerHTML=`${log?`<div class="tk-log">${log}</div>`:""}
@@ -3969,7 +3974,7 @@ function renderTalk(){
     <div class="tk-lbl">對方說</div>
     ${hideQ?`<div class="tk-ask tk-hid">先聽,聽懂了再看字 <button class="btn" id="tk-reveal">顯示對方說的字</button></div>`
       :`<div class="tk-ask">${annotate(it.q,it.notes)}</div>
-    <div class="tk-cn">${esc(it.qcn)}</div>`}
+    <div class="tk-cn">${esc(it.qcn)}</div><div class="ej-vf" data-ej="${esc(it.q)}"></div>`}
     <div class="tk-tools">
       <button class="btn" id="tk-play">${svgIcon(ICON.vol,13)} 播放</button>
       <button class="btn" id="tk-slow">${svgIcon(ICON.vol,13)} 慢速</button>
@@ -3981,7 +3986,7 @@ function renderTalk(){
       ${mode!=="read"?talkDrillHTML(it,mode):`<div class="tk-cue">
         <div class="tk-cue-tag">範例句${/Chen/.test(it.a)?" · Chen 換成你的名字":""}</div>
         <div class="tk-cue-es">${annotate(it.a,it.notes)} ${spkHTML(it.a)}</div>
-        <div class="tk-cue-cn">${esc(it.acn)}</div>
+        <div class="tk-cue-cn">${esc(it.acn)}</div><div class="ej-vf" data-ej="${esc(it.a)}"></div>
         <div class="tk-acts"><button class="btn" id="tk-say">我唸完這句了 ›</button></div>
       </div>
       ${talkAlts().map((alt,i)=>`
@@ -3989,7 +3994,7 @@ function renderTalk(){
         <button class="tk-alt-pick" type="button" aria-label="我唸了這句:${esc(alt.es)}">
           <span class="tk-cue-tag">另一種說法 · 唸完點這裡</span>
           <span class="tk-cue-es" lang="es">${esc(alt.es)}</span>
-          <span class="tk-cue-cn">${esc(alt.cn)}</span>
+          <span class="tk-cue-cn">${esc(alt.cn)}</span><span class="ej-vf" data-ej="${esc(alt.es)}"></span>
         </button>
         ${spkHTML(alt.es)}
       </div>`).join("")}`}
@@ -6452,6 +6457,7 @@ var EJVF_IDX=null;
 const EJVF_T={pres:"現在",pret:"簡單過去",imp:"未完成過去",fut:"未來",cond:"條件",presubj:"現在虛擬",impv:"命令"};
 const EJVF_RANK=["pres","pret","imp","fut","cond","presubj","impv"];
 const EJVF_P=["yo","tú","él","nosotros","vosotros","ellos"];
+const EJVF_PI=["yo","tú","usted","nosotros","vosotros","ustedes"];   /* 命令式第 3、6 格是對 usted / ustedes 說(2026-11-11 dígame 原本標成 él) */
 const EJVF_HAB={he:0,has:1,ha:2,hemos:3,"habéis":4,han:5};
 const EJVF_EST={estoy:0,"estás":1,"está":2,estamos:3,"estáis":4,"están":5};
 const EJVF_STOP=new Set("nada para sobre entre bajo vino casa casas cara cena río paso sal sed fin mira ve vela baja alta seguro libre cuenta vuelta canto pinto pesca mate como".split(" "));
@@ -6469,10 +6475,12 @@ function ejvfStripAcc(s){ return s.normalize("NFD").replace(/[̀-ͯ]/g,"").norma
 function ejvfBest(hits){ let best=99; hits.forEach(h=>best=Math.min(best,EJVF_RANK.indexOf(h.t))); const top=hits.filter(h=>EJVF_RANK.indexOf(h.t)===best);
   const byInf={}; top.forEach(h=>(byInf[h.inf]=byInf[h.inf]||[]).push(EJVF_P[h.i])); const infs=Object.keys(byInf);
   const ps=[...new Set(infs.flatMap(k=>byInf[k]))].join("/");
-  return infs.join(" / ")+" · "+EJVF_T[top[0].t]+(top[0].t==="impv"&&ps==="tú"?" · tú":" · "+ps); }
+  if(top[0].t==="impv") return infs.join(" / ")+" · 命令 · "+[...new Set(top.map(h=>EJVF_PI[h.i]))].join("/");
+  return infs.join(" / ")+" · "+EJVF_T[top[0].t]+" · "+ps; }
 function ejVerbs(text){ const I=ejvfIdx(), out=[], seen=new Set();
   const src=String(text).replace(/<[^>]+>/g," "), toks=[], start=[];   /* start[j]:句首(前面沒字,或是 . ! ? ¡ ¿ , / 之後) */
-  src.replace(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+/g,(m,off)=>{ const b=src.slice(0,off).replace(/\s+$/,""); start.push(!b||/[.!?¡¿,;:\/]$/.test(b)); toks.push(m); return m; });
+  const qs=[];   /* qs[j]:緊接在 ¿ 後面 = 問句開頭,不會是命令(¿Paga en efectivo?、¿Quiere verlo?) */
+  src.replace(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+/g,(m,off)=>{ const b=src.slice(0,off).replace(/\s+$/,""); start.push(!b||/[.!?¡¿,;:\/]$/.test(b)); qs.push(/¿$/.test(b)); toks.push(m); return m; });
   for(let j=0;j<toks.length;j++){ const raw=toks[j], w=raw.toLowerCase(), nx=(toks[j+1]||"").toLowerCase();
     let lab=null, shown=raw;
     const pv=(toks[j-1]||"").toLowerCase(), hab=(I.forms[w]||[]).filter(x=>x.inf==="haber");
@@ -6485,8 +6493,12 @@ function ejVerbs(text){ const I=ejvfIdx(), out=[], seen=new Set();
     else if(I.ger[w]) lab=I.ger[w]+" · 現在分詞";
     else if(I.forms[w]&&!EJVF_STOP.has(w)&&!EJVF_DET.has(pv)){ lab=ejvfBest(I.forms[w]);
       /* 句首又有 tú 命令式的讀法(Ven aquí、Habla más despacio):命令放前面,另一種讀法也列 */
-      const iv=I.forms[w].filter(x=>x.t==="impv"&&x.i===1);
-      if(start[j]&&iv.length&&!/命令/.test(lab)) lab=iv.map(x=>x.inf).join(" / ")+" · 命令 · tú;或 "+lab;
+      /* 問句開頭不算;estar、ser 的 tú 命令(está、sé)實際上幾乎不用:Está bien、Sé cocinar 是現在式 */
+      const iv=I.forms[w].filter(x=>x.t==="impv"&&x.i===1&&x.inf!=="estar"&&x.inf!=="ser");
+      if(!qs[j]&&/^(ser|estar)\b.*命令/.test(lab)) lab=ejvfBest(I.forms[w].filter(x=>x.t!=="impv"));
+      if(start[j]&&!qs[j]&&iv.length&&!/命令/.test(lab)) lab=iv.map(x=>x.inf).join(" / ")+" · 命令 · tú;或 "+lab;
+      /* 句首、不是問句、前面沒有 que 的 yo/él 現在虛擬 = 對 usted 的命令(Tome esta medicina) */
+      else if(start[j]&&!qs[j]&&/現在虛擬 · yo\/él$/.test(lab)) lab=lab.replace(/ · 現在虛擬 · yo\/él$/," · 命令 · usted(跟現在虛擬同形)");
       /* No lo compres:前 3 個字內有 no / nunca 的 tú 現在虛擬,多半是否定命令 */
       if(/現在虛擬 · tú/.test(lab)&&toks.slice(Math.max(0,j-3),j).some(x=>/^(no|nunca)$/i.test(x))) lab+="(否定命令用這個形)"; }
     else if(w==="como"&&/^(yo|nunca|no|siempre|ya|también|tampoco|lo|la|los|las|te|me)$/.test((toks[j-1]||"").toLowerCase())) lab=ejvfBest(I.forms[w]||[]);
@@ -6494,7 +6506,7 @@ function ejVerbs(text){ const I=ejvfIdx(), out=[], seen=new Set();
       const m=w.match(EJVF_CL), base=ejvfStripAcc(w.slice(0,-m[0].length)), cl=m[0];
       if(I.inf[base.replace(/(ar|er|ir)$/,"$1")]&&/(ar|er|ir)$/.test(base)) lab="原形 "+base+" + "+cl;
       else if(I.ger[base]) lab=I.ger[base]+" · 現在分詞 + "+cl;
-      else { const h=(I.forms[base]||[]).filter(x=>x.t==="impv"); if(h.length) lab=h[0].inf+" · 命令 · "+EJVF_P[h[0].i]+" + "+cl; } }
+      else { const h=(I.forms[base]||[]).filter(x=>x.t==="impv"); if(h.length) lab=h[0].inf+" · 命令 · "+EJVF_PI[h[0].i]+" + "+cl; } }
     if(lab&&!seen.has(shown.toLowerCase())){ seen.add(shown.toLowerCase()); out.push([shown,lab]); } }
   return out; }
 function ejvfFill(root){ (root||document).querySelectorAll(".ej-vf:not([data-done])").forEach(el=>{ el.dataset.done="1";
