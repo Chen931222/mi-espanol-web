@@ -425,6 +425,13 @@ body.rv-on .vh-fold{display:none}
 .fm-part span{font-family:var(--font-display);color:var(--terra-deep);font-size:.92rem}
 .fm-hitlab{display:block;font-size:.76rem;color:var(--azul);margin-top:2px}
 .g-x{color:var(--bad);font-family:var(--font-display);font-style:italic}
+/* 例句動詞變化 */
+.ej-vf{display:flex;flex-wrap:wrap;gap:2px 14px;margin-top:4px;font-size:.8rem;color:var(--ink-soft)}
+.ej-vf b{font-weight:600;color:var(--terra-deep);font-family:var(--font-display)}
+.ej-vf:empty{display:none}
+/* 並排:iOS 長按不要選字、不要跳選單 */
+#tabs .tab,#mnav button,#msheet button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.side-split-tip{font-size:.75rem;color:var(--ink-soft);margin:10px 13px 0;line-height:1.5}
 .vh-empty{padding:16px;color:var(--ink-soft)}
 .vh-more{margin:10px auto 0;display:block}
 .vh-more[hidden]{display:none}
@@ -4031,7 +4038,7 @@ function gPlusHTML(x){ if(!x) return ""; let h="";
 function ejHTML(ej,cn){ if(!ej) return "";
   const parts=ej.split(/\s+\/\s+/).map(p=>p.trim()).filter(p=>GEJW[p]);
   const wb=parts.length?`<button type="button" class="ej-wb" aria-expanded="false" data-ej="${esc(parts.join("\n"))}">逐字解析</button><div class="ej-wbx" hidden></div>`:"";
-  return `<div class="ej"><div class="es">${ej} ${spkHTML(ej)}</div>${cn?`<div class="cn">${cn}</div>`:""}${EN[ej]?`<div class="ejen en-line">${esc(EN[ej])}</div>`:""}${wb}</div>`; }
+  return `<div class="ej"><div class="es">${ej} ${spkHTML(ej)}</div>${cn?`<div class="cn">${cn}</div>`:""}<div class="ej-vf" data-ej="${esc(ej)}"></div>${EN[ej]?`<div class="ejen en-line">${esc(EN[ej])}</div>`:""}${wb}</div>`; }
 (function(){
   /* 2026-11-10 四層:一、動詞系統(由淺到深)二、名詞與代名詞 三、句型 四、動詞變化表(一個動詞一張卡)。
      新增筆記把標題加進 GRAM_LAYERS 對應小節;沒列到的會依舊 cat 落到該層最後的「其他」,並在 console 警告。 */
@@ -6184,6 +6191,65 @@ document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closes
   const fm=b.closest(".fm"); fm.querySelectorAll(".fm-tab").forEach(x=>{ const on=x===b; x.classList.toggle("on",on); x.setAttribute("aria-pressed",on); });
   fm.querySelectorAll(".fm-pane").forEach(p=>p.hidden=p.dataset.l!==b.dataset.l); });
 /* ===== /單字變化形 ===== */
+/* ===== 例句下面標動詞變化(_textbook/ejvf_apply.py 帶進來,原始碼在 _textbook/ejvf_ui.js) =====
+   2026-11-11 本人:「例句也要補上動詞變化」。文法卡的例句在 VTABLE / VFX 宣告前就畫好了,所以先放空的 .ej-vf,
+   等整支 script 跑完再填(之後新長出來的用 MutationObserver 補)。只標「有變化的動詞」:原形不標;
+   過去分詞單獨出現多半是形容詞(cansado、dicho),只有前面是 haber 才標;跟常用名詞同形的字(nada、para、vino…)不標。 */
+var EJVF_IDX=null;
+const EJVF_T={pres:"現在",pret:"簡單過去",imp:"未完成過去",fut:"未來",cond:"條件",presubj:"現在虛擬",impv:"命令"};
+const EJVF_RANK=["pres","pret","imp","fut","cond","presubj","impv"];
+const EJVF_P=["yo","tú","él","nosotros","vosotros","ellos"];
+const EJVF_HAB={he:0,has:1,ha:2,hemos:3,"habéis":4,han:5};
+const EJVF_EST={estoy:0,"estás":1,"está":2,estamos:3,"estáis":4,"están":5};
+const EJVF_STOP=new Set("nada para sobre entre bajo vino casa casas cara cena río paso sal sed fin mira ve vela baja alta seguro libre cuenta vuelta canto pinto pesca mate como".split(" "));
+/* 前面是冠詞、所有格、指示詞、介系詞 → 是名詞(mi trabajo、el viaje、la compra、un sueño),不標 */
+const EJVF_DET=new Set("el la los las un una unos unas mi mis tu tus su sus nuestro nuestra este esta ese esa aquel aquella del al de buen mal mucho poco otro cada primer primera segundo tercer último".split(" "));
+const EJVF_CL=/(?:me|te|se|nos|os|lo|la|los|las|le|les)+$/;
+function ejvfIdx(){ if(EJVF_IDX) return EJVF_IDX; const I={forms:{},par:{},ger:{},inf:{}};
+  const add=(f,inf,t,i)=>{ if(!f||f==="—") return; const k=f.toLowerCase(); (I.forms[k]=I.forms[k]||[]).push({inf,t,i}); };
+  const take=(inf,v)=>{ if(I.inf[inf]) return; I.inf[inf]=1; Object.keys(EJVF_T).forEach(t=>(v[t]||[]).forEach((f,i)=>add(String(f).replace(/^(me|te|se|nos|os) /,""),inf,t,i)));
+    if(v.par) I.par[v.par.toLowerCase()]=inf; if(v.ger) I.ger[v.ger.toLowerCase().replace(/se$/,"")]=inf; };
+  VTABLE.forEach(v=>take(v.inf,v)); Object.keys(VFX).forEach(k=>take(k.replace(/se$/,""),VFX[k]));
+  return EJVF_IDX=I; }
+function ejvfStripAcc(s){ return s.normalize("NFD").replace(/[̀-ͯ]/g,"").normalize("NFC"); }
+/* 一個字可能有好幾種讀法:取時態排最前面的那一級(現在 > 過去 > … > 命令),同一級裡不同動詞都列 */
+function ejvfBest(hits){ let best=99; hits.forEach(h=>best=Math.min(best,EJVF_RANK.indexOf(h.t))); const top=hits.filter(h=>EJVF_RANK.indexOf(h.t)===best);
+  const byInf={}; top.forEach(h=>(byInf[h.inf]=byInf[h.inf]||[]).push(EJVF_P[h.i])); const infs=Object.keys(byInf);
+  const ps=[...new Set(infs.flatMap(k=>byInf[k]))].join("/");
+  return infs.join(" / ")+" · "+EJVF_T[top[0].t]+(top[0].t==="impv"&&ps==="tú"?" · tú":" · "+ps); }
+function ejVerbs(text){ const I=ejvfIdx(), out=[], seen=new Set();
+  const src=String(text).replace(/<[^>]+>/g," "), toks=[], start=[];   /* start[j]:句首(前面沒字,或是 . ! ? ¡ ¿ , / 之後) */
+  src.replace(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+/g,(m,off)=>{ const b=src.slice(0,off).replace(/\s+$/,""); start.push(!b||/[.!?¡¿,;:\/]$/.test(b)); toks.push(m); return m; });
+  for(let j=0;j<toks.length;j++){ const raw=toks[j], w=raw.toLowerCase(), nx=(toks[j+1]||"").toLowerCase();
+    let lab=null, shown=raw;
+    const pv=(toks[j-1]||"").toLowerCase(), hab=(I.forms[w]||[]).filter(x=>x.inf==="haber");
+    if(w in EJVF_HAB&&I.par[nx]){ lab=I.par[nx]+" · 現在完成 · "+EJVF_P[EJVF_HAB[w]]; shown=raw+" "+toks[j+1]; j++; }
+    else if(w in EJVF_EST&&I.ger[nx]){ lab=I.ger[nx]+" · 現在進行 · "+EJVF_P[EJVF_EST[w]]; shown=raw+" "+toks[j+1]; j++; }
+    else if(hab.length&&I.par[nx]){ const HT={imp:"過去完成",fut:"未來完成",cond:"條件完成",presubj:"現在完成虛擬",pret:"過去完成"};
+      lab=I.par[nx]+" · "+(HT[hab[0].t]||"完成式")+" · "+[...new Set(hab.filter(x=>x.t===hab[0].t).map(x=>EJVF_P[x.i]))].join("/"); shown=raw+" "+toks[j+1]; j++; }
+    else if(I.par[w]&&/^(hub|hay|hab)/.test(pv)) lab=I.par[w]+" · 過去分詞";   /* hubiéramos visto 這類 */
+    else if(w==="sueño"&&/^t(e|ie|uv)n/.test(pv)) lab=null;   /* tener sueño 是「睏」,sueño 是名詞 */
+    else if(I.ger[w]) lab=I.ger[w]+" · 現在分詞";
+    else if(I.forms[w]&&!EJVF_STOP.has(w)&&!EJVF_DET.has(pv)){ lab=ejvfBest(I.forms[w]);
+      /* 句首又有 tú 命令式的讀法(Ven aquí、Habla más despacio):命令放前面,另一種讀法也列 */
+      const iv=I.forms[w].filter(x=>x.t==="impv"&&x.i===1);
+      if(start[j]&&iv.length&&!/命令/.test(lab)) lab=iv.map(x=>x.inf).join(" / ")+" · 命令 · tú;或 "+lab;
+      /* No lo compres:前 3 個字內有 no / nunca 的 tú 現在虛擬,多半是否定命令 */
+      if(/現在虛擬 · tú/.test(lab)&&toks.slice(Math.max(0,j-3),j).some(x=>/^(no|nunca)$/i.test(x))) lab+="(否定命令用這個形)"; }
+    else if(w==="como"&&/^(yo|nunca|no|siempre|ya|también|tampoco|lo|la|los|las|te|me)$/.test((toks[j-1]||"").toLowerCase())) lab=ejvfBest(I.forms[w]||[]);
+    else if(EJVF_CL.test(w)&&w.length>4){   /* 黏了代名詞:cómpralo、comprarlo、leyéndolo */
+      const m=w.match(EJVF_CL), base=ejvfStripAcc(w.slice(0,-m[0].length)), cl=m[0];
+      if(I.inf[base.replace(/(ar|er|ir)$/,"$1")]&&/(ar|er|ir)$/.test(base)) lab="原形 "+base+" + "+cl;
+      else if(I.ger[base]) lab=I.ger[base]+" · 現在分詞 + "+cl;
+      else { const h=(I.forms[base]||[]).filter(x=>x.t==="impv"); if(h.length) lab=h[0].inf+" · 命令 · "+EJVF_P[h[0].i]+" + "+cl; } }
+    if(lab&&!seen.has(shown.toLowerCase())){ seen.add(shown.toLowerCase()); out.push([shown,lab]); } }
+  return out; }
+function ejvfFill(root){ (root||document).querySelectorAll(".ej-vf:not([data-done])").forEach(el=>{ el.dataset.done="1";
+  let v=[]; try{ v=ejVerbs(el.dataset.ej||""); }catch(_){ }
+  if(!v.length){ el.remove(); return; }
+  el.innerHTML=v.map(([f,l])=>`<span><b lang="es">${esc(f)}</b> ← ${esc(l)}</span>`).join(""); }); }
+setTimeout(()=>{ ejvfFill(); new MutationObserver(ms=>{ if(ms.some(m=>m.addedNodes.length)) ejvfFill(); }).observe(document.body,{childList:true,subtree:true}); },0);
+/* ===== /例句動詞變化 ===== */
 /* ===== 9. 考試 · DELE(2026-11-10 本人要求:在「學習進度」下面另立一區,放 A1、A2;同日「全部都做好」補齊四科)=====
    考試結構:A2 以官方 2020 年範例考卷(Modelo 0)為準,A1 整理自備考網站;考期是當天在 cervantes.org 查的。
    題目全部自寫、只仿格式,不是官方題。口說三題、寫作兩題用 AI 估分(/api/talk-check 的 kind:"mono",task 分 tema/foto/rol/escr,
@@ -7267,7 +7333,7 @@ var SPLIT_ID=null;
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!menu.hidden) menuClose(); });
   addEventListener("scroll",menuClose,{passive:true});
   $$("#tabs button.tab").forEach((b,i)=>{ const id=TABS[i]&&TABS[i].id; if(!id) return; b.title="右鍵:在側邊並排打開";
-    b.addEventListener("contextmenu",e=>{ e.preventDefault(); menuOpen(id,e.clientX,e.clientY); }); });
+    b.addEventListener("contextmenu",e=>{ e.preventDefault(); if(matchMedia("(hover:none)").matches) return; menuOpen(id,e.clientX,e.clientY); }); });
 
   /* 手機:長按底部分頁或「更多」裡的分頁 */
   function longPress(btn,id){ let t=null, sx=0, sy=0, fired=false;
@@ -7279,6 +7345,14 @@ var SPLIT_ID=null;
     btn.addEventListener("click",e=>{ if(fired){ fired=false; e.stopImmediatePropagation(); e.preventDefault(); } },true);
     btn.addEventListener("contextmenu",e=>e.preventDefault()); }
   $$("#mnav button[data-id], #msheet button[data-id]").forEach(b=>longPress(b,b.dataset.id));
+  /* 2026-11-11 iPad 橫放是側邊欄版面,沒有右鍵:觸控長按側邊欄分頁也能並排(滑鼠照舊用右鍵) */
+  $$("#tabs button.tab").forEach((b,i)=>{ const id=TABS[i]&&TABS[i].id; if(!id) return; let t=null, sx=0, sy=0, fired=false; const clr=()=>{ if(t){ clearTimeout(t); t=null; } };
+    b.addEventListener("pointerdown",e=>{ if(e.pointerType==="mouse") return; fired=false; sx=e.clientX; sy=e.clientY; clr();
+      t=setTimeout(()=>{ t=null; fired=true; splitOpen(id); },550); });
+    b.addEventListener("pointerup",clr); b.addEventListener("pointercancel",clr); b.addEventListener("pointerleave",clr);
+    b.addEventListener("pointermove",e=>{ if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>12) clr(); });
+    b.addEventListener("click",e=>{ if(fired){ fired=false; e.stopImmediatePropagation(); e.preventDefault(); } },true); });
+  if(matchMedia("(hover:none)").matches){ const st=document.createElement("p"); st.className="side-split-tip"; st.textContent="長按分頁可以在右邊並排打開。"; const tb=$("#tabs"); if(tb) tb.after(st); }
   const tip=document.createElement("p"); tip.className="ms-tip"; tip.textContent="長按任一分頁，可以在下方並排打開（例如邊對話邊查文法）。";
   const h2=msheet.querySelector("h2"); if(h2) h2.after(tip);
 
