@@ -7139,7 +7139,11 @@ const MK_RATE={tarea:["完成任務",["沒寫到要點,或離題","要點只寫�
   uso:["語言使用",["幾乎看不懂","錯很多,對方要用猜的","有錯,但看得懂","幾乎沒錯,句子有連起來(y、pero、porque)"]]};
 const MK_ORATE={tarea:["完成任務",["講不到一半就停了","要點只講到一半","大部分要點都有講到","每題都講滿時間、要點都有"]],
   uso:["語言使用",["講不成句子","常卡住,對方要用猜的","有錯,但聽得懂","幾乎沒錯,講得順"]]};
-if(!Array.isArray(dl.mock)) dl.mock=[]; if(dl.mk&&typeof dl.mk!=="object") dl.mk=null;
+if(!Array.isArray(dl.mock)) dl.mock=[];
+/* 同步碼／匯入會整包覆蓋存檔:進畫面前先檢查形狀,數字一律轉數字(2026-11-12 安全審查) */
+if(dl.mk&&(typeof dl.mk!=="object"||!["A1","A2"].includes(dl.mk.lvl)||!dl.mk.sec||typeof dl.mk.sec!=="object"||!["lec","aud","escr","oral"].every(k=>dl.mk.sec[k]&&typeof dl.mk.sec[k]==="object"))) dl.mk=null;
+if(dl.mk) ["lec","aud","escr","oral"].forEach(k=>{ const x=dl.mk.sec[k]; if(x.pts!=null) x.pts=+x.pts||0; });
+dl.mock=dl.mock.filter(r=>r&&typeof r==="object"&&["A1","A2"].includes(r.lvl)&&r.p&&typeof r.p==="object");
 let mkTimer=null, mkView=null, mkPlays={};
 const mkLim=s=>(MK_T[dl.mk.lvl]||MK_T.A1)[s]*60000;
 const mkRem=s=>{ const x=dl.mk.sec[s]; return x.t0?x.t0+mkLim(s)-Date.now():mkLim(s); };
@@ -7328,7 +7332,7 @@ function mkOTasks(x){ const lv=dl.mk.lvl, tema=DELE[lv].temas.find(t=>t.id===x.c
 function mkOral(){ const box=$("#dl-mock"); if(!box) return; const x=dl.mk.sec.oral, lv=dl.mk.lvl, prep=MK_T[lv].prep*60;
   mkStopClock(); dlStop();
   const back=`<button class="btn sec" id="mk-back" type="button">回模擬考</button>`;
-  if(x.st==="prep"){ const ch=(kind,L)=>`<div class="dl-sets">`+x.opt[kind].map(id=>{ const t=L.find(z=>z.id===id); return t?`<button class="dl-set${x.ch[kind]===id?" mk-ch":""}" type="button" data-k="${kind}" data-id="${id}"><b lang="es">${esc(t.es)}</b><span class="dl-lam-cn">${esc(t.cn)}</span></button>`:""; }).join("")+`</div>`;
+  if(x.st==="prep"){ const ch=(kind,L)=>`<div class="dl-sets">`+x.opt[kind].map(id=>{ const t=L.find(z=>z.id===id); return t?`<button class="dl-set${x.ch[kind]===id?" mk-ch":""}" type="button" data-k="${kind}" data-id="${esc(id)}"><b lang="es">${esc(t.es)}</b><span class="dl-lam-cn">${esc(t.cn)}</span></button>`:""; }).join("")+`</div>`;
     const ready=x.ch.tema&&(lv==="A1"||x.ch.foto);
     box.innerHTML=`<div class="mk-bar"><span>口說 · 準備</span><b id="mk-clock" class="mk-clock">${dlMMSS(prep)}</b></div>
       <p class="dl-p">考試先給 <b>${MK_T[lv].prep} 分鐘</b>準備,可以寫關鍵字,講的時候可以看,不能照念。${lv==="A1"?"第 1 題自我介紹、第 2 題從兩個主題選一個,第 3 題考官會就你講的主題問問題。":"第 1 題從兩個主題選一個、第 2 題從兩張照片選一張,第 3 題跟考官演一段情境。"}</p>
