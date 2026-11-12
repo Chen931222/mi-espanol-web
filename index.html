@@ -7142,7 +7142,9 @@ const MK_ORATE={tarea:["完成任務",["講不到一半就停了","要點只講�
 if(!Array.isArray(dl.mock)) dl.mock=[];
 /* 同步碼／匯入會整包覆蓋存檔:進畫面前先檢查形狀,數字一律轉數字(2026-11-12 安全審查) */
 if(dl.mk&&(typeof dl.mk!=="object"||!["A1","A2"].includes(dl.mk.lvl)||!dl.mk.sec||typeof dl.mk.sec!=="object"||!["lec","aud","escr","oral"].every(k=>dl.mk.sec[k]&&typeof dl.mk.sec[k]==="object"))) dl.mk=null;
-if(dl.mk) ["lec","aud","escr","oral"].forEach(k=>{ const x=dl.mk.sec[k]; if(x.pts!=null) x.pts=+x.pts||0; });
+if(dl.mk) ["lec","aud","escr","oral"].forEach(k=>{ const x=dl.mk.sec[k], num=v=>+v||0, numObj=o=>Object.fromEntries(Object.entries(o&&typeof o==="object"?o:{}).map(([q,v])=>[q,num(v)]));
+  ["pts","ok","n","t0","t1","i","on","ai"].forEach(f=>{ if(x[f]!=null&&typeof x[f]!=="object") x[f]=num(x[f]); });
+  if(x.plays) x.plays=numObj(x.plays); if(x.ans) x.ans=numObj(x.ans); if(Array.isArray(x.secs)) x.secs=x.secs.map(num); });
 dl.mock=dl.mock.filter(r=>r&&typeof r==="object"&&["A1","A2"].includes(r.lvl)&&r.p&&typeof r.p==="object");
 let mkTimer=null, mkView=null, mkPlays={};
 const mkLim=s=>(MK_T[dl.mk.lvl]||MK_T.A1)[s]*60000;
