@@ -348,6 +348,7 @@ body.rt-bar-on #voz-aviso{bottom:calc(34px + var(--rtbar-h,56px) + env(safe-area
 .sf-btns{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
 .sf-hint{margin-top:10px;font-size:.8rem;color:var(--ink-soft);line-height:1.5}
 .del-song{cursor:pointer;color:var(--bad);font-weight:700}
+.edit-song{cursor:pointer;color:var(--azul);font-weight:700}
 .yt-link{display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:.82rem;font-weight:700;color:var(--terra-deep);text-decoration:none;border:1.5px solid var(--line-strong);background:var(--paper-2);border-radius:999px;padding:5px 12px;transition:.18s}
 .yt-link:hover{border-color:var(--terra);color:var(--terra);background:#fff}
 .spk{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line-strong);background:var(--paper-2);color:var(--ink-soft);cursor:pointer;padding:0;vertical-align:middle;transition:.18s;flex:0 0 auto}
@@ -3605,7 +3606,7 @@ document.addEventListener("click",function(e){
 function noteHTML(n){
   const forms=(n.forms&&n.forms.length)?`<div class="note-forms"><div class="nf-h">詞形變化 · Formas</div>${n.forms.map(f=>`<div class="nf-row"><b class="nf-w">${esc(f.w)}</b><span class="nf-ar">←</span><span class="nf-inf">${esc(f.inf)}</span><span class="nf-m">${esc(f.m||"")}</span>${f.k?`<span class="nf-k">${esc(f.k)}</span>`:""}</div>${fConj(f)}`).join("")}</div>`:"";
   return `<div class="note-word">${esc(n.d||n.t)} ${spkHTML(n.d||n.t)}</div><span class="note-pos">${esc(n.g)}</span>
-    <div class="note-cn">${esc(n.cn)}</div><div class="note-detail">${safeHTML(n.why)}</div>${forms}`;
+    <div class="note-cn">${esc(n.cn)}</div><div class="note-detail">${safeHTML(n.why).replace(/\n/g,"<br>")}</div>${forms}`;
 }
 
 /* Tabs */
@@ -5309,7 +5310,7 @@ function renderSong(){
   const pack=mine?packNotes(s):null;
   const own=(s.notes||[]).concat(pack?pack.notes:[]);
   const merged=own.concat(GLOSS);  /* 歌曲自己的註解(＋站上補寫的)＋全站初學者小字典 */
-  lyr.innerHTML=`<div class="song-title">${esc(s.title)}</div><div class="song-sub">${esc(s.sub||"")}${pack?" · "+esc(pack.by)+" · 站上補了 "+pack.n+" 條文法註":""}${mine?' · <span class="del-song">'+svgIcon(ICON.trash,13)+' 刪除這首</span>':''}</div>${s.credit?`<div class="song-credit">${esc(s.credit)}</div>`:""}<a class="yt-link" href="${s.yt?esc(s.yt):"https://www.youtube.com/results?search_query="+encodeURIComponent(s.title+(mine?"":" "+artistOf(s,sIdx)))}" target="_blank" rel="noopener">${svgIcon(ICON.play,13)} ${s.yt?"看官方影片":"在 YouTube 聽"}</a>`+
+  lyr.innerHTML=`<div class="song-title">${esc(s.title)}</div><div class="song-sub">${esc(s.sub||"")}${pack?" · "+esc(pack.by)+" · 站上補了 "+pack.n+" 條文法註":""}${mine?' · <span class="edit-song" role="button" tabindex="0">編輯</span> · <span class="del-song">'+svgIcon(ICON.trash,13)+' 刪除這首</span>':''}</div>${s.credit?`<div class="song-credit">${esc(s.credit)}</div>`:""}<a class="yt-link" href="${s.yt?esc(s.yt):"https://www.youtube.com/results?search_query="+encodeURIComponent(s.title+(mine?"":" "+artistOf(s,sIdx)))}" target="_blank" rel="noopener">${svgIcon(ICON.play,13)} ${s.yt?"看官方影片":"在 YouTube 聽"}</a>`+
     (h=>h+(s.excerpt?excerptHTML(s,h):""))(s.lines.map((ln,li)=>{
       const sp=`<button class="spk lyr-spk" data-li="${li}" aria-label="發音">${svgIcon(ICON.vol,12)}</button>`;
       if(ln && typeof ln==="object") return (ln.gap?'<div class="lyr-gap" aria-hidden="true">⋯</div>':"")+`<div class="lyric-line">${annotate(ln.es||"",merged)} ${sp}</div>`+(ln.cn?`<div class="lyric-cn">${esc(ln.cn)}</div>`:"")+((ln.en||EN[ln.es])?`<div class="lyric-en en-line">${esc(ln.en||EN[ln.es])}</div>`:"")+
@@ -5332,6 +5333,7 @@ function renderSong(){
   });
   const yt=lyr.querySelector(".yt-link");
   if(yt && s.lines && s.lines.length){ const cb=document.createElement("button"); cb.className="chip"; cb.style.marginLeft="10px"; cb.innerHTML=svgIcon(ICON.edit,13)+" 填空挑戰<span class=\"es2\">Reto</span>"; cb.onclick=()=>renderCloze(); yt.after(cb); }
+  const edb=lyr.querySelector(".edit-song"); if(edb) edb.onclick=()=>showSongForm(sIdx-DATA.songs.length);
   const del=lyr.querySelector(".del-song"); if(del) del.onclick=()=>{ if(confirm("確定刪除這首自己加的歌？")){ mySongs.splice(sIdx-DATA.songs.length,1); localStorage.setItem(MYKEY,JSON.stringify(mySongs)); sIdx=0; buildSongTabs(); renderSong(); songPickRender(false); } };
 }
 /* 歌單平常收起來:一行「正在看的歌 · 歌手 · 換一首」,點了才展開整張歌單(原本 15 首攤開佔滿一個手機畫面) */
@@ -5348,29 +5350,46 @@ function songPickRender(open){
   const add=document.createElement("button"); add.type="button"; add.className="btn song-paste";
   add.innerHTML=svgIcon(ICON.plus,14)+" 貼一首你在聽的歌"; add.onclick=showSongForm; songPickEl.appendChild(add);
   $("#song-pick-btn").onclick=()=>songPickRender(!open); }
-function showSongForm(){
-  songPickRender(false);
+/* 註解兩種寫法可以混用:
+   簡單:一行一個「詞 = 意思」,或「詞 = 意思 | 文法 | 為什麼」。
+   詳細:一條一塊,塊跟塊之間空一行。第一行是詞(可以接 = 意思),下面用「文法:」「意思:」「為什麼:」開頭;
+   「為什麼」可以寫好幾行。 */
+function parseMyNotes(raw){ const KEY=/^(文法|意思|為什麼|說明)\s*[:：]\s*/, out=[]; let cur=null, k0="";
+  String(raw||"").split("\n").forEach(line=>{ const x=line.trim(); if(!x){ cur=null; k0=""; return; }
+    const k=x.match(KEY);
+    if(k&&cur){ const v=x.slice(k[0].length).trim(); k0=k[1];
+      if(k0==="文法") cur.g=v||cur.g; else if(k0==="意思") cur.cn=v; else cur.why=cur.why?cur.why+"\n"+v:v; return; }
+    if(cur&&(k0==="為什麼"||k0==="說明")&&!/[=＝]/.test(x)){ cur.why+="\n"+x; return; }
+    const p=x.search(/[=＝]/), t=(p>=0?x.slice(0,p):x).trim(); if(!t) return;
+    const [cn,g,why]=(p>=0?x.slice(p+1):"").split(/\s*[|｜]\s*/);
+    cur={t:t,g:(g||"").trim()||"自訂註解",cn:(cn||"").trim(),why:(why||"").trim()}; k0=""; out.push(cur); });
+  return out; }
+function myNotesText(notes){ return (notes||[]).map(n=>[n.t+(n.cn?" = "+n.cn:""),n.g&&n.g!=="自訂註解"?"文法: "+n.g:"",n.why?"為什麼: "+n.why:""].filter(Boolean).join("\n")).join("\n\n"); }
+function myLyricsText(lines){ return (lines||[]).map(l=>typeof l==="string"?"["+l.replace(/^〔|〕$/g,"")+"]":[l.es,l.cn,l.en].filter(Boolean).join("\n")).join("\n"); }
+function showSongForm(edit){
+  songPickRender(false); const ed=Number.isInteger(edit)&&mySongs[edit]?mySongs[edit]:null;
   lyr.innerHTML=`<div class="song-form">
-    <div class="song-title">貼一首你在聽的歌 · Pega tu canción</div>
+    <div class="song-title">${ed?"編輯 · Editar":"貼一首你在聽的歌 · Pega tu canción"}</div>
     <label>歌名 / Título</label>
     <input id="sf-title" class="sf-in" placeholder="例如：La Bamba">
     <label>歌詞 / Letra（一行一句；英文、中文翻譯夾在西文下面也可以，會自動對齊）</label>
     <textarea id="sf-lyrics" class="sf-ta" rows="8" placeholder="Soy el fuego que arde tu piel&#10;我是燃燒你肌膚的火焰&#10;Soy el agua que mata tu sed&#10;…"></textarea>
-    <label>註解（選填，一行一個，格式：詞 = 解釋）</label>
-    <textarea id="sf-notes" class="sf-ta" rows="4" placeholder="quiero = 我想要&#10;bailar = 跳舞"></textarea>
+    <label>註解（選填）：簡單的一行一個「詞 = 意思」；要寫詳細，照下面範例，每條之間空一行</label>
+    <textarea id="sf-notes" class="sf-ta" rows="9" placeholder="quiero = 我想要&#10;&#10;se me corta = 我的(呼吸)斷了&#10;文法: se 的意外用法&#10;為什麼: 不是我故意停住呼吸,是呼吸自己斷了。&#10;可以寫好幾行。"></textarea>
     <div class="sf-btns"><button class="btn" id="sf-save">儲存 · Guardar</button><button class="btn" id="sf-cancel">取消 · Cancelar</button></div>
     <p class="sf-hint">存在這個瀏覽器;有開同步碼的話,會跟學習進度一起同步到雲端。站上 ${GLOSS.length} 個常見字會自動畫線;其他想查的字,在上面「註解」自己加。</p>
   </div>`;
   noteBox.innerHTML=`<div class="ph">填好左邊<br>按「儲存」</div>`;
+  if(ed){ $("#sf-title").value=ed.title||""; $("#sf-lyrics").value=myLyricsText(ed.lines); $("#sf-notes").value=myNotesText(ed.notes); }
   $("#sf-cancel").onclick=()=>{ buildSongTabs(); renderSong(); };
   $("#sf-save").onclick=()=>{
     const title=$("#sf-title").value.trim()||"我的歌";
     const lines=parseLyrics($("#sf-lyrics").value.split("\n"));
     if(!lines.some(l=>typeof l==="object")){ alert("沒有找到西班牙文的句子。請至少貼一行西文歌詞。"); return; }
-    const notes=$("#sf-notes").value.split("\n").map(x=>x.trim()).filter(Boolean).map(x=>{ const p=x.indexOf("="); if(p<0)return null; const t=x.slice(0,p).trim(); const cn=x.slice(p+1).trim(); return t?{t:t,g:"自訂註解",cn:cn,why:""}:null; }).filter(Boolean);
-    mySongs.push({title:title,sub:"自己加的 · personal",lines:lines,notes:notes});
+    const notes=parseMyNotes($("#sf-notes").value);
+    if(ed){ ed.title=title; ed.lines=lines; ed.notes=notes; } else mySongs.push({title:title,sub:"自己加的 · personal",lines:lines,notes:notes});
     localStorage.setItem(MYKEY,JSON.stringify(mySongs));
-    sIdx=DATA.songs.length+mySongs.length-1;
+    sIdx=DATA.songs.length+(ed?edit:mySongs.length-1);
     buildSongTabs(); renderSong(); songPickRender(false);  /* 上面那行是唯一顯示歌名的地方,存完要換成新歌 */
     const nes=lines.filter(l=>typeof l==="object").length, ncn=lines.filter(l=>l.cn).length, nen=lines.filter(l=>l.en).length;
     showToast("存好了:"+nes+" 句西文"+(ncn?",其中 "+ncn+" 句有中文":"")+(nen?","+nen+" 句有英文"+(document.body.classList.contains("hide-en")?"(英文對照在「學習進度 · 設定」打開)":""):""));
