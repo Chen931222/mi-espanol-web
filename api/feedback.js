@@ -5,7 +5,7 @@
 //   POST { type:"wtp",    choice }                → espfb:wtp      欄位 choice +1
 //   POST { type:"report", item:"7-2", field, reason } → espfb:report 欄位 "7-2|a|es" +1
 //   POST { type:"waitlist", email, remove? }      → espfb:waitlist 集合加入／移除這個 email(付費版上線時通知用)
-//   POST { type:"ev", ev }                         → espfb:ev:<ev> 欄位「台北日期」+1(new 新裝置/back 回訪/start 按開始/done 做完三步/video 點今日影片/try 今天練過)
+//   POST { type:"ev", ev }                         → espfb:ev:<ev> 欄位「台北日期」+1(new 新裝置/back 回訪/start 按開始/done 做完三步/video 點今日影片或對話頁的對談片連結/try 今天練過)
 //   POST { type:"ev", ev:"pick", ep:"ep01" }       → espfb:ev:pick 欄位「台北日期|ep」+1(在「從影片來的?」點了哪一支;ep 要是「ep＋2–3 位數字」的字串)
 //   GET                                            → 兩張表的目前計數＋候補名單人數＋ev 每天的次數(只有數字,可以公開;email 本身不回傳)
 // ev 是 2026-10-25 加的,推估 YouTube 有沒有帶人來(不帶來源):前端每個瀏覽器每個台北日每種最多送一次,不帶任何 id、不設 cookie。

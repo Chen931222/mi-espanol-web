@@ -1155,8 +1155,12 @@ details.g-plus>summary:focus-visible{outline:2px solid var(--azul);outline-offse
 .tk-badge.ok{color:var(--good)}
 .tk-badge.warn{color:var(--wine)}
 /* 模式與場景的晶片平常收起來,只留一行「目前的選擇 · 更換」 */
-.dlg-pick{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-size:.92rem}
+.dlg-pick{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;margin-bottom:16px;font-size:.92rem}
 .dlg-pick-cur{font-weight:700}
+.dlg-vid-row{flex-basis:100%}
+.dlg-vid{color:var(--terra-deep);font-weight:600;text-decoration:none;border-bottom:1px solid transparent;min-height:44px;display:inline-flex;align-items:center;gap:6px}
+.dlg-vid:hover,.dlg-vid:focus-visible{border-bottom-color:var(--terra)}
+.dlg-vid-meta{color:var(--ink-soft);font-weight:400;font-size:.86rem}
 #dialogos:not(.dlg-open) #dlg-mode,#dialogos:not(.dlg-open) #dlg-chips{display:none}
 /* 「另一種說法」整張卡可點 */
 .tk-cue.alt{cursor:pointer;transition:.18s;padding-right:52px}
@@ -2056,7 +2060,7 @@ const DATA = {
         {t:"verlo", g:"ver + lo", cn:"看它", why:"lo = el piso。受詞代名詞可以黏在原形動詞後面:<b>verlo</b>。"},
         {t:"por la tarde", g:"por + 時段", cn:"下午", why:"時段用 <b>por la mañana / tarde / noche</b>(拉美常說 en la tarde)。"} ]},
     ]},
-    { scene:"一天的作息", es:"Mi rutina", items:[
+    { scene:"一天的作息", es:"Mi rutina", video:{url:"https://youtu.be/NrC1O9uOioE", label:"看這段的對談片", meta:"9 分鐘・YouTube"}, items:[
       { q:"¿A qué hora te levantas normalmente?", qcn:"你通常幾點起床?", a:"Me levanto a las siete, pero siempre tengo mucho sueño.", acn:"我七點起床,可是總是很想睡。", notes:[
         {t:"te levantas", g:"levantarse 現在式 (tú)", cn:"你起床", why:"反身動詞:me levanto / <b>te levantas</b> / se levanta。"},
         {t:"a las siete", g:"a + 時間", cn:"在七點", why:"「在幾點」做某事用 <b>a las…</b>。"},
@@ -7809,7 +7813,7 @@ function fbSend(body){ try{ return fetch("/api/feedback",{method:"POST",headers:
 /* ===== 匿名計數(2026-10-25):推估 YouTube 有沒有帶人來。不帶來源(手打網址本來就沒有),只能看上片時間前後的變化。
    送 /api/feedback {type:"ev"},日期由伺服器記(台北時間) =====
    new 新的瀏覽器(進站時沒有任何 miEsp 開頭的紀錄,見最前面的 EV_NEW)/ back 來過的瀏覽器今天第一次來 /
-   start 按「開始今天的五分鐘」/ done 三步做完(不一定經過 start,從分頁直接做完也算)/ video 點今日影片(排好的播完後是「去頻道」)/
+   start 按「開始今天的五分鐘」/ done 三步做完(不一定經過 start,從分頁直接做完也算)/ video 點今日影片(排好的播完後是「去頻道」),2026-11-17 起也算對話頁場景列的「看這段的對談片」/
    pick 在「從影片來的?」點了哪一支(2026-10-28,多帶 ep,例如 ep01;伺服器記成「日期|ep」;每一支各記一次)/
    try 今天練過了(2026-10-28,拿到任何 XP 都算,從哪個分頁練的都一樣;start 只量得到「今天」那顆按鈕)。
    每個瀏覽器每個台北日每種最多送一次(記在 miEsp_ev);斷線沒送出去就不算送過,下次再補。不帶任何 id、不設 cookie。
@@ -8223,8 +8227,12 @@ const dlgPick=document.createElement("div"); dlgPick.className="dlg-pick reveal"
 $("#dlg-mode").before(dlgPick);
 function dlgPickRender(open){
   $("#dialogos").classList.toggle("dlg-open",!!open);
-  dlgPick.innerHTML=`<span class="dlg-pick-cur">${MODE_LABEL[dlgMode]||dlgMode} · ${esc(DATA.dialogos[dScene].scene)}</span><button class="tk-link" id="dlg-pick-btn">${open?"收起":"更換"}</button>`;
+  /* 場景有對應的 YouTube 片(2026-11-17 本人「站和頻道互導」):選擇列下面多一行連結,點了記一次 video(跟今日影片卡同一種) */
+  const sv=DATA.dialogos[dScene].video, vOk=sv&&/^https:\/\/(youtu\.be|www\.youtube\.com)\//.test(sv.url);
+  dlgPick.innerHTML=`<span class="dlg-pick-cur">${MODE_LABEL[dlgMode]||dlgMode} · ${esc(DATA.dialogos[dScene].scene)}</span><button class="tk-link" id="dlg-pick-btn">${open?"收起":"更換"}</button>`+
+    (vOk?`<div class="dlg-vid-row"><a class="dlg-vid" href="${esc(sv.url)}" target="_blank" rel="noopener" aria-label="${esc(sv.label)}・${esc(sv.meta||"")}(YouTube,另開分頁)">${esc(sv.label)} <span class="dlg-vid-meta">${esc(sv.meta||"")}</span> ›</a></div>`:"");
   $("#dlg-pick-btn").onclick=()=>dlgPickRender(!open);
+  const va=dlgPick.querySelector(".dlg-vid"); if(va){ va.addEventListener("click",()=>evAct("video")); va.addEventListener("auxclick",e=>{ if(e.button===1) evAct("video"); }); }
 }
 const _renderDlgBase=renderDlg;
 renderDlg=function(){ _renderDlgBase(); dlgPickRender(false); };
@@ -8232,6 +8240,11 @@ dlgPickRender(false);
 checkLogros();
 
 renderDlg(); buildVList(); renderSong(); buildVerbos(); vrInit(); renderDaily(); show("hoy");
+/* 場景網址 ?escena=mi-rutina(2026-11-17):從 YouTube 說明欄、置頂留言點進來,直接進那段對話的逐句模式。
+   代號 = 場景西文名去重音、小寫、空白換成 -;找不到就照常停在今天頁。 */
+function sceneSlug(d){ return String(d.es||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+try{ const want=new URLSearchParams(location.search).get("escena");
+  if(want){ const i=DATA.dialogos.findIndex(d=>sceneSlug(d)===want.toLowerCase()); if(i>=0) requestAnimationFrame(()=>hfGo(i)); } }catch(_){}
 { const gn=$("#gram-n"); if(gn) gn.textContent=document.querySelectorAll("#verb-list .card.verb").length; }
 if("serviceWorker" in navigator){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
 </script>
