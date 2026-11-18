@@ -7,7 +7,7 @@
 //   POST { type:"waitlist", email, remove? }      → espfb:waitlist 集合加入／移除這個 email(付費版上線時通知用)
 //   POST { type:"ev", ev }                         → espfb:ev:<ev> 欄位「台北日期」+1(new 新裝置/back 回訪/start 按開始/done 做完三步/video 點今日影片或對話頁的對談片連結/try 今天練過)
 //   POST { type:"ev", ev:"pick", ep:"ep01" }       → espfb:ev:pick 欄位「台北日期|ep」+1(在「從影片來的?」點了哪一支;ep 要是「ep＋2–3 位數字」的字串)
-//   POST { type:"ev", ev:"esc", sc:"mi-rutina", nb:"new" } → espfb:ev:esc 欄位「台北日期|sc|nb」+1(從場景網址 ?escena= 進站;sc 小寫英數與 -,最長 40;nb 是 new 或 back)
+//   POST { type:"ev", ev:"esc", sc:"mi-rutina", nb:"new" } → espfb:ev:esc 欄位「台北日期|sc|nb」+1(從場景網址 ?escena= 進站;sc 小寫英數與 -,最長 40,不在 SCENES 裡的記成 otro;nb 是 new 或 back)
 //   POST { type:"ev", ev:"yt", nb:"back" }        → espfb:ev:yt 欄位「台北日期|nb」+1(上一頁是 YouTube)
 //   GET                                            → 兩張表的目前計數＋候補名單人數＋ev 每天的次數(只有數字,可以公開;email 本身不回傳)
 // ev 是 2026-10-25 加的,推估 YouTube 有沒有帶人來(不帶來源):前端每個瀏覽器每個台北日每種最多送一次,不帶任何 id、不設 cookie。
@@ -25,6 +25,11 @@ const RATE_MAX = 30;                                  // 每個 IP 每小時最�
 const EV_RATE_MAX = 400;                              // ev 另外一桶,每個 IP 每小時最多 400 次(2026-10-28 從 200 提高:每台瀏覽器一天最多送的種類變多了)
 const EVS = ["new", "back", "start", "done", "video", "pick", "try", "esc", "yt"]; // 新的瀏覽器 / 回訪 / 按開始 / 做完三步 / 點今日影片 / 從影片來點了哪一支 / 今天練過 / 從場景網址進站 / 上一頁是 YouTube（esc、yt 2026-11-18 加）
 const NB = ["new", "back"];
+// esc 只認站上現有的場景代號（index.html DATA.dialogos 的 es 去重音、小寫、空白換 -，2026-11-18 共 19 個）；
+// 其他代號記成 "otro"，欄位數有上限，別人亂編代號也灌不大這張表。**站上新增場景要回來加一行**，不然那個場景會被記成 otro。
+const SCENES = ["charla-diaria", "en-la-tienda-de-ropa", "en-el-cafe", "clima-y-deporte", "trabajo-y-estudios", "viajes-y-aeropuerto",
+  "presentarse", "pedir-indicaciones", "en-el-mercado", "la-familia", "el-fin-de-semana", "en-el-taxi", "hacer-planes",
+  "en-el-consultorio", "buscar-piso", "mi-rutina", "mi-pais", "una-ciudad-nueva", "algo-nuevo"];
 const EV_NS = process.env.VERCEL_ENV === "production" ? "espfb:ev:" : "espfb:evp:";
 const tpeDay = () => new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);   // 台北的日期 YYYY-MM-DD
 
@@ -71,7 +76,7 @@ export default async function handler(req, res) {
       && (body.ev !== "esc" || (typeof body.sc === "string" && /^[a-z0-9-]{1,40}$/.test(body.sc) && NB.includes(body.nb)))
       && (body.ev !== "yt" || NB.includes(body.nb))) {
       key = EV_NS + body.ev; isEv = true;
-      field = body.ev === "pick" ? `${tpeDay()}|${body.ep}` : body.ev === "esc" ? `${tpeDay()}|${body.sc}|${body.nb}` : body.ev === "yt" ? `${tpeDay()}|${body.nb}` : tpeDay();
+      field = body.ev === "pick" ? `${tpeDay()}|${body.ep}` : body.ev === "esc" ? `${tpeDay()}|${SCENES.includes(body.sc) ? body.sc : "otro"}|${body.nb}` : body.ev === "yt" ? `${tpeDay()}|${body.nb}` : tpeDay();
     } else if (body.type === "selftest") {
       key = "espfb:selftest"; field = "ok";   // 部署後自我檢查用,不混進正式計數
     } else {
