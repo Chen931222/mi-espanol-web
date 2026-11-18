@@ -7815,7 +7815,10 @@ function fbSend(body){ try{ return fetch("/api/feedback",{method:"POST",headers:
    new 新的瀏覽器(進站時沒有任何 miEsp 開頭的紀錄,見最前面的 EV_NEW)/ back 來過的瀏覽器今天第一次來 /
    start 按「開始今天的五分鐘」/ done 三步做完(不一定經過 start,從分頁直接做完也算)/ video 點今日影片(排好的播完後是「去頻道」),2026-11-17 起也算對話頁場景列的「看這段的對談片」/
    pick 在「從影片來的?」點了哪一支(2026-10-28,多帶 ep,例如 ep01;伺服器記成「日期|ep」;每一支各記一次)/
-   try 今天練過了(2026-10-28,拿到任何 XP 都算,從哪個分頁練的都一樣;start 只量得到「今天」那顆按鈕)。
+   try 今天練過了(2026-10-28,拿到任何 XP 都算,從哪個分頁練的都一樣;start 只量得到「今天」那顆按鈕)/
+   esc 從場景網址 ?escena= 進站、而且找得到那個場景(2026-11-18,多帶 sc 場景代號與 nb 新或回訪;這種網址目前只放在 YouTube 說明欄與置頂留言)/
+   yt 上一頁是 youtube.com 或 youtu.be(2026-11-18,多帶 nb;YouTube 轉址頁不一定交出上一頁,手機 App 多半不交,所以只會少算)。
+   esc、yt 只是「從哪個網址進來」,不帶任何 id;同一個瀏覽器同一天各記一次。
    每個瀏覽器每個台北日每種最多送一次(記在 miEsp_ev);斷線沒送出去就不算送過,下次再補。不帶任何 id、不設 cookie。
    key 用 miEsp_ 開頭:同步碼、匯出、重設只認 miEspanol. 開頭,這兩個是「這個瀏覽器」的事,不跟著走(同步後也不會多算)。
    不送:網址加過 ?notrack(站主自己的瀏覽器,記在 miEsp_notrack;?notrack=off 取消)、開了「不追蹤」(DNT／GPC)、
@@ -7829,7 +7832,7 @@ function evSend(ev,also,extra){ try{
   if(navigator.webdriver||/bot|crawl|spider|slurp|headless|lighthouse|facebookexternalhit/i.test(navigator.userAgent||"")) return;
   const d=evDay(), s=lsGet(EVKEY,{});
   if(s.d!==d||!Array.isArray(s.sent)){ s.d=d; s.sent=[]; }
-  const k=extra&&extra.ep?ev+":"+extra.ep:ev;   /* pick 每一支各記一次(2026-10-28 驗收:原本只記當天第一次點的那支) */
+  const k=extra&&(extra.ep||extra.sc)?ev+":"+(extra.ep||extra.sc):ev;   /* pick 每一支各記一次(2026-10-28 驗收:原本只記當天第一次點的那支) */
   if(s.sent.includes(k)) return;
   const mark=[k,...(also||[])];
   s.sent.push(...mark); localStorage.setItem(EVKEY,JSON.stringify(s));
@@ -7840,6 +7843,8 @@ function evSend(ev,also,extra){ try{
 function evVisit(){ evSend(EV_NEW&&evDay()===EV_DAY0?"new":"back",["new","back"]); }
 function evAct(ev,extra){ evVisit(); evSend(ev,null,extra); }
 evVisit();
+const EV_NB=EV_NEW?"new":"back";   /* 這次進站算新或回訪,esc、yt 一起記 */
+try{ if(/(^|\.)(youtube\.com|youtu\.be)$/i.test(new URL(document.referrer).hostname)) evAct("yt",{nb:EV_NB}); }catch(_){}
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") evVisit(); });
 { const b=$("#hoy-video"); if(b) b.addEventListener("click",e=>{ if(e.target.closest&&e.target.closest(".hv-go")) evAct("video"); }); }
 function wtpHTML(){ let asked=null; try{ asked=localStorage.getItem(WTPKEY); }catch(_){}
@@ -8244,7 +8249,7 @@ renderDlg(); buildVList(); renderSong(); buildVerbos(); vrInit(); renderDaily();
    代號 = 場景西文名去重音、小寫、空白換成 -;找不到就照常停在今天頁。 */
 function sceneSlug(d){ return String(d.es||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
 try{ const want=new URLSearchParams(location.search).get("escena");
-  if(want){ const i=DATA.dialogos.findIndex(d=>sceneSlug(d)===want.toLowerCase()); if(i>=0) requestAnimationFrame(()=>hfGo(i)); } }catch(_){}
+  if(want){ const i=DATA.dialogos.findIndex(d=>sceneSlug(d)===want.toLowerCase()); if(i>=0){ evAct("esc",{sc:sceneSlug(DATA.dialogos[i]),nb:EV_NB}); requestAnimationFrame(()=>hfGo(i)); } } }catch(_){}
 { const gn=$("#gram-n"); if(gn) gn.textContent=document.querySelectorAll("#verb-list .card.verb").length; }
 if("serviceWorker" in navigator){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
 </script>

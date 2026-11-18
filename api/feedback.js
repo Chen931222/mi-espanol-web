@@ -7,6 +7,8 @@
 //   POST { type:"waitlist", email, remove? }      → espfb:waitlist 集合加入／移除這個 email(付費版上線時通知用)
 //   POST { type:"ev", ev }                         → espfb:ev:<ev> 欄位「台北日期」+1(new 新裝置/back 回訪/start 按開始/done 做完三步/video 點今日影片或對話頁的對談片連結/try 今天練過)
 //   POST { type:"ev", ev:"pick", ep:"ep01" }       → espfb:ev:pick 欄位「台北日期|ep」+1(在「從影片來的?」點了哪一支;ep 要是「ep＋2–3 位數字」的字串)
+//   POST { type:"ev", ev:"esc", sc:"mi-rutina", nb:"new" } → espfb:ev:esc 欄位「台北日期|sc|nb」+1(從場景網址 ?escena= 進站;sc 小寫英數與 -,最長 40;nb 是 new 或 back)
+//   POST { type:"ev", ev:"yt", nb:"back" }        → espfb:ev:yt 欄位「台北日期|nb」+1(上一頁是 YouTube)
 //   GET                                            → 兩張表的目前計數＋候補名單人數＋ev 每天的次數(只有數字,可以公開;email 本身不回傳)
 // ev 是 2026-10-25 加的,推估 YouTube 有沒有帶人來(不帶來源):前端每個瀏覽器每個台北日每種最多送一次,不帶任何 id、不設 cookie。
 // pick、try 是 2026-10-28 加的:pick 的 ep 是訪客自己點的那一集,不是追蹤來源;try 是今天拿到任何 XP(從哪個分頁練都算)。
@@ -21,7 +23,8 @@ const FIELDS = ["q", "a", "alt"];                     // 對方那句 / 範例�
 const REASONS = ["es", "cn", "odd"];                  // 西文有錯 / 中文有錯 / 不自然
 const RATE_MAX = 30;                                  // 每個 IP 每小時最多 30 次
 const EV_RATE_MAX = 400;                              // ev 另外一桶,每個 IP 每小時最多 400 次(2026-10-28 從 200 提高:每台瀏覽器一天最多送的種類變多了)
-const EVS = ["new", "back", "start", "done", "video", "pick", "try"]; // 新的瀏覽器 / 回訪 / 按開始 / 做完三步 / 點今日影片 / 從影片來點了哪一支 / 今天練過
+const EVS = ["new", "back", "start", "done", "video", "pick", "try", "esc", "yt"]; // 新的瀏覽器 / 回訪 / 按開始 / 做完三步 / 點今日影片 / 從影片來點了哪一支 / 今天練過 / 從場景網址進站 / 上一頁是 YouTube（esc、yt 2026-11-18 加）
+const NB = ["new", "back"];
 const EV_NS = process.env.VERCEL_ENV === "production" ? "espfb:ev:" : "espfb:evp:";
 const tpeDay = () => new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);   // 台北的日期 YYYY-MM-DD
 
@@ -63,8 +66,12 @@ export default async function handler(req, res) {
       key = "espfb:wtp"; field = body.choice;
     } else if (body.type === "report" && /^\d{1,2}-\d{1,2}$/.test(String(body.item || "")) && FIELDS.includes(body.field) && REASONS.includes(body.reason)) {
       key = "espfb:report"; field = `${body.item}|${body.field}|${body.reason}`;
-    } else if (body.type === "ev" && EVS.includes(body.ev) && (body.ev !== "pick" || (typeof body.ep === "string" && /^ep\d{2,3}$/.test(body.ep)))) {
-      key = EV_NS + body.ev; field = body.ev === "pick" ? `${tpeDay()}|${body.ep}` : tpeDay(); isEv = true;
+    } else if (body.type === "ev" && EVS.includes(body.ev)
+      && (body.ev !== "pick" || (typeof body.ep === "string" && /^ep\d{2,3}$/.test(body.ep)))
+      && (body.ev !== "esc" || (typeof body.sc === "string" && /^[a-z0-9-]{1,40}$/.test(body.sc) && NB.includes(body.nb)))
+      && (body.ev !== "yt" || NB.includes(body.nb))) {
+      key = EV_NS + body.ev; isEv = true;
+      field = body.ev === "pick" ? `${tpeDay()}|${body.ep}` : body.ev === "esc" ? `${tpeDay()}|${body.sc}|${body.nb}` : body.ev === "yt" ? `${tpeDay()}|${body.nb}` : tpeDay();
     } else if (body.type === "selftest") {
       key = "espfb:selftest"; field = "ok";   // 部署後自我檢查用,不混進正式計數
     } else {
