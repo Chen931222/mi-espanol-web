@@ -2060,7 +2060,7 @@ const DATA = {
         {t:"verlo", g:"ver + lo", cn:"看它", why:"lo = el piso。受詞代名詞可以黏在原形動詞後面:<b>verlo</b>。"},
         {t:"por la tarde", g:"por + 時段", cn:"下午", why:"時段用 <b>por la mañana / tarde / noche</b>(拉美常說 en la tarde)。"} ]},
     ]},
-    { scene:"一天的作息", es:"Mi rutina", video:{url:"https://youtu.be/NrC1O9uOioE", label:"看這段的對談片", meta:"9 分鐘・YouTube"}, items:[
+    { scene:"一天的作息", es:"Mi rutina", video:{url:"https://youtu.be/5rSSVj6KA7c", label:"看這段的對談片", meta:"9 分鐘・YouTube"}, items:[
       { q:"¿A qué hora te levantas normalmente?", qcn:"你通常幾點起床?", a:"Me levanto a las siete, pero siempre tengo mucho sueño.", acn:"我七點起床,可是總是很想睡。", notes:[
         {t:"te levantas", g:"levantarse 現在式 (tú)", cn:"你起床", why:"反身動詞:me levanto / <b>te levantas</b> / se levanta。"},
         {t:"a las siete", g:"a + 時間", cn:"在七點", why:"「在幾點」做某事用 <b>a las…</b>。"},
@@ -7936,7 +7936,7 @@ function renderHoy(){
    - 網址只收 youtube.com / m.youtube.com / youtu.be
    頁面開著跨過台北午夜、或到了下一支的上線時間,會重新讀 videos.json 再畫一次。
    2026-11-03 網站和頻道分開:videos.json 不再每週補。排好的都播完、今天也沒有新的,卡片改成固定連頻道(點了一樣記 video)。 */
-const HV_CHANNEL="https://www.youtube.com/@breme3991";
+const HV_CHANNEL="https://www.youtube.com/@miespanolapp";   /* 2026-11-26 西語片從 Breme 搬到新頻道,Breme 的西語片已全改私人 */
 let hvData=null, hvTimer=0;
 function hvLoad(){
   if(hvData) return Promise.resolve(hvData);
@@ -7969,8 +7969,8 @@ function renderHoyVideo(){
     const {v,at}=live[0], day=tpeDate(at), [,mo,dd]=day.split("-");
     if(day!==tpeDate(now)&&!list.some(x=>x.at>now)){   /* 排好的都播完了、今天也沒有新的 → 改成固定連頻道,不再停在最後一支 */
       box.innerHTML=`<div class="hv"><div class="hv-body"><span class="hv-tag">YouTube 頻道</span>`+
-        `<p class="hv-t">每日一段 ${live.length} 集，還有名人致詞翻譯</p><p class="hv-m">Breme · YouTube</p></div>`+
-        `<a class="btn hv-go" href="${HV_CHANNEL}" target="_blank" rel="noopener" aria-label="去頻道:Breme(YouTube,另開分頁)">去頻道 ›</a></div>`;
+        `<p class="hv-t">每日一段、慢速對談，還有名人致詞翻譯</p><p class="hv-m">Mi Español 西班牙文慢慢說 · YouTube</p></div>`+
+        `<a class="btn hv-go" href="${HV_CHANNEL}" target="_blank" rel="noopener" aria-label="去頻道:Mi Español 西班牙文慢慢說(YouTube,另開分頁)">去頻道 ›</a></div>`;
       box.hidden=false; return;
     }
     const sec=Number(v.seconds), meta=[v.scene?esc(v.scene):"", sec>0?`${Math.round(sec)} 秒`:"", "YouTube"].filter(Boolean).join(" · ");
